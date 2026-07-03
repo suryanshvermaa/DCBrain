@@ -1,0 +1,23 @@
+{
+  "task_id": "001",
+  "task_name": "Project Setup",
+  "task_path": "tasks/001-project-setup",
+  "priority": "P0",
+  "sprint": 1,
+  "status": "not_started",
+  "estimated_hours": 4,
+  "actual_hours": null,
+  "dependencies": [],
+  "assigned_to": null,
+  "started_at": null,
+  "completed_at": null,
+  "description": "Set up the complete development environment with frontend (Next.js 14 App Router + TypeScript + TailwindCSS + Redux Toolkit), backend (Express.js + TypeScript), database (PostgreSQL 16), cache (Redis 7), vector store (ChromaDB), object storage (MinIO), graph database (Neo4j 5.x), and Docker Compose orchestration.",
+  "files_to_read": [
+    ".ai/ARCHITECTURE.md",
+    ".ai/TECH_STACK.md",
+    ".ai/DEPLOYMENT.md",
+    ".ai/ENVIRONMENT.md",
+    ".ai/UI_GUIDELINES.md"
+  ],
+  "last_updated": "2026-07-01T00:00:00+05:30"
+}

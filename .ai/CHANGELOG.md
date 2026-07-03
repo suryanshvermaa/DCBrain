@@ -1,0 +1,28 @@
+# Changelog
+
+Only documents changes to planning and documentation.
+
+## [Unreleased]
+
+### Changed
+- **Resolved Graph DB vendor decision (Neo4j 5.x).** `TECH_STACK.md` already listed Neo4j; `CURRENT_STATE.md`, `KNOWN_ISSUES.md` (ISSUE-004), `DATABASE.md`, `ARCHITECTURE.md`, and `DECISIONS.md` (ADR-010) updated to be consistent. ISSUE-004 marked Resolved.
+- **Expanded `AGENTS.md`.** Every one of the 14 agents now documents Purpose, Responsibilities, Inputs, Outputs, Dependencies, Prompt Summary, and Future Improvements. Added an Agent Roster & Sprint Allocation table at the bottom.
+- **`CURRENT_STATE.md` clarified.** Phase wording harmonised with `NEXT_CHAT.md` and `ROADMAP.md` — planning is complete; implementation is starting in Phase 1.
+- **`REQUIREMENTS.md` FR-002 broadened.** Image uploads (PNG / JPG / TIFF) explicitly listed as a supported format with OCR (Tesseract) processing. Aligns with `PROJECT_CHECKLIST.md` and `DATASETS.md`.
+- **Alias files no longer empty.** `UI_UX.md`, `LESSONS.md`, `CODING_RULES.md`, and `GIT_WORKFLOW.md` now each carry a short pointer to their canonical document (`UI_GUIDELINES.md`, `LESSONS_LEARNED.md`, `CODING_STANDARDS.md`, `GIT_RULES.md` respectively) so every required filename in the `.ai/` index resolves with useful content.
+- **Task backlog synchronized with documented scope.** Created Tasks 011–018 covering Procurement Intelligence, RFI Intelligence, Knowledge Graph & Entity Extraction, AI Agent Framework & Supervisor, Reporting Engine, Simulation & Mitigation Planner, Notifications/Audit/Activity Timeline, and Advanced EPC Intelligence (NCR, Inspection, Commissioning, Change Orders). Updated [tasks/backlog.md](./tasks/backlog.md), [tasks/sprint.md](./tasks/sprint.md), and [TASKS.md](./TASKS.md) with sprint allocations and dependency graph. Each new task includes `task.md`, `plan.md`, `progress.md`, and `review.md`.
+- **Existing tasks aligned with current stack.** Task 001 updated to include Neo4j and MinIO in Docker Compose; Task 003 updated to include image upload (PNG/JPG/TIFF) and MinIO storage; Task 004 updated to include image OCR, Node.js `xlsx` parser, entity extraction for Neo4j, and duplicate detection.
+- **Corrected implementation plans for Node.js/TypeScript stack.** Rewrote `tasks/001-project-setup/plan.md`, `tasks/002-authentication/plan.md`, `tasks/003-document-upload/plan.md`, `tasks/004-document-processing/plan.md`, `tasks/005-rag/plan.md`, `tasks/006-chat/plan.md`, `tasks/007-compliance-checker/plan.md`, `tasks/008-schedule-risk/plan.md`, and `tasks/009-dashboard/plan.md` to use `.ts` files, Next.js App Router, Redux Toolkit, MinIO, Neo4j, and the module-based backend structure instead of Python-style paths and dependencies.
+- **Synchronized `.ai/state/` files.** Updated `current_task.json` (MinIO/Neo4j, canonical file references), `state.json` (added modules 011–018, updated open issue count), and `versions.json` (removed `@tanstack/react-query`, added `minio`, `neo4j-driver`, `docx`, `xlsx`, `tesseract.js`, `ws`, `tsx`).
+- **Synchronized `.ai/memory/` files.** Updated `conversation_summary.md` and `architecture_history.md` to remove Vite/TanStack Query, add MinIO/Neo4j, and reflect 18 tasks and the 14-agent ensemble.
+- **Synchronized `.ai/prompts/` files.** Updated `frontend.md`, `implement.md`, and `database.md` to match the documented stack and canonical filenames.
+- **Created `.ai/prompts/agents/` directory.** Added `index.md` plus 14 agent prompt files (one per agent) with system prompts, runtime variables, and example output.
+- **Updated `.ai/templates/` and `PROMPTS.md`.** Templates now reference canonical files; `PROMPTS.md` indexes both the agent prompt library and development prompts.
+- **Canonicalized file references.** Updated `NEXT_CHAT.md`, `README.md`, `FEATURES.md`, `COMPONENTS.md`, `SECURITY.md`, task files 001/002/006/009, and prompts (`backend`, `review`, `refactor`, `implement`, `database`) to reference `UI_GUIDELINES.md` / `CODING_STANDARDS.md` instead of the alias names, while preserving the alias files for required-file-name completeness.
+
+### Added
+- Initial creation of Project Memory System (`.ai/`).
+
+### Notes
+- No problem statement PDF was present in the repository. Project context was reconstructed from the existing `.ai/` documentation and `README.md`. The `.ai/` documentation is therefore the authoritative source until a problem statement is added at the repo root.
+- Re-structured Mermaid diagrams to enforce strict compatibility across all parsers (carried over from previous unreleased notes).

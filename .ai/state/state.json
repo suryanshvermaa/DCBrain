@@ -1,0 +1,56 @@
+{
+  "project": {
+    "name": "AI Intelligence Platform for Data Centre EPC Project Delivery",
+    "codename": "DCBrain",
+    "hackathon": "ET AI Hackathon 2026",
+    "start_date": "2026-06-30",
+    "version": "0.0.0"
+  },
+  "phase": {
+    "current": "Phase 1: Foundation",
+    "number": 1,
+    "description": "Project setup, authentication, document upload/storage (MinIO), document processing (OCR, chunking, embeddings, entity extraction), and basic RAG/chat infrastructure."
+  },
+  "development": {
+    "status": "not_started",
+    "lines_of_code": 0,
+    "test_coverage_backend": null,
+    "test_coverage_frontend": null,
+    "open_issues": 4
+  },
+  "sprint": {
+    "number": 1,
+    "start_date": "2026-07-01",
+    "end_date": "2026-07-14",
+    "tasks_total": 3,
+    "tasks_completed": 0,
+    "tasks_in_progress": 0
+  },
+  "modules": {
+    "project_setup": { "status": "not_started", "progress": 0 },
+    "authentication": { "status": "not_started", "progress": 0 },
+    "document_upload": { "status": "not_started", "progress": 0 },
+    "document_processing": { "status": "not_started", "progress": 0 },
+    "rag_search": { "status": "not_started", "progress": 0 },
+    "chat_interface": { "status": "not_started", "progress": 0 },
+    "compliance_checker": { "status": "not_started", "progress": 0 },
+    "schedule_risk": { "status": "not_started", "progress": 0 },
+    "dashboard": { "status": "not_started", "progress": 0 },
+    "procurement_intelligence": { "status": "not_started", "progress": 0 },
+    "rfi_intelligence": { "status": "not_started", "progress": 0 },
+    "knowledge_graph": { "status": "not_started", "progress": 0 },
+    "ai_agent_framework": { "status": "not_started", "progress": 0 },
+    "reporting_engine": { "status": "not_started", "progress": 0 },
+    "simulation_engine": { "status": "not_started", "progress": 0 },
+    "notifications_audit": { "status": "not_started", "progress": 0 },
+    "advanced_epc_intelligence": { "status": "not_started", "progress": 0 },
+    "deployment": { "status": "not_started", "progress": 0 }
+  },
+  "environments": {
+    "local": { "status": "not_configured", "url": null },
+    "staging": { "status": "not_configured", "url": null },
+    "production": { "status": "not_configured", "url": null }
+  },
+  "last_updated": "2026-07-01T00:00:00+05:30",
+  "updated_by": "documentation_sync"
+}
