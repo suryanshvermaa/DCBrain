@@ -21,7 +21,7 @@ Only documents changes to planning and documentation.
 - **Canonicalized file references.** Updated `NEXT_CHAT.md`, `README.md`, `FEATURES.md`, `COMPONENTS.md`, `SECURITY.md`, task files 001/002/006/009, and prompts (`backend`, `review`, `refactor`, `implement`, `database`) to reference `UI_GUIDELINES.md` / `CODING_STANDARDS.md` instead of the alias names, while preserving the alias files for required-file-name completeness.
 
 ### Added
-- Initial creation of Project Memory System (`.ai/`).
+- **Task 001 — Project Setup completed.** Full Docker Compose development environment (frontend, backend, worker, PostgreSQL + pgvector, Redis, ChromaDB, MinIO, Neo4j). Backend Express app factory with `/health`, `/api`, `/openapi.json`, and `/docs` (Swagger UI). Prisma schema, initial migration, and smoke tests. Next.js dashboard placeholder with Tailwind v4 design tokens and primary color scale. Backend and frontend lint/format/test tooling wired up.
 
 ### Notes
 - No problem statement PDF was present in the repository. Project context was reconstructed from the existing `.ai/` documentation and `README.md`. The `.ai/` documentation is therefore the authoritative source until a problem statement is added at the repo root.

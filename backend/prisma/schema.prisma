@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  role          Role      @default(VIEWER)
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  projects      ProjectMember[]
+  documents     Document[]        @relation("DocumentOwner")
+  createdProjects Project[]       @relation("ProjectCreator")
+  activities    Activity[]
+  notifications Notification[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  code        String   @unique
+  status      ProjectStatus @default(PLANNING)
+  startDate   DateTime?
+  endDate     DateTime?
+  location    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creatorId   String
+  creator     User     @relation("ProjectCreator", fields: [creatorId], references: [id])
+  members     ProjectMember[]
+  documents   Document[]
+  activities  Activity[]
+
+  @@index([code])
+  @@index([status])
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String       @id @default(cuid())
+  role      ProjectRole  @default(MEMBER)
+  joinedAt  DateTime     @default(now())
+
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String
+  project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@map("project_members")
+}
+
+model Document {
+  id            String        @id @default(cuid())
+  filename      String
+  originalName  String
+  mimeType      String
+  size          Int
+  path          String
+  bucket        String
+  status        DocumentStatus @default(UPLOADED)
+  metadata      Json?
+  pageCount     Int?
+  extractedText String?
+  summary       String?
+  uploadedAt    DateTime      @default(now())
+  processedAt   DateTime?
+  completedAt   DateTime?
+
+  projectId     String
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  ownerId       String
+  owner         User          @relation("DocumentOwner", fields: [ownerId], references: [id])
+  chunks        DocumentChunk[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([ownerId])
+  @@map("documents")
+}
+
+model DocumentChunk {
+  id          String   @id @default(cuid())
+  content     String
+  embedding   Unsupported("vector")?
+  chunkIndex  Int
+  tokenCount  Int
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("document_chunks")
+}
+
+model Activity {
+  id          String        @id @default(cuid())
+  type        ActivityType
+  title       String
+  description String?
+  metadata    Json?
+  createdAt   DateTime      @default(now())
+
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("activities")
+}
+
+model Notification {
+  id        String              @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  read      Boolean             @default(false)
+  readAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  userId    String
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum Role {
+  ADMIN
+  PROJECT_MANAGER
+  ENGINEER
+  PROCUREMENT
+  QA_QC
+  VIEWER
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  ARCHIVED
+}
+
+enum ProjectRole {
+  OWNER
+  MANAGER
+  ENGINEER
+  PROCUREMENT
+  QA_QC
+  MEMBER
+  VIEWER
+}
+
+enum DocumentStatus {
+  UPLOADED
+  PROCESSING
+  PROCESSED
+  FAILED
+  ARCHIVED
+}
+
+enum ActivityType {
+  DOCUMENT_UPLOADED
+  DOCUMENT_PROCESSED
+  COMPLIANCE_CHECKED
+  SCHEDULE_UPDATED
+  PROCUREMENT_CREATED
+  RFI_CREATED
+  NCR_CREATED
+  INSPECTION_SCHEDULED
+  USER_JOINED
+  COMMENT_ADDED
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  ERROR
+  SUCCESS
+  TASK_ASSIGNED
+  DEADLINE_APPROACHING
+  COMPLIANCE_ISSUE
+  DOCUMENT_READY
+}

@@ -7,8 +7,8 @@
 
 | ID | Task | Assignee | Status | Est. Hours |
 |----|------|----------|--------|------------|
-| 001 | [Project Setup](./001-project-setup/task.md) | — | 🔲 Not Started | 4h |
-| 002 | [Authentication](./002-authentication/task.md) | — | 🔲 Not Started | 6h |
+| 001 | [Project Setup](./001-project-setup/task.md) | — | ✅ Completed | 4h |
+| 002 | [Authentication](./002-authentication/task.md) | — | 🟡 In Progress | 6h |
 | 003 | [Document Upload](./003-document-upload/task.md) | — | 🔲 Not Started | 6h |
 
 **Total Estimated Hours:** 16h
@@ -92,9 +92,9 @@
 
 ## Sprint Progress Summary
 
-- **Completed:** 0 / 18 tasks
-- **In Progress:** 0
-- **Not Started:** 18
+- **Completed:** 1 / 18 tasks
+- **In Progress:** 1
+- **Not Started:** 16
 
 ---
 

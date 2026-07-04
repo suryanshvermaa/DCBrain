@@ -1,0 +1,51 @@
+{
+  "name": "dcbrain-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000 -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,css,md}\"",
+    "test": "vitest --run --cache=false",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.2.0",
+    "@tailwindcss/postcss": "^4.3.2",
+    "lucide-react": "^0.400.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^9.0.0",
+    "react-redux": "^9.1.0",
+    "recharts": "^2.12.0"
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^16.2.10",
+    "@testing-library/jest-dom": "^6.4.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.0.0",
+    "jsdom": "^24.0.0",
+    "postcss": "^8.4.38",
+    "prettier": "^3.3.0",
+    "prettier-plugin-tailwindcss": "^0.6.0",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.62.1",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

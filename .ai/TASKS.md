@@ -12,7 +12,7 @@ See [tasks/sprint.md](./tasks/sprint.md) for the active sprint. As of the latest
 
 | ID | Task | Sprint | Estimate | Status |
 |----|------|--------|----------|--------|
-| 001 | [Project Setup](./tasks/001-project-setup/task.md) | 1 | 4h | Not Started |
+| 001 | [Project Setup](./tasks/001-project-setup/task.md) | 1 | 4h | Completed |
 | 002 | [Authentication](./tasks/002-authentication/task.md) | 1 | 6h | Not Started |
 | 003 | [Document Upload](./tasks/003-document-upload/task.md) | 1 | 6h | Not Started |
 | 004 | [Document Processing](./tasks/004-document-processing/task.md) | 2 | 8h | Not Started |
