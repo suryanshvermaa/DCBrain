@@ -18,9 +18,9 @@ describe('Application', () => {
     const response = await request(createApp()).get('/openapi.json');
 
     expect(response.status).toBe(200);
-    expect(response.body.openapi).toBe('3.0.3');
-    expect(response.body.info.title).toBe('DCBrain');
-    expect(response.body.paths).toHaveProperty('/health');
+    expect(response.body).toHaveProperty('openapi', '3.0.3');
+    expect(response.body).toHaveProperty('info.title', 'DCBrain');
+    expect(response.body).toHaveProperty(['paths', '/health']);
   });
 
   it('GET /docs serves Swagger UI', async () => {
