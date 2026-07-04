@@ -1,6 +1,15 @@
 {
-  "tasks": [],
-  "total_completed": 0,
-  "total_hours_spent": 0,
-  "last_completed_at": null
+  "tasks": [
+    {
+      "id": "001",
+      "name": "Project Setup",
+      "sprint": 1,
+      "completed_at": "2026-07-04T00:00:00+05:30",
+      "hours_spent": 8,
+      "hours_estimated": 4
+    }
+  ],
+  "total_completed": 1,
+  "total_hours_spent": 8,
+  "last_completed_at": "2026-07-04T00:00:00+05:30"
 }
