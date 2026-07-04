@@ -10,10 +10,10 @@ DCBrain uses a **modular monolith** architecture for the hackathon prototype, de
 
 | Technology | Version | Purpose | Rationale |
 |-----------|---------|---------|-----------|
-| Next.js | 14.x | App framework | Server-side rendering, API routes, App Router, standard for modern React apps. |
-| React | 18.x | UI framework | Component-based architecture, large ecosystem, team familiarity. |
+| Next.js | 15.x | App framework | Server-side rendering, API routes, App Router, standard for modern React apps. |
+| React | 19.x | UI framework | Component-based architecture, large ecosystem, team familiarity. |
 | TypeScript | 5.x | Type safety | Catches errors at compile time, improves refactoring confidence, better IDE support. Non-negotiable for a project of this complexity. |
-| TailwindCSS | 3.x | Styling | Utility-first CSS framework. Allows rapid UI development without context switching. |
+| TailwindCSS | 4.x | Styling | Utility-first CSS framework. Allows rapid UI development without context switching. |
 | shadcn/ui | Latest | UI Components | Unstyled, accessible components that we can fully customize. Better than bloated component libraries. |
 | Redux Toolkit | 2.x | Client state | Centralized global state management. Enforces predictable state updates, developer tooling (Redux DevTools), and scalability. |
 | Recharts | 2.x | Charts | React-native charting library built on D3. Simpler API than raw D3. |
@@ -35,8 +35,8 @@ DCBrain uses a **modular monolith** architecture for the hackathon prototype, de
 
 | Technology | Version | Purpose | Rationale |
 |-----------|---------|---------|-----------|
-| LangChain.js | 0.2+ | LLM framework | Provides RAG pipeline and tool integration abstractions for Node.js. |
-| LangGraph.js | 0.0.x | AI Agent framework | Orchestrates stateful, multi-actor agent configurations. Supports cyclic workflows and human-in-the-loop steps. |
+| LangChain.js / @langchain/core | 0.3+ | LLM framework | Provides RAG pipeline and tool integration abstractions for Node.js. |
+| LangGraph.js | 0.1+ | AI Agent framework | Orchestrates stateful, multi-actor agent configurations. Supports cyclic workflows and human-in-the-loop steps. |
 | Gemini API | 2.5 Flash | LLM provider | Reasoning, chat, document understanding, RAG response generation, and structured outputs. |
 | BAAI/bge-m3 | Latest | Embeddings | Generate vector embeddings for documents and queries for semantic search (never use Gemini for embeddings). |
 | ChromaDB | 0.5+ | Vector database | Lightweight vector DB with an official JavaScript/Node client. Suitable for prototype. |

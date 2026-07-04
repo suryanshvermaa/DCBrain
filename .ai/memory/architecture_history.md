@@ -14,7 +14,7 @@ The current architecture is a modular monolith with clear domain boundaries. See
 
 ### Architecture Summary
 
-- **Frontend:** Next.js 14 App Router, React 18, TypeScript, TailwindCSS, shadcn/ui, Redux Toolkit
+- **Frontend:** Next.js 15 App Router, React 19, TypeScript, TailwindCSS 4, shadcn/ui, Redux Toolkit
 - **Backend:** Express.js (Node.js 20+) with modular service architecture
 - **Data Layer:** PostgreSQL 16 (primary), ChromaDB (vectors), Redis (cache/broker), MinIO (object storage), Neo4j 5.x (graph)
 - **Processing:** BullMQ workers for async document processing
@@ -32,6 +32,7 @@ This architecture was chosen to balance hackathon speed with production viabilit
 |---------|------|--------|--------|
 | 1.0 | 2026-06-30 | Initial architecture designed | Project start |
 | 1.1 | 2026-07-01 | Added MinIO, Neo4j, and expanded task scope | Documentation sync; Graph DB decision resolved |
+| 1.2 | 2026-07-04 | Project setup implementation | Switched backend TS output to CommonJS for reliable path-alias resolution; added Swagger/OpenAPI docs; aligned stack to Next.js 15 / React 19 / TailwindCSS 4 installed versions |
 
 ---
 

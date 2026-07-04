@@ -48,4 +48,29 @@ Each entry records:
 
 ---
 
+### Session 002 — 2026-07-04
+
+- **AI Model:** Kimchi
+- **Topic:** Complete Task 001 — Project Setup
+- **Key Decisions:**
+  - Switched backend TypeScript output from `NodeNext` to `CommonJS` + `node` module resolution so path aliases are resolved by `tsc` and the production build runs without external path rewriting.
+  - Added Swagger/OpenAPI docs endpoint at `/docs` (served by `swagger-ui-express`) and `/openapi.json`.
+  - Switched PostgreSQL Docker image to `pgvector/pgvector:pg16` and enabled the `vector` extension in `prisma/init.sql` to support `DocumentChunk.embedding`.
+  - Committed the initial Prisma migration so fresh clones can run `prisma migrate deploy`.
+  - Updated Tailwind v4 theme to include a full primary color scale (`primary-50` through `primary-950`).
+  - Added `JWT_*` environment variables to the `backend` and `worker` Docker Compose service definitions.
+  - Added backend Jest smoke tests and a frontend Vitest smoke test.
+- **Key Outputs:**
+  - Working Docker Compose environment with 8 services.
+  - Backend lint, type-check, and tests pass.
+  - Frontend lint, type-check, and tests pass.
+  - `/health`, `/docs`, `/openapi.json`, and frontend page verified end-to-end.
+  - Initial Prisma migration generated and applied.
+  - State files updated: Task 001 completed, Task 002 active.
+- **Unresolved Items:**
+  - Task 002 — Authentication is the next immediate task.
+  - Production Docker image tags should be pinned before deployment (currently `minio/minio:latest`).
+
+---
+
 *Add new session summaries above this line, keeping the most recent at the top.*

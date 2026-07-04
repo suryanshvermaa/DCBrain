@@ -62,6 +62,15 @@ Based on competitive analysis of similar document search tools:
 
 ---
 
+## Development Environment Gotchas
+
+- **Shell env overrides `.env` in Docker Compose.** If a variable like `JWT_SECRET_KEY` or `CHROMA_PORT` is set in the host shell, Compose uses it instead of the value in `.env`. Unset conflicting variables before running `docker compose up` if the container sees stale values.
+- **ChromaDB JS client / server API mismatch.** The `chromadb` JS client may call `/api/v2/heartbeat` while the server image only exposes `/api/v1/heartbeat`. Health checks in the backend use a direct `fetch` to `/api/v1/heartbeat` to avoid this.
+- **Backend TypeScript module target.** `NodeNext` module resolution does not resolve path aliases in a runnable production build. The project uses `CommonJS` + `node` resolution so `tsc` rewrites `@/*` imports automatically.
+- **Tailwind v4 theme colors.** Defining only `--color-primary` does not generate shade utilities like `bg-primary-600`. The theme must include `--color-primary-50` through `--color-primary-950` for the dashboard tokens to render.
+- **JWT placeholder length.** The Zod schema requires `JWT_SECRET_KEY` to be at least 32 characters. Any placeholder in `.env.example` must satisfy this or the backend will fail to boot.
+- **Frontend lint cache permissions.** Running `next lint` inside the production Docker image can create a root-owned `.next/cache/eslint/` directory. The lint script uses `--no-cache` to avoid this in mixed host/container workflows.
+
 ## Team Communication Channels
 
 - **Primary:** GitHub Issues and Pull Requests
