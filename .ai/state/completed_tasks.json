@@ -7,9 +7,17 @@
       "completed_at": "2026-07-04T00:00:00+05:30",
       "hours_spent": 8,
       "hours_estimated": 4
+    },
+    {
+      "id": "002",
+      "name": "Authentication",
+      "sprint": 1,
+      "completed_at": "2026-07-05T00:00:00+05:30",
+      "hours_spent": 8,
+      "hours_estimated": 6
     }
   ],
-  "total_completed": 1,
-  "total_hours_spent": 8,
-  "last_completed_at": "2026-07-04T00:00:00+05:30"
+  "total_completed": 2,
+  "total_hours_spent": 16,
+  "last_completed_at": "2026-07-05T00:00:00+05:30"
 }

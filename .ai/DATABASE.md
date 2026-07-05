@@ -6,6 +6,7 @@
 ```mermaid
 erDiagram
     users ||--o{ project_members : "has"
+    users ||--o{ audit_log : "records"
     projects ||--o{ project_members : "includes"
     users ||--o{ projects : "creates"
     projects ||--o{ documents : "contains"
@@ -29,6 +30,11 @@ erDiagram
 - **NEW:** `simulations` (What-if scenario tracking)
 - **NEW:** `ncrs` (Non-Conformance Reports)
 - **NEW:** `change_orders` (Project financial/scope changes)
+
+### Audit Log
+
+- `audit_log` stores auth events, RBAC-sensitive actions, and other notable user activity.
+- Columns include `action`, `resourceType`, `resourceId`, `details`, `ipAddress`, `userAgent`, `createdAt`, and optional `userId`.
 
 ## Vector Store (ChromaDB)
 - `project_{id}_documents`: Document chunk embeddings.

@@ -1,11 +1,13 @@
 # REST API Specification
 
 **Base URL:** `/api/v1`
-**Auth:** Bearer JWT required for all endpoints (except login/register).
+**Auth:** Bearer JWT required for all endpoints (except login/register/refresh).
 
 ## Authentication & Projects
-- `POST /auth/register`, `POST /auth/login`, `GET /auth/me`
+- `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `GET /auth/me`
 - `GET /projects`, `POST /projects`, `GET /projects/{id}`
+
+Auth endpoints return the access token in the JSON response and set the refresh token as an HttpOnly cookie scoped to `/api/v1/auth`.
 
 ## Documents & Search
 - `POST /projects/{id}/documents/upload`: Bulk/Multipart upload (Stored in MinIO)

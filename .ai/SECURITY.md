@@ -36,8 +36,8 @@
 - Algorithm: HS256 with 256-bit secret (RS256 for production with key rotation)
 - Access tokens stored in memory only — not localStorage, not sessionStorage
 - Refresh tokens in HttpOnly, Secure, SameSite=Strict cookies
-- Refresh token rotation: each refresh invalidates the previous token
-- Token blacklist in Redis for immediate revocation on logout
+- Refresh token rotation: each refresh invalidates the previous token via a blacklist keyed by `jti`
+- Refresh-token blacklist in Redis with in-memory fallback for tests/dev
 
 ### Password Security
 
@@ -133,14 +133,16 @@
 
 ### Rate Limiting
 
-Implemented via Redis-backed token bucket in Express.js middleware:
+Implemented via Redis-backed counters and lockouts in Express.js middleware:
 
 | Endpoint Category | Limit | Window |
 |------------------|-------|--------|
-| Authentication | 10 requests | 1 minute |
+| Authentication | 5 attempts | 15 minutes |
 | Document Upload | 20 uploads | 1 hour |
 | Search/Chat | 60 requests | 1 minute |
 | General API | 120 requests | 1 minute |
+
+- Successful auth requests clear the per-IP counter; repeated failures trigger a 30-minute lockout.
 
 ### CORS Configuration
 

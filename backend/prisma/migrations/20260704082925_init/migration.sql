@@ -16,6 +16,9 @@ CREATE TYPE "ActivityType" AS ENUM ('DOCUMENT_UPLOADED', 'DOCUMENT_PROCESSED', '
 -- CreateEnum
 CREATE TYPE "NotificationType" AS ENUM ('INFO', 'WARNING', 'ERROR', 'SUCCESS', 'TASK_ASSIGNED', 'DEADLINE_APPROACHING', 'COMPLIANCE_ISSUE', 'DOCUMENT_READY');
 
+-- Enable pgvector before creating tables that use the vector type
+CREATE EXTENSION IF NOT EXISTS "vector";
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -201,3 +204,30 @@ ALTER TABLE "activities" ADD CONSTRAINT "activities_userId_fkey" FOREIGN KEY ("u
 
 -- AddForeignKey
 ALTER TABLE "notifications" ADD CONSTRAINT "notifications_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- CreateTable
+CREATE TABLE "audit_log" (
+    "id" TEXT NOT NULL,
+    "action" TEXT NOT NULL,
+    "resourceType" TEXT,
+    "resourceId" TEXT,
+    "details" JSONB,
+    "ipAddress" TEXT,
+    "userAgent" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userId" TEXT,
+
+    CONSTRAINT "audit_log_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE INDEX "audit_log_userId_idx" ON "audit_log"("userId");
+
+-- CreateIndex
+CREATE INDEX "audit_log_action_idx" ON "audit_log"("action");
+
+-- CreateIndex
+CREATE INDEX "audit_log_createdAt_idx" ON "audit_log"("createdAt");
+
+-- AddForeignKey
+ALTER TABLE "audit_log" ADD CONSTRAINT "audit_log_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

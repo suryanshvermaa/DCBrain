@@ -3,7 +3,7 @@ import { z } from 'zod';
 const envSchema = z.object({
   // Application
   APP_NAME: z.string().default('DCBrain'),
-  APP_ENV: z.enum(['development', 'staging', 'production']).default('development'),
+  APP_ENV: z.enum(['development', 'test', 'staging', 'production']).default('development'),
   APP_DEBUG: z
     .string()
     .transform((val) => val === 'true')

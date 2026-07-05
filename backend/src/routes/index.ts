@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { authRouter } from '@/modules/auth';
 
 export const routes = Router();
 
@@ -6,7 +7,7 @@ routes.get('/', (_req, res) => {
   res.json({
     message: 'DCBrain API v1',
     endpoints: {
-      auth: '/api/auth',
+      auth: '/api/v1/auth',
       documents: '/api/documents',
       search: '/api/search',
       chat: '/api/chat',
@@ -24,3 +25,5 @@ routes.get('/', (_req, res) => {
 routes.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+routes.use('/v1/auth', authRouter);

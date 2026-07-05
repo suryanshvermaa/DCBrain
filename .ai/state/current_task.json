@@ -1,28 +1,31 @@
 {
-  "task_id": "001",
-  "task_name": "Project Setup",
-  "task_path": "tasks/001-project-setup",
+  "task_id": "003",
+  "task_name": "Document Upload",
+  "task_path": "tasks/003-document-upload",
   "priority": "P0",
   "sprint": 1,
-  "status": "completed",
-  "estimated_hours": 4,
-  "actual_hours": 8,
-  "dependencies": [],
+  "status": "in_progress",
+  "estimated_hours": 6,
+  "actual_hours": 0,
+  "dependencies": ["001", "002"],
   "assigned_to": null,
-  "started_at": "2026-07-03T00:00:00+05:30",
-  "completed_at": "2026-07-04T00:00:00+05:30",
-  "description": "Set up the complete development environment with frontend (Next.js + TypeScript + TailwindCSS + Redux Toolkit), backend (Express.js + TypeScript), database (PostgreSQL 16 + pgvector), cache (Redis 7), vector store (ChromaDB), object storage (MinIO), graph database (Neo4j 5.x), and Docker Compose orchestration.",
+  "started_at": "2026-07-05T00:00:00+05:30",
+  "completed_at": null,
+  "description": "Implement document upload, storage, categorization, and management UI. Users can upload PDF, DOCX, XLSX, CSV, JSON, XML (P6), and image files. Documents are stored in MinIO, metadata is saved to PostgreSQL, and documents appear in a filterable list with status tracking.",
   "files_to_read": [
     ".ai/ARCHITECTURE.md",
     ".ai/TECH_STACK.md",
-    ".ai/DEPLOYMENT.md",
+    ".ai/API.md",
+    ".ai/DATABASE.md",
+    ".ai/SECURITY.md",
     ".ai/ENVIRONMENT.md",
-    ".ai/UI_GUIDELINES.md"
+    ".ai/UI_GUIDELINES.md",
+    ".ai/COMPONENTS.md"
   ],
-  "last_updated": "2026-07-04T00:00:00+05:30",
+  "last_updated": "2026-07-05T00:00:00+05:30",
   "next_task": {
-    "task_id": "002",
-    "task_name": "Authentication",
-    "task_path": "tasks/002-authentication"
+    "task_id": "004",
+    "task_name": "Document Processing",
+    "task_path": "tasks/004-document-processing"
   }
 }

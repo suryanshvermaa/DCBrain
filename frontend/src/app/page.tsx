@@ -3,6 +3,7 @@
 import React from 'react';
 import { LayoutDashboard, FileText, Search, Bot, AlertTriangle, Package, Settings, Users, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard, current: true },
@@ -33,7 +34,8 @@ const recentActivity = [
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
         <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
@@ -169,6 +171,7 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

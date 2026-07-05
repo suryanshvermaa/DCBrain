@@ -6,7 +6,7 @@
 - **Estimate:** 6 hours
 - **Sprint:** 1
 - **Dependencies:** 001 (Project Setup)
-- **Status:** Not Started
+- **Status:** Completed
 
 ## Objective
 

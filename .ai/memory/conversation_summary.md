@@ -48,6 +48,22 @@ Each entry records:
 
 ---
 
+### Session 003 — 2026-07-05
+
+- **AI Model:** GPT-5.4 mini
+- **Topic:** Task 002 — Authentication implementation and state sync
+- **Key Decisions:**
+  - Added `/api/v1/auth` backend routes with JWT access tokens in memory and HttpOnly refresh cookies.
+  - Implemented refresh-token rotation with blacklist support and Redis-backed auth rate limiting with in-memory fallback for tests.
+  - Kept frontend access tokens in Redux memory only and wrapped the dashboard in a protected route.
+  - Updated the repository state so Task 003 is now the active task.
+- **Key Outputs:**
+  - Backend auth module, Prisma `audit_log` support, and auth tests.
+  - Frontend login/register pages, auth slice, and protected dashboard wrapper.
+  - Updated `.ai/` docs, state, and next-session instructions.
+- **Unresolved Items:**
+  - Task 003 (Document Upload) is next.
+
 ### Session 002 — 2026-07-04
 
 - **AI Model:** Kimchi

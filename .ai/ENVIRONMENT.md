@@ -18,7 +18,7 @@ All configuration is managed through environment variables. No secrets are commi
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
 | `APP_NAME` | `DCBrain` | No | Application display name |
-| `APP_ENV` | `development` | No | Environment: `development`, `staging`, `production` |
+| `APP_ENV` | `development` | No | Environment: `development`, `test`, `staging`, `production` |
 | `APP_DEBUG` | `true` | No | Enable debug mode (disable in production) |
 | `APP_VERSION` | `0.1.0` | No | Application version string |
 | `APP_HOST` | `0.0.0.0` | No | API server host |
@@ -200,6 +200,11 @@ LOG_FORMAT=console
 | `LOG_FORMAT` | `json` | Structured logs for log aggregation |
 | `LOG_LEVEL` | `WARNING` | Reduce log volume in production |
 | `GEMINI_TEMPERATURE` | `0.05` | More deterministic in production |
+
+### Test Environment
+
+- `APP_ENV=test` is valid and used by `backend/.env.test` for Jest runs.
+- `DATABASE_URL` and `REDIS_URL` should point at the local Docker services when running tests on the host.
 
 ## Related Documents
 

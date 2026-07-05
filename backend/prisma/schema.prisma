@@ -24,6 +24,7 @@ model User {
   createdProjects Project[]       @relation("ProjectCreator")
   activities    Activity[]
   notifications Notification[]
+  auditLogs     AuditLog[]
 
   @@index([email])
   @@map("users")
@@ -148,6 +149,25 @@ model Notification {
   @@index([read])
   @@index([createdAt])
   @@map("notifications")
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  action       String
+  resourceType String?
+  resourceId   String?
+  details      Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_log")
 }
 
 enum Role {

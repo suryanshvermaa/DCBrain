@@ -29,3 +29,12 @@ When a task is completed, add an entry here with:
 - **PR:** N/A
 - **Key Changes:** Docker Compose environment with Next.js frontend, Express.js backend, worker, PostgreSQL + pgvector, Redis, ChromaDB, MinIO, and Neo4j. Swagger/OpenAPI docs at `/docs` and `/openapi.json`. Initial Prisma migration committed. Backend Jest smoke tests and frontend Vitest smoke test added. Linting and type checking pass for both backend and frontend.
 - **Lessons:** See [LESSONS.md](../LESSONS.md).
+
+### Task 002: Authentication
+- **Completed:** 2026-07-05
+- **Sprint:** 1
+- **Time Spent:** 8h
+- **Estimated:** 6h
+- **PR:** N/A
+- **Key Changes:** Implemented JWT-based authentication with `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me`; added bcrypt password hashing, RBAC middleware, refresh-token rotation, Redis-backed auth rate limiting, audit logging, and a frontend login/register flow with protected routing.
+- **Lessons:** None yet.
