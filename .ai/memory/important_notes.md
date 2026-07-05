@@ -72,6 +72,8 @@ Based on competitive analysis of similar document search tools:
 - **Frontend lint cache permissions.** Running `next lint` inside the production Docker image can create a root-owned `.next/cache/eslint/` directory. The lint script uses `--no-cache` to avoid this in mixed host/container workflows.
 - **Auth test environment.** Backend config must accept `APP_ENV=test`; the Jest suite loads `backend/.env.test` directly.
 - **Refresh token rotation.** Refresh tokens are blacklisted by `jti` on rotation; Redis is used when available with an in-memory fallback for tests/dev.
+- **Frontend Docker build context.** `.dockerignore` must exclude only build artifacts and secrets; excluding config files like `tsconfig.json` breaks Next.js alias resolution during `docker compose build`.
+- **Next.js Suspense prerender.** Pages that call `useSearchParams()` need a Suspense boundary in production builds, even if local development works.
 
 ## Team Communication Channels
 
