@@ -143,6 +143,7 @@ Implemented via Redis-backed counters and lockouts in Express.js middleware:
 | General API | 120 requests | 1 minute |
 
 - Successful auth requests clear the per-IP counter; repeated failures trigger a 30-minute lockout.
+- Authentication rate limiting is disabled when `APP_ENV=development` so local auth flows remain usable during iterative testing.
 
 ### CORS Configuration
 

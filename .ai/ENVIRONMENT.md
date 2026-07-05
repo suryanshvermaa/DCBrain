@@ -205,6 +205,7 @@ LOG_FORMAT=console
 
 - `APP_ENV=test` is valid and used by `backend/.env.test` for Jest runs.
 - `DATABASE_URL` and `REDIS_URL` should point at the local Docker services when running tests on the host.
+- `APP_ENV=development` disables authentication rate limiting; this keeps the login/register UI usable during local development.
 
 ## Related Documents
 

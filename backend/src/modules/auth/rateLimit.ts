@@ -1,5 +1,6 @@
 import { redis } from '@/lib/redis';
 import { RateLimitError } from '@/core/errors';
+import config from '@/core/config';
 
 const AUTH_ATTEMPT_LIMIT = 5;
 const AUTH_ATTEMPT_WINDOW_SECONDS = 15 * 60;
@@ -40,6 +41,10 @@ async function saveState(key: string, state: { count: number; expiresAt: number;
 }
 
 export async function assertAuthRateLimit(scope: string, ipAddress: string): Promise<void> {
+  if (config.APP_ENV === 'development') {
+    return;
+  }
+
   const key = getKey(scope, ipAddress);
   const state = await getState(key);
   const now = Date.now();
@@ -65,6 +70,10 @@ export async function assertAuthRateLimit(scope: string, ipAddress: string): Pro
 }
 
 export async function resetAuthRateLimit(scope: string, ipAddress: string): Promise<void> {
+  if (config.APP_ENV === 'development') {
+    return;
+  }
+
   const key = getKey(scope, ipAddress);
 
   if (redis.status === 'ready') {

@@ -7,3 +7,4 @@
 - **Phase:** Phase 1 — Foundation (per [ROADMAP.md](./ROADMAP.md)). Task 001 complete; Task 002 complete; Task 003 starting.
 - **Status:** Scope locked, architecture approved, tech stack pinned, ADRs recorded. Development environment is running end-to-end.
 - **Route Contract:** The canonical backend API prefix is `/api/v1`; auth routes are `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me`. Frontend API clients must use the same prefix.
+- **Auth Rate Limiting:** Disabled in `APP_ENV=development` so local registration/login loops do not lock out the developer browser. Kept enabled outside development.
