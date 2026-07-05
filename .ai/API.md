@@ -3,6 +3,8 @@
 **Base URL:** `/api/v1`
 **Auth:** Bearer JWT required for all endpoints (except login/register/refresh).
 
+Frontend clients must call the API with the `/api/v1` prefix. Do not drop the `/api` segment when wiring browser requests.
+
 ## Authentication & Projects
 - `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `GET /auth/me`
 - `GET /projects`, `POST /projects`, `GET /projects/{id}`

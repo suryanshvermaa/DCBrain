@@ -1,12 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@/lib/store';
 import * as authApi from '@/lib/api/auth';
+import { ApiError } from '@/lib/api';
+
+export interface AuthError {
+  message: string;
+  details?: string[];
+}
 
 export interface AuthState {
   accessToken: string | null;
   user: authApi.AuthUser | null;
   status: 'idle' | 'loading' | 'authenticated' | 'anonymous';
-  error: string | null;
+  error: AuthError | null;
 }
 
 const initialState: AuthState = {
@@ -23,9 +29,56 @@ function applySession(state: AuthState, payload: authApi.AuthSessionResponse): v
   state.error = null;
 }
 
-export const loginUser = createAsyncThunk('auth/login', async (payload: authApi.LoginPayload) => authApi.login(payload));
-export const registerUser = createAsyncThunk('auth/register', async (payload: authApi.RegisterPayload) => authApi.register(payload));
-export const refreshSession = createAsyncThunk('auth/refresh', async () => authApi.refresh());
+function normalizeAuthError(error: unknown, fallbackMessage: string): AuthError {
+  if (error instanceof ApiError) {
+    const details = error.details ? Object.entries(error.details).flatMap(([field, messages]) => messages.map((message) => `${field}: ${message}`)) : undefined;
+    return {
+      message: error.message || fallbackMessage,
+      details,
+    };
+  }
+
+  if (error instanceof Error) {
+    return { message: error.message || fallbackMessage };
+  }
+
+  return { message: fallbackMessage };
+}
+
+export const loginUser = createAsyncThunk<
+  authApi.AuthSessionResponse,
+  authApi.LoginPayload,
+  { rejectValue: AuthError }
+>('auth/login', async (payload, { rejectWithValue }) => {
+  try {
+    return await authApi.login(payload);
+  } catch (error) {
+    return rejectWithValue(normalizeAuthError(error, 'Unable to sign in'));
+  }
+});
+
+export const registerUser = createAsyncThunk<
+  authApi.AuthSessionResponse,
+  authApi.RegisterPayload,
+  { rejectValue: AuthError }
+>('auth/register', async (payload, { rejectWithValue }) => {
+  try {
+    return await authApi.register(payload);
+  } catch (error) {
+    return rejectWithValue(normalizeAuthError(error, 'Unable to create your account'));
+  }
+});
+
+export const refreshSession = createAsyncThunk<authApi.AuthSessionResponse, void, { rejectValue: AuthError }>(
+  'auth/refresh',
+  async (_payload, { rejectWithValue }) => {
+    try {
+      return await authApi.refresh();
+    } catch (error) {
+      return rejectWithValue(normalizeAuthError(error, 'Unable to refresh session'));
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: 'auth',
@@ -49,7 +102,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'anonymous';
-        state.error = action.error.message ?? 'Unable to sign in';
+        state.error = action.payload ?? { message: action.error.message ?? 'Unable to sign in' };
       })
       .addCase(registerUser.pending, (state) => {
         state.status = 'loading';
@@ -60,7 +113,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = 'anonymous';
-        state.error = action.error.message ?? 'Unable to create your account';
+        state.error = action.payload ?? { message: action.error.message ?? 'Unable to create your account' };
       })
       .addCase(refreshSession.pending, (state) => {
         state.status = 'loading';
@@ -72,7 +125,7 @@ const authSlice = createSlice({
         state.accessToken = null;
         state.user = null;
         state.status = 'anonymous';
-        state.error = action.error.message ?? null;
+        state.error = action.payload ?? (action.error.message ? { message: action.error.message } : null);
       });
   },
 });

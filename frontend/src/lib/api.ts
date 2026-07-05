@@ -1,5 +1,76 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+export interface ApiErrorDetails {
+  [key: string]: string[];
+}
+
+export interface ApiErrorPayload {
+  code?: string;
+  message: string;
+  details?: ApiErrorDetails;
+}
+
+export class ApiError extends Error {
+  public readonly status: number;
+  public readonly code?: string;
+  public readonly details?: ApiErrorDetails;
+
+  constructor(message: string, status: number, code?: string, details?: ApiErrorDetails) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+    this.details = details;
+  }
+}
+
+function normalizeApiErrorBody(body: unknown): ApiErrorPayload {
+  if (body && typeof body === 'object' && 'error' in body) {
+    const error = (body as { error?: unknown }).error;
+    if (error && typeof error === 'object') {
+      const payload = error as { code?: unknown; message?: unknown; details?: unknown };
+      const details =
+        payload.details && typeof payload.details === 'object'
+          ? Object.fromEntries(
+              Object.entries(payload.details as Record<string, unknown>).map(([key, value]) => [
+                key,
+                Array.isArray(value) ? value.map((entry) => String(entry)) : [String(value)],
+              ])
+            )
+          : undefined;
+
+      return {
+        code: typeof payload.code === 'string' ? payload.code : undefined,
+        message: typeof payload.message === 'string' ? payload.message : 'An error occurred',
+        details,
+      };
+    }
+  }
+
+  if (body && typeof body === 'object') {
+    const payload = body as { code?: unknown; message?: unknown; details?: unknown };
+    const details =
+      payload.details && typeof payload.details === 'object'
+        ? Object.fromEntries(
+            Object.entries(payload.details as Record<string, unknown>).map(([key, value]) => [
+              key,
+              Array.isArray(value) ? value.map((entry) => String(entry)) : [String(value)],
+            ])
+          )
+        : undefined;
+
+    return {
+      code: typeof payload.code === 'string' ? payload.code : undefined,
+      message: typeof payload.message === 'string' ? payload.message : 'An error occurred',
+      details,
+    };
+  }
+
+  return {
+    message: 'An error occurred',
+  };
+}
+
 class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
@@ -28,8 +99,9 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-      throw new Error(error.message || `HTTP error ${response.status}`);
+      const errorBody = await response.json().catch(() => null);
+      const error = normalizeApiErrorBody(errorBody);
+      throw new ApiError(error.message || `HTTP error ${response.status}`, response.status, error.code, error.details);
     }
 
     if (response.status === 204) {

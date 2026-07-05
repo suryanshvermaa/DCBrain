@@ -37,17 +37,17 @@ export interface RegisterPayload extends LoginPayload {
 const api = getApiClient();
 
 export async function login(payload: LoginPayload): Promise<AuthSessionResponse> {
-  return api.post<AuthSessionResponse>('/v1/auth/login', payload, { credentials: 'include' });
+  return api.post<AuthSessionResponse>('/api/v1/auth/login', payload, { credentials: 'include' });
 }
 
 export async function register(payload: RegisterPayload): Promise<AuthSessionResponse> {
-  return api.post<AuthSessionResponse>('/v1/auth/register', payload, { credentials: 'include' });
+  return api.post<AuthSessionResponse>('/api/v1/auth/register', payload, { credentials: 'include' });
 }
 
 export async function refresh(): Promise<AuthSessionResponse> {
-  return api.post<AuthSessionResponse>('/v1/auth/refresh', {}, { credentials: 'include' });
+  return api.post<AuthSessionResponse>('/api/v1/auth/refresh', {}, { credentials: 'include' });
 }
 
 export async function me(): Promise<{ user: AuthUser }> {
-  return api.get<{ user: AuthUser }>('/v1/auth/me');
+  return api.get<{ user: AuthUser }>('/api/v1/auth/me');
 }

@@ -35,6 +35,8 @@
 
 Authentication is complete and verified. The backend now exposes `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me` with JWT access tokens in memory, HttpOnly refresh cookies, RBAC middleware, refresh-token rotation, and auth rate limiting. The frontend now has `/login`, `/register`, a Redux auth slice, API client integration, and a protected dashboard wrapper.
 
+Frontend browser requests must use `NEXT_PUBLIC_API_URL` plus `/api/v1/*`. If a request appears as `/v1/*`, treat it as a stale client bundle or an API client regression and rebuild/restart the frontend before chasing the backend.
+
 Prisma was updated to include `audit_log`, and the initial migration now replays cleanly because it also enables `vector`. The backend test env now accepts `APP_ENV=test`.
 
 ## Important Decisions

@@ -47,6 +47,21 @@ function validateRegister(values: RegisterFormState): string | null {
   return null;
 }
 
+function renderAuthError(message: string, details?: string[]) {
+  return (
+    <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+      <div>{message}</div>
+      {details && details.length > 0 && (
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-xs">
+          {details.map((detail) => (
+            <li key={detail}>{detail}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -170,11 +185,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {(localError || authError) && (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            {localError ?? authError}
-          </div>
-        )}
+        {(localError || authError) && renderAuthError(localError ?? authError?.message ?? 'An error occurred', authError?.details)}
 
         <button
           type="submit"

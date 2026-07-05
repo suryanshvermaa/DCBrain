@@ -74,6 +74,8 @@ Based on competitive analysis of similar document search tools:
 - **Refresh token rotation.** Refresh tokens are blacklisted by `jti` on rotation; Redis is used when available with an in-memory fallback for tests/dev.
 - **Frontend Docker build context.** `.dockerignore` must exclude only build artifacts and secrets; excluding config files like `tsconfig.json` breaks Next.js alias resolution during `docker compose build`.
 - **Next.js Suspense prerender.** Pages that call `useSearchParams()` need a Suspense boundary in production builds, even if local development works.
+- **Auth route prefix.** The canonical auth endpoints are `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me`; frontend clients must never call `/v1/auth/*` directly.
+- **Auth error contract.** Backend validation errors return structured JSON with `error.message` and `error.details`; frontend auth forms should display both instead of flattening them into `HTTP error 400`.
 
 ## Team Communication Channels
 

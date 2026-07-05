@@ -5,6 +5,7 @@ Only documents changes to planning and documentation.
 ## [Unreleased]
 
 ### Changed
+- **Frontend/backend auth routes synchronized.** Canonical auth requests now use `/api/v1/auth/*` everywhere, and project memory/docs were updated so future sessions keep the `/api` prefix.
 - **Task 002 — Authentication completed.** Implemented JWT auth for `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me`; added bcrypt password hashing, RBAC middleware, refresh-token rotation, Redis-backed auth rate limiting, audit logging, frontend login/register pages, Redux auth state, and a protected dashboard wrapper. Added backend auth tests and frontend page validation.
 - **Resolved Graph DB vendor decision (Neo4j 5.x).** `TECH_STACK.md` already listed Neo4j; `CURRENT_STATE.md`, `KNOWN_ISSUES.md` (ISSUE-004), `DATABASE.md`, `ARCHITECTURE.md`, and `DECISIONS.md` (ADR-010) updated to be consistent. ISSUE-004 marked Resolved.
 - **Expanded `AGENTS.md`.** Every one of the 14 agents now documents Purpose, Responsibilities, Inputs, Outputs, Dependencies, Prompt Summary, and Future Improvements. Added an Agent Roster & Sprint Allocation table at the bottom.
