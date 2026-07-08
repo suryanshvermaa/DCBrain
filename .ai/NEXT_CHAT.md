@@ -4,10 +4,10 @@
 
 ## Current Status
 
-**Date:** 2026-07-05
-**Phase:** Phase 1 — Foundation
-**Active Task:** 003 — Document Upload
-**Active Task File:** [tasks/003-document-upload/task.md](./tasks/003-document-upload/task.md)
+**Date:** 2026-07-08  
+**Phase:** Phase 1 — Foundation  
+**Active Task:** 004 — Document Processing Pipeline  
+**Active Task File:** [tasks/004-document-processing/task.md](./tasks/004-document-processing/task.md)  
 **Blocker:** None
 
 ## Before Writing Any Code, Read These Files
@@ -16,60 +16,93 @@
 
 1. [CURRENT_STATE.md](./CURRENT_STATE.md)
 2. [state/current_task.json](./state/current_task.json)
-3. [tasks/003-document-upload/](./tasks/003-document-upload/)
+3. [tasks/004-document-processing/](./tasks/004-document-processing/)
 
 ### Read For Context
 
 4. [ARCHITECTURE.md](./ARCHITECTURE.md)
-5. [DECISIONS.md](./DECISIONS.md)
-6. [TECH_STACK.md](./TECH_STACK.md)
-7. [CODING_STANDARDS.md](./CODING_STANDARDS.md)
-8. [SECURITY.md](./SECURITY.md)
-9. [ENVIRONMENT.md](./ENVIRONMENT.md)
-10. [API.md](./API.md)
-11. [DATABASE.md](./DATABASE.md)
-12. [UI_GUIDELINES.md](./UI_GUIDELINES.md)
-13. [COMPONENTS.md](./COMPONENTS.md)
+5. [TECH_STACK.md](./TECH_STACK.md)
+6. [DATABASE.md](./DATABASE.md)
+7. [API.md](./API.md)
+8. [AI_PIPELINES.md](./AI_PIPELINES.md)
+9. [AGENTS.md](./AGENTS.md)
+10. [ENVIRONMENT.md](./ENVIRONMENT.md)
+11. [SECURITY.md](./SECURITY.md)
+12. [CODING_STANDARDS.md](./CODING_STANDARDS.md)
 
 ## Current Project Status
 
-Authentication is complete and verified. The backend now exposes `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me` with JWT access tokens in memory, HttpOnly refresh cookies, RBAC middleware, refresh-token rotation, and auth rate limiting. The frontend now has `/login`, `/register`, a Redux auth slice, API client integration, and a protected dashboard wrapper.
+Project setup, authentication, and document upload are complete. The backend exposes `/api/v1/auth/*`, `/api/v1/projects`, and `/api/v1/projects/:id/documents/*`. The frontend has login/register, a protected dashboard, and a protected `/documents` page with project creation, project selection, filtering, upload progress, download links, soft delete, and document detail metadata.
 
-Frontend browser requests must use `NEXT_PUBLIC_API_URL` plus `/api/v1/*`. If a request appears as `/v1/*`, treat it as a stale client bundle or an API client regression and rebuild/restart the frontend before chasing the backend.
+Task 003 added private MinIO storage with project-scoped UUID object keys, content-based file validation, document metadata persistence, version `1` records, presigned download URLs, and soft delete. New document uploads start as `DocumentStatus.QUEUED`.
 
-Prisma was updated to include `audit_log`, and the initial migration now replays cleanly because it also enables `vector`. The backend test env now accepts `APP_ENV=test`.
+## Completed Work
+
+- Task 001 — Project Setup
+- Task 002 — Authentication
+- Task 003 — Document Upload
+
+## Architecture Summary
+
+DCBrain remains a modular monolith. Express modules own backend domains (`auth`, `projects`, `documents`), Prisma persists relational metadata, MinIO stores raw project documents privately, Redis/BullMQ will drive async work, ChromaDB will store embeddings, and Neo4j will store extracted entities/relationships.
 
 ## Important Decisions
 
-- Auth access tokens are kept in Redux memory only.
-- Refresh tokens are issued as HttpOnly cookies and rotated on refresh.
-- RBAC is enforced in backend middleware with a permission map derived from `SECURITY.md`.
-- Auth rate limiting is Redis-backed with an in-memory fallback for tests.
+- Frontend browser requests must use `NEXT_PUBLIC_API_URL` plus `/api/v1/*`.
+- Auth access tokens remain in Redux memory only; refresh tokens remain HttpOnly cookies.
+- Uploaded files are not publicly addressable. Preview/download goes through `/api/v1/projects/:id/documents/:documentId/download-url`.
+- Users with `create_projects` permission can create a project from `/documents` using the New project modal.
+- In a fresh DB, the first registered user is bootstrapped as `PROJECT_MANAGER`; later registrations default to `VIEWER`.
+- MinIO object keys are `projects/{projectId}/documents/{uuid}/{sanitizedFilename}`.
+- Soft delete sets `documents.deletedAt` and hides records from API reads; raw objects stay private in MinIO.
+- Task 004 owns moving documents from `QUEUED` to `PROCESSING`, `PROCESSED`, or `FAILED`.
+
+## Active Task
+
+Task 004 — Document Processing Pipeline.
+
+Implement BullMQ-based asynchronous processing for queued uploads:
+
+- extract text from PDFs, DOCX, XLSX, CSV, XML/JSON, and images
+- OCR images and PDF fallback paths
+- chunk text with metadata
+- generate embeddings using BAAI/bge-m3 or the chosen local/self-hosted endpoint
+- write chunks to PostgreSQL and vectors to ChromaDB
+- start entity/relationship extraction for Neo4j
+- update document status through the pipeline
 
 ## Remaining Work
 
-Implement Task 003: document upload, MinIO storage, file validation, document listing, and the frontend upload/list UI.
+- Add the processing queue producer after document upload or a processor scan for `QUEUED` documents.
+- Build worker implementation and tests.
+- Add processing progress/status endpoint.
+- Add document upload integration tests when processing fixtures exist.
 
 ## Next Recommended Task
 
-Task 003 — Document Upload.
+Task 004 — Document Processing Pipeline.
 
 ## Warnings
 
-- The auth implementation relies on `APP_ENV=test` being valid in backend config.
-- The Prisma initial migration was updated to include the `vector` extension and `audit_log` table so schema replay succeeds.
-- Refresh-token blacklist state is stored in Redis when available and falls back to in-memory storage in tests.
+- `backend/dist`, `frontend/.next`, and Docker-created files may become root-owned. If host builds fail with `EACCES`, fix ownership narrowly.
+- The frontend Docker service must keep `HOSTNAME=0.0.0.0`; otherwise Next standalone can try to resolve the container ID and restart-loop with `getaddrinfo EAI_AGAIN`.
+- Frontend API clients must include `/api/v1`; stale `/v1/*` requests indicate a stale bundle or client regression.
+- Prisma migration `20260708090000_document_upload` adds `QUEUED`, document category, soft delete, and `document_versions`.
+- Task 003 migrations are split: `20260708090000_document_upload` adds `QUEUED`; `20260708090500_document_upload_tables` adds category/soft-delete/default/version table changes. Keep this split because PostgreSQL cannot safely use a newly added enum value as a default in the same migration transaction.
+- Document upload currently validates and stores files, but does not enqueue processing yet. That is Task 004.
+- Existing local demo users were promoted to `PROJECT_MANAGER` on 2026-07-08 to unblock project creation.
 
 ## Known Issues
 
-- None blocking.
+- No dedicated document upload integration tests yet; current verification covered build/type/test suites.
 
 ## Files The Next AI Should Read First
 
 1. [CURRENT_STATE.md](./CURRENT_STATE.md)
 2. [state/current_task.json](./state/current_task.json)
-3. [tasks/003-document-upload/task.md](./tasks/003-document-upload/task.md)
-4. [tasks/003-document-upload/plan.md](./tasks/003-document-upload/plan.md)
-5. [SECURITY.md](./SECURITY.md)
-6. [API.md](./API.md)
-7. [DATABASE.md](./DATABASE.md)
+3. [tasks/004-document-processing/task.md](./tasks/004-document-processing/task.md)
+4. [tasks/004-document-processing/plan.md](./tasks/004-document-processing/plan.md)
+5. [DATABASE.md](./DATABASE.md)
+6. [AI_PIPELINES.md](./AI_PIPELINES.md)
+7. [backend/src/modules/documents/service.ts](../backend/src/modules/documents/service.ts)
+8. [backend/prisma/schema.prisma](../backend/prisma/schema.prisma)

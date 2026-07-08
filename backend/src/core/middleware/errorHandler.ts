@@ -11,6 +11,19 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     name: err.name,
   });
 
+  if (err.name === 'MulterError') {
+    const multerError = err as Error & { code?: string };
+    const statusCode = multerError.code === 'LIMIT_FILE_SIZE' || multerError.code === 'LIMIT_FILE_COUNT' ? 413 : 400;
+    res.status(statusCode).json({
+      success: false,
+      error: {
+        code: multerError.code ?? 'UPLOAD_ERROR',
+        message: multerError.message,
+      },
+    });
+    return;
+  }
+
   if (err instanceof ZodError) {
     const details: Record<string, string[]> = {};
     err.errors.forEach((e) => {

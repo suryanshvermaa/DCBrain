@@ -36,6 +36,13 @@ erDiagram
 - `audit_log` stores auth events, RBAC-sensitive actions, and other notable user activity.
 - Columns include `action`, `resourceType`, `resourceId`, `details`, `ipAddress`, `userAgent`, `createdAt`, and optional `userId`.
 
+### Documents
+
+- `documents` stores uploaded file metadata, MinIO bucket/path, project/owner links, category, processing status, timestamps, and `deletedAt` for soft delete.
+- New uploads start at `DocumentStatus.QUEUED`; Task 004 is responsible for moving documents through processing/completed/failed states.
+- `document_versions` stores immutable raw-file snapshots for each document version. Task 003 creates version `1` during initial upload.
+- MinIO object keys are project-scoped and UUID-based: `projects/{projectId}/documents/{uuid}/{sanitizedFilename}`.
+
 ## Vector Store (ChromaDB)
 - `project_{id}_documents`: Document chunk embeddings.
 - `project_{id}_standards`: Industry standard embeddings.

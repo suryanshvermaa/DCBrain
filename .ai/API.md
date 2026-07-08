@@ -12,8 +12,11 @@ Frontend clients must call the API with the `/api/v1` prefix. Do not drop the `/
 Auth endpoints return the access token in the JSON response and set the refresh token as an HttpOnly cookie scoped to `/api/v1/auth`.
 
 ## Documents & Search
-- `POST /projects/{id}/documents/upload`: Bulk/Multipart upload (Stored in MinIO)
-- `GET /projects/{id}/documents`: List & filter
+- `POST /projects/{id}/documents/upload`: Multipart batch upload using form field `files` (up to 50 files, 100MB each) and optional `category`; stores private objects in MinIO and creates `QUEUED` document records.
+- `GET /projects/{id}/documents`: Paginated list with `page`, `pageSize`, `search`, `category`, `status`, `sortBy`, and `sortOrder`.
+- `GET /projects/{id}/documents/{documentId}`: Document detail with metadata, owner, and version history.
+- `GET /projects/{id}/documents/{documentId}/download-url`: Presigned private MinIO download/preview URL.
+- `DELETE /projects/{id}/documents/{documentId}`: Soft delete document metadata; deleted documents are hidden from list/detail/download.
 - `POST /projects/{id}/search`: RAG & Semantic search
 
 ## Chat & Agents

@@ -54,6 +54,14 @@ export async function uploadFile(
   await minio.fPutObject(config.MINIO_BUCKET_NAME, objectName, filePath, metaData);
 }
 
+export async function uploadBuffer(
+  objectName: string,
+  buffer: Buffer,
+  metaData?: Record<string, string>
+): Promise<void> {
+  await minio.putObject(config.MINIO_BUCKET_NAME, objectName, buffer, buffer.length, metaData);
+}
+
 export async function downloadFile(objectName: string, filePath: string): Promise<void> {
   await minio.fGetObject(config.MINIO_BUCKET_NAME, objectName, filePath);
 }

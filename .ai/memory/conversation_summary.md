@@ -18,6 +18,27 @@ Each entry records:
 
 ## Session Log
 
+### Session 004 — 2026-07-08
+
+- **AI Model:** Codex
+- **Topic:** Task 003 — Document Upload implementation
+- **Key Decisions:**
+  - Kept Prisma record IDs as existing `cuid()` values, while MinIO object keys use project-scoped UUID paths.
+  - Added `DocumentStatus.QUEUED`, document `category`, `deletedAt`, and `document_versions` for upload metadata/version tracking.
+  - Implemented soft delete as metadata deletion only; MinIO objects remain private and inaccessible through API after deletion.
+  - Validates every file in a batch before storing any object to reduce partial upload risk.
+- **Key Outputs:**
+  - Backend project routes and document routes under `/api/v1/projects`.
+  - Multipart upload with file count/size/content validation, MinIO storage, presigned URL endpoint, list/detail/delete endpoints, audit logging.
+  - Frontend `/documents` page with project selector, drag-and-drop upload modal, progress indicator, filters, document table, detail panel, download, and delete.
+  - Follow-up: added a New project modal on `/documents` wired to `POST /api/v1/projects` for users with `create_projects` permission.
+  - Follow-up: added first-user bootstrap RBAC so a fresh DB's first registered user becomes `PROJECT_MANAGER`; existing local users were promoted to `PROJECT_MANAGER`.
+  - Prisma migration `20260708090000_document_upload`.
+  - Verification passed: backend Prisma generate/build/tests, frontend type-check/tests/build. Follow-up project modal also passed frontend type-check/tests/build. First-user bootstrap passed backend build/tests and Docker backend restart.
+- **Unresolved Items:**
+  - Task 004 should add BullMQ document processing, text extraction, chunking, embeddings, ChromaDB writes, and status transitions from `QUEUED`.
+  - Dedicated document upload integration tests should be added when the processing pipeline test fixtures are introduced.
+
 ### Session 001 — 2026-06-30
 
 - **AI Model:** Claude (Antigravity IDE)

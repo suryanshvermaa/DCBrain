@@ -45,6 +45,10 @@ export async function findUserById(userId: string): Promise<AuthUserRecord | nul
   });
 }
 
+export async function countUsers(): Promise<number> {
+  return prisma.user.count();
+}
+
 export async function createUser(input: CreateUserInput): Promise<AuthUserRecord> {
   return prisma.user.create({
     data: {

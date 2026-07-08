@@ -10,6 +10,7 @@ import {
   verifyRefreshToken,
 } from './security';
 import {
+  countUsers,
   createAuditLog,
   createUser,
   findUserByEmail,
@@ -105,11 +106,13 @@ export async function register(input: RegisterInput, context: AuthContext = {}):
   }
 
   const passwordHash = await hashPassword(input.password);
+  const userCount = await countUsers();
   const user = await createUser({
     email: input.email,
     passwordHash,
     firstName: input.firstName,
     lastName: input.lastName,
+    role: userCount === 0 ? 'PROJECT_MANAGER' : undefined,
   });
   const response = buildAuthResponse(user);
 

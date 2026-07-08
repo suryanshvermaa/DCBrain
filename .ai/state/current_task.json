@@ -1,31 +1,30 @@
 {
-  "task_id": "003",
-  "task_name": "Document Upload",
-  "task_path": "tasks/003-document-upload",
+  "task_id": "004",
+  "task_name": "Document Processing",
+  "task_path": "tasks/004-document-processing",
   "priority": "P0",
-  "sprint": 1,
-  "status": "in_progress",
-  "estimated_hours": 6,
+  "sprint": 2,
+  "status": "not_started",
+  "estimated_hours": 8,
   "actual_hours": 0,
-  "dependencies": ["001", "002"],
+  "dependencies": ["003"],
   "assigned_to": null,
-  "started_at": "2026-07-05T00:00:00+05:30",
+  "started_at": null,
   "completed_at": null,
-  "description": "Implement document upload, storage, categorization, and management UI. Users can upload PDF, DOCX, XLSX, CSV, JSON, XML (P6), and image files. Documents are stored in MinIO, metadata is saved to PostgreSQL, and documents appear in a filterable list with status tracking.",
+  "description": "Build the asynchronous document processing pipeline that extracts text from uploaded documents, chunks content, generates embeddings, stores vectors in ChromaDB, writes chunk metadata to PostgreSQL, and advances document status through processing/completed/failed.",
   "files_to_read": [
     ".ai/ARCHITECTURE.md",
     ".ai/TECH_STACK.md",
-    ".ai/API.md",
     ".ai/DATABASE.md",
-    ".ai/SECURITY.md",
     ".ai/ENVIRONMENT.md",
-    ".ai/UI_GUIDELINES.md",
-    ".ai/COMPONENTS.md"
+    ".ai/AI_PIPELINES.md",
+    ".ai/AGENTS.md",
+    ".ai/API.md"
   ],
-  "last_updated": "2026-07-05T00:00:00+05:30",
+  "last_updated": "2026-07-08T22:56:00+05:30",
   "next_task": {
-    "task_id": "004",
-    "task_name": "Document Processing",
-    "task_path": "tasks/004-document-processing"
+    "task_id": "005",
+    "task_name": "RAG Search",
+    "task_path": "tasks/005-rag-search"
   }
 }

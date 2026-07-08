@@ -76,6 +76,13 @@ Based on competitive analysis of similar document search tools:
 - **Next.js Suspense prerender.** Pages that call `useSearchParams()` need a Suspense boundary in production builds, even if local development works.
 - **Auth route prefix.** The canonical auth endpoints are `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me`; frontend clients must never call `/v1/auth/*` directly.
 - **Auth error contract.** Backend validation errors return structured JSON with `error.message` and `error.details`; frontend auth forms should display both instead of flattening them into `HTTP error 400`.
+- **Document upload route prefix.** Document APIs are project-scoped under `/api/v1/projects/{id}/documents`; browser clients must include `/api/v1` and must not call `/v1/projects/*` directly.
+- **Document upload status.** New uploads start with `DocumentStatus.QUEUED`; Task 004 owns transitions to processing/completed/failed.
+- **Document object storage.** Uploaded file objects are private in MinIO and use UUID object keys under `projects/{projectId}/documents/{uuid}/{sanitizedFilename}`. Download/preview must go through the API presigned URL endpoint.
+- **Docker ownership gotcha.** Docker-built/generated folders such as `backend/dist`, `frontend/.next`, and previously `backend/prisma/migrations` may become root-owned. If host builds fail with `EACCES`, fix ownership narrowly rather than changing source code.
+- **Next standalone Docker hostname.** The frontend Compose service sets `HOSTNAME=0.0.0.0` because Docker's default container-id `HOSTNAME` can make Next standalone fail with `getaddrinfo EAI_AGAIN <container-id>`.
+- **First user bootstrap.** Until full admin/user management exists, the first registered user in a fresh DB is assigned `PROJECT_MANAGER` so they can create the first project. Additional registered users remain `VIEWER` by default.
+- **PostgreSQL enum migration ordering.** Do not add a new enum value and use it as a column default in the same Prisma migration. PostgreSQL requires the enum-value transaction to commit first. Task 003 split `DocumentStatus.QUEUED` into `20260708090000_document_upload` and document table/default changes into `20260708090500_document_upload_tables`.
 
 ## Team Communication Channels
 

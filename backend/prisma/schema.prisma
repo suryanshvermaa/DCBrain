@@ -21,6 +21,7 @@ model User {
 
   projects      ProjectMember[]
   documents     Document[]        @relation("DocumentOwner")
+  documentVersions DocumentVersion[]
   createdProjects Project[]       @relation("ProjectCreator")
   activities    Activity[]
   notifications Notification[]
@@ -74,9 +75,10 @@ model Document {
   originalName  String
   mimeType      String
   size          Int
+  category      String        @default("uncategorized")
   path          String
   bucket        String
-  status        DocumentStatus @default(UPLOADED)
+  status        DocumentStatus @default(QUEUED)
   metadata      Json?
   pageCount     Int?
   extractedText String?
@@ -84,17 +86,44 @@ model Document {
   uploadedAt    DateTime      @default(now())
   processedAt   DateTime?
   completedAt   DateTime?
+  deletedAt     DateTime?
 
   projectId     String
   project       Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   ownerId       String
   owner         User          @relation("DocumentOwner", fields: [ownerId], references: [id])
   chunks        DocumentChunk[]
+  versions      DocumentVersion[]
 
   @@index([projectId])
   @@index([status])
+  @@index([category])
   @@index([ownerId])
+  @@index([deletedAt])
   @@map("documents")
+}
+
+model DocumentVersion {
+  id           String   @id @default(cuid())
+  version      Int
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  path         String
+  bucket       String
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  documentId   String
+  document     Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+
+  @@unique([documentId, version])
+  @@index([documentId])
+  @@index([uploadedById])
+  @@map("document_versions")
 }
 
 model DocumentChunk {
@@ -198,6 +227,7 @@ enum ProjectRole {
 }
 
 enum DocumentStatus {
+  QUEUED
   UPLOADED
   PROCESSING
   PROCESSED
