@@ -109,6 +109,8 @@ services:
     container_name: dcbrain-backend
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
       - APP_ENV=development
       - APP_DEBUG=true
@@ -132,7 +134,6 @@ services:
       - GRAPH_DB_PASSWORD=password
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=gemini-2.5-flash
       - EMBEDDING_MODEL=Xenova/bge-small-en-v1.5
       - LOG_LEVEL=DEBUG
@@ -182,6 +183,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: dcbrain-worker
+    env_file:
+      - .env
     environment:
       - APP_ENV=development
       - APP_DEBUG=true
@@ -202,7 +205,6 @@ services:
       - GRAPH_DB_PASSWORD=password
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=gemini-2.5-flash
       - EMBEDDING_MODEL=Xenova/bge-small-en-v1.5
       - BULLMQ_BROKER_URL=redis://redis:6379/1
