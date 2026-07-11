@@ -14,21 +14,21 @@ Implement the hybrid search system combining semantic vector search (ChromaDB) w
 
 ## Acceptance Criteria
 
-- [ ] Search endpoint (`POST /api/v1/projects/{id}/search`)
-- [ ] Semantic search via ChromaDB (embed query → vector similarity)
-- [ ] Keyword search via PostgreSQL pg_tsvector (BM25-style ranking)
-- [ ] Reciprocal Rank Fusion (RRF) combining both result sets
-- [ ] Top-K result retrieval (configurable, default 10)
-- [ ] LLM answer generation from retrieved context using Gemini 2.5 Flash
-- [ ] Source citations with document name, page number, relevance score
-- [ ] Confidence score on generated answers
-- [ ] Search filters: category, date range, specific documents
-- [ ] Search history saved per user
-- [ ] Response caching in Redis (1 hour TTL)
-- [ ] Search response time under 5 seconds (P95)
-- [ ] Frontend search page with query input and results display
-- [ ] AI answer card with source citation cards below
-- [ ] Search history sidebar
+- [x] Search endpoint (`POST /api/v1/projects/{id}/search`)
+- [x] Semantic search via ChromaDB (embed query → vector similarity)
+- [x] Keyword search via PostgreSQL pg_tsvector (BM25-style ranking)
+- [x] Reciprocal Rank Fusion (RRF) combining both result sets
+- [x] Top-K result retrieval (configurable, default 10)
+- [x] LLM answer generation from retrieved context using Gemini 2.5 Flash
+- [x] Source citations with document name, page number, relevance score
+- [x] Confidence score on generated answers
+- [x] Search filters: category, date range, specific documents
+- [x] Search history saved per user
+- [x] Response caching in Redis (1 hour TTL)
+- [x] Search response time under 5 seconds (P95)
+- [x] Frontend search page with query input and results display
+- [x] AI answer card with source citation cards below
+- [x] Search history sidebar
 
 ## Reference Documents
 - [ARCHITECTURE.md](../../ARCHITECTURE.md) — RAG search data flow

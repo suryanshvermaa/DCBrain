@@ -134,7 +134,7 @@ services:
       - CHROMA_PORT=8000
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=gemini-2.5-flash
-      - EMBEDDING_MODEL=BAAI/bge-m3
+      - EMBEDDING_MODEL=Xenova/bge-small-en-v1.5
       - LOG_LEVEL=DEBUG
       - LOG_FORMAT=console
     volumes:
@@ -204,7 +204,7 @@ services:
       - CHROMA_PORT=8000
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=gemini-2.5-flash
-      - EMBEDDING_MODEL=BAAI/bge-m3
+      - EMBEDDING_MODEL=Xenova/bge-small-en-v1.5
       - BULLMQ_BROKER_URL=redis://redis:6379/1
       - BULLMQ_RESULT_BACKEND=redis://redis:6379/2
       - BULLMQ_WORKER_CONCURRENCY=2

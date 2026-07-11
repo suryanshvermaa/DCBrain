@@ -1,12 +1,9 @@
 import { Queue } from 'bullmq';
 import type { ProcessDocumentJobData } from './worker';
+import { bullMqRedis } from '@/lib/redis';
 
 const queueOptions = {
-  connection: {
-    host: '127.0.0.1',
-    port: 6379,
-    lazyConnect: true,
-  },
+  connection: bullMqRedis as any,
 };
 
 const isTestEnvironment = process.env['APP_ENV'] === 'test' || process.env['NODE_ENV'] === 'test';

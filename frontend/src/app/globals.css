@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./search.css";
 
 @theme {
   --color-background: hsl(0 0% 100%);

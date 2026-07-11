@@ -1,17 +1,17 @@
 {
-  "task_id": "004",
-  "task_name": "Document Processing",
-  "task_path": "tasks/004-document-processing",
+  "task_id": "005",
+  "task_name": "RAG Search",
+  "task_path": "tasks/005-rag",
   "priority": "P0",
   "sprint": 2,
   "status": "completed",
   "estimated_hours": 8,
   "actual_hours": 8,
-  "dependencies": ["003"],
+  "dependencies": ["004"],
   "assigned_to": null,
   "started_at": null,
-  "completed_at": "2026-07-11T18:50:00+05:30",
-  "description": "Build the asynchronous document processing pipeline that extracts text from uploaded documents, chunks content, generates embeddings, stores vectors in ChromaDB, writes chunk metadata to PostgreSQL, and advances document status through processing/completed/failed.",
+  "completed_at": "2026-07-11T14:40:00Z",
+  "description": "Implement RAG search backend with hybrid ChromaDB + pg_tsvector retrieval, Reciprocal Rank Fusion, Gemini answer generation, and a frontend search interface.",
   "files_to_read": [
     ".ai/ARCHITECTURE.md",
     ".ai/TECH_STACK.md",
@@ -21,10 +21,10 @@
     ".ai/AGENTS.md",
     ".ai/API.md"
   ],
-  "last_updated": "2026-07-11T17:40:00+05:30",
+  "last_updated": "2026-07-11T14:40:00Z",
   "next_task": {
-    "task_id": "005",
-    "task_name": "RAG Search",
-    "task_path": "tasks/005-rag-search"
+    "task_id": "006",
+    "task_name": "Project Chat",
+    "task_path": "tasks/006-chat"
   }
 }

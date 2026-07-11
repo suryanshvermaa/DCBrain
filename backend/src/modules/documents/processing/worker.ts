@@ -67,12 +67,14 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
     const collection = await getOrCreateCollection(projectId);
     
     let duplicateCount = 0;
-    const chromaItems = [];
+    const chromaItems: Array<{ id: string; metadata: any; document: string; embedding: number[] }> = [];
 
     // Check duplicates and prepare ChromaDB items
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
+      if (!chunk) continue;
       const embedding = chunkEmbeddings[i];
+      if (!embedding) continue;
       
       let isDuplicate = false;
       try {
@@ -81,7 +83,7 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
           nResults: 1
         });
         
-        if (queryResult.distances && queryResult.distances[0] && queryResult.distances[0][0] < DUPLICATE_DISTANCE_THRESHOLD) {
+        if (queryResult.distances && queryResult.distances[0] && queryResult.distances[0][0] !== undefined && queryResult.distances[0][0] < DUPLICATE_DISTANCE_THRESHOLD) {
           isDuplicate = true;
           duplicateCount++;
         }
@@ -139,6 +141,7 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
     await updateDocumentProcessingStatus(documentId, DocumentStatus.PROCESSING, 'entity_extraction.started');
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
+      if (!chunk) continue;
       // Skip deep entity extraction if it's an exact duplicate to save tokens/time
       if (!(chunk.metadata as any).isDuplicate) {
         await extractAndStoreEntities(chunk.content, documentId, projectId, chunk.metadata.chunkIndex);

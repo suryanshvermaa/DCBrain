@@ -2,7 +2,7 @@ import { Worker } from 'bullmq';
 import { createApp } from './app';
 import config from '@/core/config';
 import { logger } from '@/lib/logger';
-import { connectRedis, redis } from '@/lib/redis';
+import { connectRedis, bullMqRedis } from '@/lib/redis';
 import { ensureBucketExists } from '@/lib/minio';
 import { processDocumentJob } from '@/modules/documents/processing/worker';
 
@@ -14,7 +14,7 @@ async function startWorker(): Promise<void> {
     'document-processing',
     async (job) => processDocumentJob(job),
     {
-      connection: redis,
+      connection: bullMqRedis as any,
       concurrency: config.BULLMQ_WORKER_CONCURRENCY,
       removeOnComplete: { count: 100 },
       removeOnFail: { count: 50 },

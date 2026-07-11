@@ -57,7 +57,7 @@ export async function extractDocumentText(
       }
       if (messages.length > 0) {
         return {
-          text: messages.map((m) => m.message).join(' '),
+          text: messages.map((m: any) => m.message).join(' '),
           metadata: { format: 'docx', source: 'buffer', detectedMimeType: mimeType },
         };
       }

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authRouter } from '@/modules/auth';
 import { documentsRouter } from '@/modules/documents';
 import { projectsRouter } from '@/modules/projects';
+import { searchRouter } from '@/modules/search/routes';
 
 export const routes = Router();
 
@@ -31,3 +32,4 @@ routes.get('/health', (_req, res) => {
 routes.use('/v1/auth', authRouter);
 routes.use('/v1/projects', projectsRouter);
 routes.use('/v1/projects/:id/documents', documentsRouter);
+routes.use('/v1/projects/:id/search', searchRouter);

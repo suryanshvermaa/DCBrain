@@ -26,6 +26,7 @@ model User {
   activities    Activity[]
   notifications Notification[]
   auditLogs     AuditLog[]
+  searchHistory SearchHistory[]
 
   @@index([email])
   @@map("users")
@@ -46,9 +47,10 @@ model Project {
 
   creatorId   String
   creator     User     @relation("ProjectCreator", fields: [creatorId], references: [id])
-  members     ProjectMember[]
-  documents   Document[]
-  activities  Activity[]
+  members       ProjectMember[]
+  documents     Document[]
+  activities    Activity[]
+  searchHistory SearchHistory[]
 
   @@index([code])
   @@index([status])
@@ -257,4 +259,23 @@ enum NotificationType {
   DEADLINE_APPROACHING
   COMPLIANCE_ISSUE
   DOCUMENT_READY
+}
+
+model SearchHistory {
+  id          String   @id @default(cuid())
+  query       String
+  resultCount Int      @default(0)
+  cached      Boolean  @default(false)
+  filters     Json?
+  createdAt   DateTime @default(now())
+
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("search_history")
 }

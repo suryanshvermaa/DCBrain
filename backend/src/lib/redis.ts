@@ -20,6 +20,10 @@ export const redis =
     lazyConnect: true,
   });
 
+export const bullMqRedis = new Redis(config.REDIS_URL, {
+  maxRetriesPerRequest: null,
+});
+
 redis.on('connect', () => {
   logger.info('Redis connected');
 });
