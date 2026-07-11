@@ -1,0 +1,20 @@
+# HVAC and Cooling System Specifications - Project DC-2024-001
+
+## 1. Overview
+The cooling infrastructure for DC-2024-001 is designed to support a high-density compute environment of up to 15kW per rack. The facility utilizes a Chilled Water (CHW) system with N+2 redundancy.
+
+## 2. Equipment Specifications
+- **Chillers**: 4x Trane CenTraVac centrifugal liquid chillers. Capacity: 800 Tons each.
+- **Cooling Towers**: 4x Evapco closed-circuit cooling towers located on the facility roof.
+- **CRAC Units (Computer Room Air Conditioning)**: 24x Vertiv Liebert PCW chilled water units placed in the data halls.
+- **Containment**: Hot Aisle Containment (HAC) is fully implemented to prevent mixing of hot exhaust and cold supply air.
+
+## 3. Operational Setpoints
+- **Supply Air Temperature**: 22°C (71.6°F) ± 1°C.
+- **Return Air Temperature**: 35°C (95°F) ± 2°C.
+- **Humidity**: Maintained between 40% and 60% Relative Humidity.
+- **Chilled Water Supply Temperature (CHWS)**: 12°C (53.6°F).
+- **Chilled Water Return Temperature (CHWR)**: 18°C (64.4°F).
+
+## 4. Emergency Procedures
+In the event of a total utility failure, the chiller plants are backed up by the diesel generator systems and are designed to restart and provide full cooling capacity within 90 seconds. The chilled water loop contains a buffer tank providing 5 minutes of ride-through cooling at full load while the generators synchronize.

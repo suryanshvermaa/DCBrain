@@ -35,6 +35,7 @@ This architecture was chosen to balance hackathon speed with production viabilit
 | 1.2 | 2026-07-04 | Project setup implementation | Switched backend TS output to CommonJS for reliable path-alias resolution; added Swagger/OpenAPI docs; aligned stack to Next.js 15 / React 19 / TailwindCSS 4 installed versions |
 | 1.3 | 2026-07-05 | Authentication implementation | Added JWT auth module, RBAC middleware, refresh-token rotation, Redis-backed auth rate limiting, audit-log persistence, and frontend protected auth pages |
 | 1.4 | 2026-07-08 | Document upload implementation | Added project/document modules, private MinIO object storage, document metadata/version persistence, presigned download URLs, soft delete, and frontend document management UI |
+| 1.5 | 2026-07-11 | RAG & Chat Implementation | Built LangGraph ReAct agent, ChromaDB semantic search pipeline, frontend chat UI with PDF export, and distinct JSON metadata for chat follow-up suggestions |
 
 ---
 

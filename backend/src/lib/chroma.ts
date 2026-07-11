@@ -21,14 +21,21 @@ export async function getOrCreateCollection(projectId: string): Promise<Collecti
   const collectionName = `${config.CHROMA_COLLECTION_PREFIX}${projectId}`;
   try {
     // ChromaDB JS types require an embedding function even when one is not used.
-    // @ts-expect-error embeddingFunction is not needed for manual embedding insertion
-    return await chroma.getCollection({ name: collectionName });
+    return await chroma.getCollection({ name: collectionName, embeddingFunction: { generate: async () => [] } as any });
   } catch {
     logger.info('Creating new ChromaDB collection', { collectionName, projectId });
-    return await chroma.createCollection({
-      name: collectionName,
-      metadata: { projectId, createdAt: new Date().toISOString() },
-    });
+    try {
+      return await chroma.createCollection({
+        name: collectionName,
+        metadata: { projectId, createdAt: new Date().toISOString() },
+        embeddingFunction: { generate: async () => [] } as any,
+      });
+    } catch (createError: any) {
+      if (createError?.message?.includes('already exists') || createError?.message?.includes('UniqueConstraintError')) {
+        return await chroma.getCollection({ name: collectionName, embeddingFunction: { generate: async () => [] } as any });
+      }
+      throw createError;
+    }
   }
 }
 

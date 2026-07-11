@@ -65,7 +65,7 @@ export function FileUpload({ accept, maxSizeMb, multiple = true, disabled = fals
       >
         <FileUp className="mb-3 h-8 w-8 text-primary-600" />
         <p className="text-sm font-semibold text-gray-900">Drop files here or choose files</p>
-        <p className="mt-1 text-xs text-gray-500">PDF, DOCX, XLSX, CSV, JSON, XML, PNG, JPG, TIFF up to {maxSizeMb}MB</p>
+        <p className="mt-1 text-xs text-gray-500">PDF, DOCX, XLSX, CSV, JSON, XML, TXT, PNG, JPG, TIFF up to {maxSizeMb}MB</p>
         <input
           ref={inputRef}
           className="hidden"

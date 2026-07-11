@@ -9,7 +9,7 @@
 |----|------|----------|--------|------------|
 | 001 | [Project Setup](./001-project-setup/task.md) | — | ✅ Completed | 4h |
 | 002 | [Authentication](./002-authentication/task.md) | — | ✅ Completed | 6h |
-| 003 | [Document Upload](./003-document-upload/task.md) | — | 🟡 In Progress | 6h |
+| 003 | [Document Upload](./003-document-upload/task.md) | — | ✅ Completed | 6h |
 
 **Total Estimated Hours:** 16h
 
@@ -22,9 +22,9 @@
 
 | ID | Task | Assignee | Status | Est. Hours |
 |----|------|----------|--------|------------|
-| 004 | [Document Processing](./004-document-processing/task.md) | — | 🔲 Not Started | 8h |
-| 005 | [RAG Search](./005-rag/task.md) | — | 🔲 Not Started | 8h |
-| 006 | [Chat Interface](./006-chat/task.md) | — | 🔲 Not Started | 6h |
+| 004 | [Document Processing](./004-document-processing/task.md) | — | ✅ Completed | 8h |
+| 005 | [RAG Search](./005-rag/task.md) | — | ✅ Completed | 8h |
+| 006 | [Chat Interface](./006-chat/task.md) | — | ✅ Completed | 6h |
 
 **Total Estimated Hours:** 22h
 
@@ -92,9 +92,9 @@
 
 ## Sprint Progress Summary
 
-- **Completed:** 2 / 18 tasks
-- **In Progress:** 1
-- **Not Started:** 15
+- **Completed:** 6 / 18 tasks
+- **In Progress:** 0
+- **Not Started:** 12
 
 ---
 

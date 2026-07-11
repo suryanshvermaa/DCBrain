@@ -28,3 +28,53 @@ export async function listProjects(): Promise<{ projects: Project[] }> {
 export async function createProject(payload: CreateProjectPayload): Promise<{ project: Project }> {
   return api.post<{ project: Project }>('/api/v1/projects', payload);
 }
+
+// --- Chat APIs ---
+export interface ChatSession {
+  id: string;
+  title: string;
+  projectId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: 'USER' | 'ASSISTANT' | 'SYSTEM';
+  content: string;
+  sources?: Array<{ content: string }>;
+  metadata?: { suggestedQuestions?: string[] } | null;
+  createdAt: string;
+}
+
+export async function listChatSessions(projectId: string): Promise<{ sessions: ChatSession[] }> {
+  return api.get<{ sessions: ChatSession[] }>(`/api/v1/projects/${projectId}/chat/sessions`);
+}
+
+export async function createChatSession(projectId: string, title?: string): Promise<{ session: ChatSession }> {
+  return api.post<{ session: ChatSession }>(`/api/v1/projects/${projectId}/chat/sessions`, { title });
+}
+
+export async function getChatMessages(projectId: string, sessionId: string): Promise<{ messages: ChatMessage[] }> {
+  return api.get<{ messages: ChatMessage[] }>(`/api/v1/projects/${projectId}/chat/sessions/${sessionId}/messages`);
+}
+
+export async function sendChatMessage(projectId: string, sessionId: string, content: string): Promise<{ message: ChatMessage }> {
+  return api.post<{ message: ChatMessage }>(`/api/v1/projects/${projectId}/chat/sessions/${sessionId}/messages`, { content });
+}
+
+export async function exportChatSessionPDF(projectId: string, sessionId: string): Promise<Blob> {
+  const token = api.getToken();
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/projects/${projectId}/chat/sessions/${sessionId}/export`, {
+    headers
+  });
+  if (!res.ok) {
+    throw new Error('Failed to export chat session');
+  }
+  return res.blob();
+}

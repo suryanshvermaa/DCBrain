@@ -83,6 +83,7 @@ Based on competitive analysis of similar document search tools:
 - **Next standalone Docker hostname.** The frontend Compose service sets `HOSTNAME=0.0.0.0` because Docker's default container-id `HOSTNAME` can make Next standalone fail with `getaddrinfo EAI_AGAIN <container-id>`.
 - **First user bootstrap.** Until full admin/user management exists, the first registered user in a fresh DB is assigned `PROJECT_MANAGER` so they can create the first project. Additional registered users remain `VIEWER` by default.
 - **PostgreSQL enum migration ordering.** Do not add a new enum value and use it as a column default in the same Prisma migration. PostgreSQL requires the enum-value transaction to commit first. Task 003 split `DocumentStatus.QUEUED` into `20260708090000_document_upload` and document table/default changes into `20260708090500_document_upload_tables`.
+- **Docker Volume Node.js dependency conflict.** Because we use an anonymous volume for `/app/node_modules` to prevent Windows host binaries from crashing Linux containers, running `docker compose build` is not enough to reset `node_modules`. You MUST NOT run `npm install` on the host machine. Instead, use `docker compose exec backend npm install <pkg>`. To flush stale anonymous volumes when rebuilding an image, always use `docker compose up -d --build -V`.
 
 ## Team Communication Channels
 

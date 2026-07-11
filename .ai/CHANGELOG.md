@@ -5,6 +5,9 @@ Only documents changes to planning and documentation.
 ## [Unreleased]
 
 ### Changed
+- **Task 006 — Chat Interface completed.** Built a responsive Next.js Chat UI with distinct RAG source cards, suggested question pills, and centered premium styling. Backend uses LangGraph for an autonomous ReAct AI agent powered by Gemini. Added PDF export functionality.
+- **Task 005 — RAG Search completed.** Built the backend retrieval pipeline using ChromaDB for semantic search and PostgreSQL for metadata filtering. AI agents successfully invoke `project_document_search` to cite sources.
+- **Task 003 — Document Upload completed.** Implemented document management API, storing files in MinIO and metadata in Postgres.
 - **Task 004 — Document Processing completed.** Implemented text extraction (PDF, DOCX, XLSX, Image OCR), semantic chunking with page number tracking, local batched embeddings via Xenova/bge-m3, duplicate detection against ChromaDB, and Gemini-based Entity Extraction storing nodes directly in Neo4j.
 - **Frontend/backend auth routes synchronized.** Canonical auth requests now use `/api/v1/auth/*` everywhere, and project memory/docs were updated so future sessions keep the `/api` prefix.
 - **Task 002 — Authentication completed.** Implemented JWT auth for `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me`; added bcrypt password hashing, RBAC middleware, refresh-token rotation, Redis-backed auth rate limiting, audit logging, frontend login/register pages, Redux auth state, and a protected dashboard wrapper. Added backend auth tests and frontend page validation.

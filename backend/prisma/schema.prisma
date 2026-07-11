@@ -27,6 +27,7 @@ model User {
   notifications Notification[]
   auditLogs     AuditLog[]
   searchHistory SearchHistory[]
+  chatSessions  ChatSession[]
 
   @@index([email])
   @@map("users")
@@ -51,6 +52,7 @@ model Project {
   documents     Document[]
   activities    Activity[]
   searchHistory SearchHistory[]
+  chatSessions  ChatSession[]
 
   @@index([code])
   @@index([status])
@@ -278,4 +280,38 @@ model SearchHistory {
   @@index([userId])
   @@index([createdAt])
   @@map("search_history")
+}
+
+model ChatSession {
+  id        String   @id @default(cuid())
+  title     String   @default("New Chat")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([updatedAt])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  role      String   // "USER", "ASSISTANT", "SYSTEM"
+  content   String
+  sources   Json?    // Store citations and references
+  metadata  Json?    // Store extra data like suggested questions
+  createdAt DateTime @default(now())
+
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("chat_messages")
 }

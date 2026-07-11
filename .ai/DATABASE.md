@@ -21,7 +21,8 @@ erDiagram
 ```
 
 ## Expected Tables
-- `users`, `projects`, `project_members`, `documents`, `document_versions`, `chunks`, `chat_sessions`, `chat_messages`
+- `users`, `projects`, `project_members`, `documents`, `document_versions`, `chunks`
+- `chat_sessions`, `chat_messages`: Created in Task 006 for Project Chat.
 - `rfis`: Requests for Information tracking.
 - `compliance_checks`: Validation results.
 - `schedule_activities`: P6 imported activities.

@@ -23,9 +23,33 @@
       "completed_at": "2026-07-08T22:56:00+05:30",
       "hours_spent": 6,
       "hours_estimated": 6
+    },
+    {
+      "id": "004",
+      "name": "Document Processing",
+      "sprint": 2,
+      "completed_at": "2026-07-11T12:00:00+05:30",
+      "hours_spent": 8,
+      "hours_estimated": 8
+    },
+    {
+      "id": "005",
+      "name": "RAG Search",
+      "sprint": 2,
+      "completed_at": "2026-07-11T15:00:00+05:30",
+      "hours_spent": 8,
+      "hours_estimated": 8
+    },
+    {
+      "id": "006",
+      "name": "Chat Interface",
+      "sprint": 2,
+      "completed_at": "2026-07-12T03:00:00+05:30",
+      "hours_spent": 6,
+      "hours_estimated": 6
     }
   ],
-  "total_completed": 3,
-  "total_hours_spent": 22,
-  "last_completed_at": "2026-07-08T22:56:00+05:30"
+  "total_completed": 6,
+  "total_hours_spent": 44,
+  "last_completed_at": "2026-07-12T03:00:00+05:30"
 }

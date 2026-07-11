@@ -37,7 +37,7 @@ services:
     restart: unless-stopped
 
   chromadb:
-    image: chromadb/chroma:0.5.5
+    image: chromadb/chroma:0.4.15
     container_name: dcbrain-chromadb
     ports:
       - "8100:8000"
@@ -46,11 +46,6 @@ services:
     environment:
       CHROMA_SERVER_HOST: 0.0.0.0
       CHROMA_SERVER_HTTP_PORT: 8000
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - dcbrain-network
     restart: unless-stopped
@@ -134,7 +129,7 @@ services:
       - GRAPH_DB_PASSWORD=password
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
-      - GEMINI_MODEL=gemini-2.5-flash
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-flash-latest}
       - EMBEDDING_MODEL=Xenova/bge-small-en-v1.5
       - LOG_LEVEL=DEBUG
       - LOG_FORMAT=console
@@ -148,7 +143,7 @@ services:
       redis:
         condition: service_healthy
       chromadb:
-        condition: service_healthy
+        condition: service_started
       minio:
         condition: service_healthy
       neo4j:
@@ -176,7 +171,11 @@ services:
     networks:
       - dcbrain-network
     restart: unless-stopped
-    command: node server.js
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
 
   worker:
     build:
@@ -205,7 +204,7 @@ services:
       - GRAPH_DB_PASSWORD=password
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
-      - GEMINI_MODEL=gemini-2.5-flash
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-flash-latest}
       - EMBEDDING_MODEL=Xenova/bge-small-en-v1.5
       - BULLMQ_BROKER_URL=redis://redis:6379/1
       - BULLMQ_RESULT_BACKEND=redis://redis:6379/2
@@ -222,7 +221,7 @@ services:
       redis:
         condition: service_healthy
       chromadb:
-        condition: service_healthy
+        condition: service_started
       minio:
         condition: service_healthy
       neo4j:

@@ -125,6 +125,10 @@ function detectMimeType(buffer: Buffer, originalName: string): string | null {
     return 'text/csv';
   }
 
+  if (extension === '.txt' || extension === '.md') {
+    return 'text/plain';
+  }
+
   return null;
 }
 

@@ -1,25 +1,25 @@
 # Task 006: Chat Interface — Progress
 
-## Status: Not Started
+## Status: Completed
 
 ## Checklist
-- [ ] Chat tables migration created
-- [ ] Chat models and schemas created
-- [ ] Chat service with session management
-- [ ] Conversation context handling
-- [ ] RAG integration for chat responses
-- [ ] Follow-up question generation
-- [ ] Chat API endpoints created
-- [ ] PDF export endpoint
-- [ ] Frontend ChatWindow component
-- [ ] Message list with auto-scroll
-- [ ] User and assistant message components
-- [ ] Markdown rendering in responses
-- [ ] Source citation display
-- [ ] Suggested questions pills
-- [ ] Chat session list sidebar
-- [ ] Tests passing
+- [x] Chat tables migration created
+- [x] Chat models and schemas created
+- [x] Chat service with session management
+- [x] Conversation context handling
+- [x] RAG integration for chat responses
+- [x] Follow-up question generation
+- [x] Chat API endpoints created
+- [x] PDF export endpoint
+- [x] Frontend ChatWindow component
+- [x] Message list with auto-scroll
+- [x] User and assistant message components
+- [x] Markdown rendering in responses
+- [x] Source citation display
+- [x] Suggested questions pills
+- [x] Chat session list sidebar
+- [x] Tests passing
 
 ## Work Log
 
-*No work done yet.*
+- **2026-07-11**: Completed full implementation. Integrated LangGraph for AI orchestration, built the Next.js React UI with distinct source cards and suggestion pills, and finalized the PDF export with markdown cleanup.

@@ -1,21 +1,21 @@
-# Next Chat Session: Task 006 — Project Chat
+# Next Chat Session: Task 007 — Compliance Engine
 
 ## 1. Current State
-- **Just Completed:** Task 005 (RAG Search)
-  - Implemented the RAG pipeline using ChromaDB semantic search and PostgreSQL pg_tsvector keyword search, combined via Reciprocal Rank Fusion.
-  - Implemented Gemini 2.5 Flash answer generation with source citations.
-  - Created a frontend `/search` interface with history, filters, and AI answers.
-  - Deployed Redis caching to reduce LLM latency and cost.
-  - Fixed TypeScript configuration and typings for `Prisma.InputJsonObject`, BullMQ, and array types.
-- **Repository Health:** Backend and frontend build cleanly. Schema correctly handles `SearchHistory`.
+- **Just Completed:** Task 006 (Project Chat)
+  - Added `ChatSession` and `ChatMessage` models to Prisma schema.
+  - Implemented backend API endpoints for chat session and message CRUD.
+  - Integrated LangGraph to manage a conversational agent powered by Gemini 2.5 Flash.
+  - Provided the agent with RAG tools (semantic and keyword search) for citing project documents.
+  - Implemented the frontend `/chat` interface with a sidebar for sessions and a main chat window.
+- **Repository Health:** Backend and frontend build cleanly. The project is ready for the next feature.
 
 ## 2. Next Step
-- **Target Task:** Task 006 (Project Chat)
-- **Goal:** Implement persistent conversational AI sessions using `LangGraph` and `Langchain` bounded by RAG tool context.
-- **Dependencies:** The chat needs access to the dual retrievers (`semanticSearch`, `keywordSearch`) we just built in the RAG module.
+- **Target Task:** Task 007 (Compliance Engine)
+- **Goal:** Implement automated compliance validation against standards like ASHRAE, NFPA, etc., extracting requirements and validating project documents against them.
+- **Dependencies:** Relies on the extracted document text (Task 004) and vector search capabilities (Task 005).
 
 ## 3. Preparation Instructions for AI
-1. **Initialize Context:** Read `.ai/tasks/006-chat/task.md` (or equivalent backlog file) to define the specific requirements.
-2. **Review RAG Tools:** Look at `backend/src/modules/rag/retriever.ts` to see how you can convert those into LangChain tools.
-3. **Database:** Ensure the Prisma schema supports a `ChatSession` and `ChatMessage` model.
-4. **Draft Plan:** Produce `implementation_plan.md` for Task 006 before editing any source files.
+1. **Initialize Context:** Read `.ai/tasks/007-compliance/task.md` (or equivalent backlog file) to define the specific requirements.
+2. **Review Agents:** The Compliance Engine likely involves one of the 14 Autonomous AI Agents. Refer to `.ai/AGENTS.md` and `.ai/ARCHITECTURE.md`.
+3. **Database:** Ensure the Prisma schema supports `ComplianceCheck` and `Finding` models.
+4. **Draft Plan:** Produce `implementation_plan.md` for Task 007 before editing any source files.

@@ -12,7 +12,7 @@ interface DocumentUploadModalProps {
   onUpload: (files: File[], category: string) => Promise<void>;
 }
 
-const ACCEPTED_FILES = '.pdf,.docx,.xlsx,.csv,.json,.xml,.png,.jpg,.jpeg,.tif,.tiff';
+const ACCEPTED_FILES = '.pdf,.docx,.xlsx,.csv,.json,.xml,.png,.jpg,.jpeg,.tif,.tiff,.txt,.md';
 
 export function DocumentUploadModal({ open, progress, uploading, onClose, onUpload }: DocumentUploadModalProps) {
   const [files, setFiles] = useState<File[]>([]);

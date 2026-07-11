@@ -18,6 +18,23 @@ Each entry records:
 
 ## Session Log
 
+### Session 005 — 2026-07-11
+
+- **AI Model:** AntiGravity
+- **Topic:** Task 004, 005, 006 — Document Processing, RAG Search, and Chat Interface
+- **Key Decisions:**
+  - Implemented LangGraph for an autonomous ReAct AI agent capable of using a `project_document_search` tool.
+  - Standardized chat PDF exports using markdown stripping for a cleaner `pdfkit` layout.
+  - Stored suggested follow-up questions in `ChatMessage.metadata`.
+  - Formally established `.agents/AGENTS.md` rules to prevent host/container `node_modules` conflicts, enforcing `docker compose exec <service> npm install` and the `-V` flag for image rebuilds.
+- **Key Outputs:**
+  - End-to-end RAG pipeline using ChromaDB.
+  - Polished Chat UI featuring distinct source cards, clickable suggestion pills, and a centered layout.
+  - PDF export endpoint generating formatted transcripts.
+  - Tasks 003, 004, 005, and 006 marked fully complete across all tracking files.
+- **Unresolved Items:**
+  - Task 007 (Compliance Engine) is the next immediate task.
+
 ### Session 004 — 2026-07-08
 
 - **AI Model:** Codex

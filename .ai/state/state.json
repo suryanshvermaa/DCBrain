@@ -19,10 +19,10 @@
     "open_issues": 4
   },
   "sprint": {
-    "number": 1,
-    "start_date": "2026-07-01",
-    "end_date": "2026-07-14",
-    "tasks_total": 4,
+    "number": 2,
+    "start_date": "2026-07-15",
+    "end_date": "2026-07-28",
+    "tasks_total": 3,
     "tasks_completed": 3,
     "tasks_in_progress": 0
   },
@@ -30,9 +30,9 @@
     "project_setup": { "status": "completed", "progress": 100 },
     "authentication": { "status": "completed", "progress": 100 },
     "document_upload": { "status": "completed", "progress": 100 },
-    "document_processing": { "status": "in_progress", "progress": 70 },
-    "rag_search": { "status": "not_started", "progress": 0 },
-    "chat_interface": { "status": "not_started", "progress": 0 },
+    "document_processing": { "status": "completed", "progress": 100 },
+    "rag_search": { "status": "completed", "progress": 100 },
+    "chat_interface": { "status": "completed", "progress": 100 },
     "compliance_checker": { "status": "not_started", "progress": 0 },
     "schedule_risk": { "status": "not_started", "progress": 0 },
     "dashboard": { "status": "not_started", "progress": 0 },

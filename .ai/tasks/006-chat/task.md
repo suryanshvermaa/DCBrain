@@ -6,7 +6,7 @@
 - **Estimate:** 6 hours
 - **Sprint:** 2
 - **Dependencies:** 005 (RAG Search)
-- **Status:** Not Started
+- **Status:** Completed
 
 ## Objective
 
@@ -14,22 +14,22 @@ Build a conversational AI chat interface that leverages the RAG pipeline. Users 
 
 ## Acceptance Criteria
 
-- [ ] Chat session CRUD endpoints
-- [ ] Message endpoint with AI response (`POST /api/v1/projects/{id}/chat/sessions/{sid}/messages`)
-- [ ] Conversation context maintained within a session (last 10 messages)
-- [ ] AI responses include source citations
-- [ ] Suggested follow-up questions generated after each response
-- [ ] Document referencing in queries
-- [ ] Chat session list and history
-- [ ] Chat export as PDF
-- [ ] Database migrations for `chat_sessions` and `chat_messages` tables
-- [ ] Frontend chat window with message list
-- [ ] User message bubbles (right-aligned)
-- [ ] Assistant message rendering with markdown and source cards
-- [ ] Message input with send button
-- [ ] Suggested question pills
-- [ ] Chat session list sidebar
-- [ ] Streaming response support (optional for hackathon)
+- [x] Chat session CRUD endpoints
+- [x] Message endpoint with AI response (`POST /api/v1/projects/{id}/chat/sessions/{sid}/messages`)
+- [x] Conversation context maintained within a session (last 10 messages)
+- [x] AI responses include source citations
+- [x] Suggested follow-up questions generated after each response
+- [x] Document referencing in queries
+- [x] Chat session list and history
+- [x] Chat export as PDF
+- [x] Database migrations for `chat_sessions` and `chat_messages` tables
+- [x] Frontend chat window with message list
+- [x] User message bubbles (right-aligned)
+- [x] Assistant message rendering with markdown and source cards
+- [x] Message input with send button
+- [x] Suggested question pills
+- [x] Chat session list sidebar
+- [x] Streaming response support (optional for hackathon)
 
 ## Reference Documents
 - [API.md](../../API.md) — Chat endpoint specifications
