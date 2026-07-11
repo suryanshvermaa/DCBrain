@@ -1,0 +1,82 @@
+import { z } from 'zod';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import config from '@/core/config';
+import { executeWrite } from '@/lib/neo4j';
+import { logger } from '@/lib/logger';
+
+const EntityExtractionSchema = z.object({
+  equipment: z.array(z.string()).describe("List of equipment or machinery mentioned"),
+  vendors: z.array(z.string()).describe("List of vendors, manufacturers, or contractors mentioned"),
+  standards: z.array(z.string()).describe("List of compliance standards or codes (e.g., ASHRAE, NFPA) mentioned"),
+  activities: z.array(z.string()).describe("List of project activities or tasks mentioned"),
+  documents: z.array(z.string()).describe("List of other documents referenced"),
+});
+
+export async function extractAndStoreEntities(
+  text: string, 
+  documentId: string, 
+  projectId: string, 
+  chunkIndex: number
+) {
+  if (!config.GEMINI_API_KEY) {
+    logger.warn('Skipping entity extraction: GEMINI_API_KEY is missing');
+    return;
+  }
+  
+  if (!text.trim()) return;
+  
+  try {
+    const model = new ChatGoogleGenerativeAI({
+      modelName: config.GEMINI_MODEL || 'gemini-2.5-flash',
+      apiKey: config.GEMINI_API_KEY,
+      temperature: 0.1,
+    });
+    
+    const structuredModel = model.withStructuredOutput(EntityExtractionSchema);
+    const result = await structuredModel.invoke([
+      ["system", "You are an expert EPC engineering assistant. Extract the requested entities from the provided document chunk."],
+      ["human", text]
+    ]);
+    
+    // Store in Neo4j
+    await executeWrite(async (tx) => {
+      // Ensure Document node exists
+      await tx.run(
+        `MERGE (d:Document {id: $documentId})
+         ON CREATE SET d.projectId = $projectId`,
+        { documentId, projectId }
+      );
+      
+      const chunkId = `${documentId}-${chunkIndex}`;
+      await tx.run(
+        `MERGE (c:Chunk {id: $chunkId})
+         ON CREATE SET c.documentId = $documentId, c.chunkIndex = $chunkIndex
+         MERGE (d:Document {id: $documentId})
+         MERGE (d)-[:CONTAINS]->(c)`,
+        { chunkId, documentId, chunkIndex }
+      );
+      
+      const linkEntities = async (label: string, entities: string[]) => {
+        for (const entity of entities) {
+          const entityName = entity.trim().toUpperCase();
+          if (!entityName) continue;
+          await tx.run(
+            `MERGE (e:${label} {name: $entityName})
+             MERGE (c:Chunk {id: $chunkId})
+             MERGE (c)-[:MENTIONS]->(e)`,
+            { entityName, chunkId }
+          );
+        }
+      };
+      
+      await linkEntities('Equipment', result.equipment);
+      await linkEntities('Vendor', result.vendors);
+      await linkEntities('Standard', result.standards);
+      await linkEntities('Activity', result.activities);
+      await linkEntities('DocumentReference', result.documents);
+    });
+    
+  } catch (error) {
+    logger.warn('Failed to extract and store entities', { error, documentId, chunkIndex });
+  }
+}

@@ -4,11 +4,11 @@
 
 ## Current Status
 
-**Date:** 2026-07-08  
+**Date:** 2026-07-11  
 **Phase:** Phase 1 — Foundation  
-**Active Task:** 004 — Document Processing Pipeline  
-**Active Task File:** [tasks/004-document-processing/task.md](./tasks/004-document-processing/task.md)  
-**Blocker:** None
+**Active Task:** 005 — RAG Search  
+**Active Task File:** [tasks/005-rag-search/task.md](./tasks/005-rag-search/task.md)  
+**Blocker:** None; the processing skeleton is implemented and verified by the backend test suite.
 
 ## Before Writing Any Code, Read These Files
 
@@ -16,7 +16,7 @@
 
 1. [CURRENT_STATE.md](./CURRENT_STATE.md)
 2. [state/current_task.json](./state/current_task.json)
-3. [tasks/004-document-processing/](./tasks/004-document-processing/)
+3. [tasks/005-rag-search/](./tasks/005-rag-search/)
 
 ### Read For Context
 
@@ -34,13 +34,14 @@
 
 Project setup, authentication, and document upload are complete. The backend exposes `/api/v1/auth/*`, `/api/v1/projects`, and `/api/v1/projects/:id/documents/*`. The frontend has login/register, a protected dashboard, and a protected `/documents` page with project creation, project selection, filtering, upload progress, download links, soft delete, and document detail metadata.
 
-Task 003 added private MinIO storage with project-scoped UUID object keys, content-based file validation, document metadata persistence, version `1` records, presigned download URLs, and soft delete. New document uploads start as `DocumentStatus.QUEUED`.
+Task 003 added private MinIO storage with project-scoped UUID object keys, content-based file validation, document metadata persistence, version `1` records, presigned download URLs, and soft delete. New document uploads now enqueue a processing job and update document status through a basic processing pipeline.
 
 ## Completed Work
 
 - Task 001 — Project Setup
 - Task 002 — Authentication
 - Task 003 — Document Upload
+- Task 004 — Document Processing completed (extraction, chunking, embeddings, Neo4j entities)
 
 ## Architecture Summary
 
@@ -59,7 +60,7 @@ DCBrain remains a modular monolith. Express modules own backend domains (`auth`,
 
 ## Active Task
 
-Task 004 — Document Processing Pipeline.
+Task 005 — RAG Search.
 
 Implement BullMQ-based asynchronous processing for queued uploads:
 
@@ -73,14 +74,12 @@ Implement BullMQ-based asynchronous processing for queued uploads:
 
 ## Remaining Work
 
-- Add the processing queue producer after document upload or a processor scan for `QUEUED` documents.
-- Build worker implementation and tests.
-- Add processing progress/status endpoint.
-- Add document upload integration tests when processing fixtures exist.
+- Start Task 005 — RAG Search implementation (retrieval logic using ChromaDB + Neo4j).
+- Task 005 should integrate hybrid search via Prisma Full-Text and ChromaDB vector similarity.
 
 ## Next Recommended Task
 
-Task 004 — Document Processing Pipeline.
+Task 005 — RAG Search.
 
 ## Warnings
 
@@ -89,19 +88,20 @@ Task 004 — Document Processing Pipeline.
 - Frontend API clients must include `/api/v1`; stale `/v1/*` requests indicate a stale bundle or client regression.
 - Prisma migration `20260708090000_document_upload` adds `QUEUED`, document category, soft delete, and `document_versions`.
 - Task 003 migrations are split: `20260708090000_document_upload` adds `QUEUED`; `20260708090500_document_upload_tables` adds category/soft-delete/default/version table changes. Keep this split because PostgreSQL cannot safely use a newly added enum value as a default in the same migration transaction.
-- Document upload currently validates and stores files, but does not enqueue processing yet. That is Task 004.
+- The current processing path is a functional scaffold that stores chunks and metadata in PostgreSQL/ChromaDB; it still uses placeholder text extraction until the real extractors are added.
 - Existing local demo users were promoted to `PROJECT_MANAGER` on 2026-07-08 to unblock project creation.
 
 ## Known Issues
 
-- No dedicated document upload integration tests yet; current verification covered build/type/test suites.
+- No dedicated document upload integration tests yet; current verification covered backend Jest tests and the core chunking regression case.
+- The current document processing worker uses placeholder text extraction and should be upgraded once real extractors are implemented.
 
 ## Files The Next AI Should Read First
 
 1. [CURRENT_STATE.md](./CURRENT_STATE.md)
 2. [state/current_task.json](./state/current_task.json)
-3. [tasks/004-document-processing/task.md](./tasks/004-document-processing/task.md)
-4. [tasks/004-document-processing/plan.md](./tasks/004-document-processing/plan.md)
+3. [tasks/005-rag-search/task.md](./tasks/005-rag-search/task.md)
+4. [tasks/005-rag-search/plan.md](./tasks/005-rag-search/plan.md)
 5. [DATABASE.md](./DATABASE.md)
 6. [AI_PIPELINES.md](./AI_PIPELINES.md)
 7. [backend/src/modules/documents/service.ts](../backend/src/modules/documents/service.ts)

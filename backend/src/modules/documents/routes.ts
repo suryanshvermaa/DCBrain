@@ -13,6 +13,7 @@ import {
 import {
   deleteProjectDocument,
   getDocumentDownloadUrl,
+  getDocumentProcessingStatus,
   getProjectDocument,
   listProjectDocuments,
   uploadDocuments,
@@ -93,6 +94,20 @@ documentsRouter.get(
   asyncHandler(async (req: Request, res: Response) => {
     const params = documentParamsSchema.parse(req.params);
     const result = await getDocumentDownloadUrl({
+      projectId: params.id,
+      documentId: params.documentId,
+      actor: getActor(req),
+    });
+    res.status(200).json(result);
+  })
+);
+
+documentsRouter.get(
+  '/:documentId/processing-status',
+  requirePermission('search_documents'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const params = documentParamsSchema.parse(req.params);
+    const result = await getDocumentProcessingStatus({
       projectId: params.id,
       documentId: params.documentId,
       actor: getActor(req),

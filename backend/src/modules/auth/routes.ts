@@ -31,11 +31,37 @@ function getRequestIp(req: Request): string {
   return req.ip ?? '127.0.0.1';
 }
 
+function isRateLimitError(error: unknown): error is Error & { statusCode?: number; code?: string } {
+  return Boolean(
+    error instanceof Error &&
+      ((error as { statusCode?: number }).statusCode === 429 ||
+        (error as { code?: string }).code === 'RATE_LIMIT_EXCEEDED' ||
+        error.message.includes('Too many authentication attempts'))
+  );
+}
+
 authRouter.post(
   '/register',
   asyncHandler(async (req: Request, res: Response) => {
     const ipAddress = getRequestIp(req);
-    await assertAuthRateLimit('register', ipAddress);
+
+    try {
+      await assertAuthRateLimit('register', ipAddress);
+    } catch (error) {
+      if (isRateLimitError(error)) {
+        res.status(429).json({
+          success: false,
+          error: {
+            code: 'RATE_LIMIT_EXCEEDED',
+            message: error.message,
+          },
+        });
+        return;
+      }
+
+      throw error;
+    }
+
     const input = registerRequestSchema.parse(req.body);
     const result = await register(input, {
       ipAddress,
@@ -62,7 +88,24 @@ authRouter.post(
   '/login',
   asyncHandler(async (req: Request, res: Response) => {
     const ipAddress = getRequestIp(req);
-    await assertAuthRateLimit('login', ipAddress);
+
+    try {
+      await assertAuthRateLimit('login', ipAddress);
+    } catch (error) {
+      if (isRateLimitError(error)) {
+        res.status(429).json({
+          success: false,
+          error: {
+            code: 'RATE_LIMIT_EXCEEDED',
+            message: error.message,
+          },
+        });
+        return;
+      }
+
+      throw error;
+    }
+
     const input = loginRequestSchema.parse(req.body);
     const result = await login(input, {
       ipAddress,
@@ -89,7 +132,24 @@ authRouter.post(
   '/refresh',
   asyncHandler(async (req: Request, res: Response) => {
     const ipAddress = getRequestIp(req);
-    await assertAuthRateLimit('refresh', ipAddress);
+
+    try {
+      await assertAuthRateLimit('refresh', ipAddress);
+    } catch (error) {
+      if (isRateLimitError(error)) {
+        res.status(429).json({
+          success: false,
+          error: {
+            code: 'RATE_LIMIT_EXCEEDED',
+            message: error.message,
+          },
+        });
+        return;
+      }
+
+      throw error;
+    }
+
     const refreshToken = extractRefreshTokenFromCookie(req.headers.cookie);
     const result = await refresh(refreshToken, {
       ipAddress,

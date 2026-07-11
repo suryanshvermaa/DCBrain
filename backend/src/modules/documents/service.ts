@@ -7,6 +7,7 @@ import { createAuditLog } from '@/modules/auth/repository';
 import { assertProjectAccess } from '@/modules/projects';
 import { ensureBucketExists, getPresignedDownloadUrl, uploadBuffer } from '@/lib/minio';
 import { createDocument, findDocument, listDocuments, softDeleteDocument, type DocumentRecord } from './repository';
+import { enqueueDocumentProcessing } from './processing/queue';
 import type { ListDocumentsQuery } from './schemas';
 
 const MAX_FILES_PER_BATCH = 50;
@@ -224,6 +225,16 @@ export async function uploadDocuments(input: {
       ownerId: input.actor.id,
     });
 
+    await enqueueDocumentProcessing({
+      documentId: document.id,
+      projectId: input.projectId,
+      filename: document.filename,
+      mimeType: document.mimeType,
+      bucket: document.bucket,
+      path: document.path,
+      ownerId: input.actor.id,
+    });
+
     await createAuditLog({
       userId: input.actor.id,
       action: 'document.upload',
@@ -313,6 +324,27 @@ export async function getDocumentDownloadUrl(input: {
   return {
     url: await getPresignedDownloadUrl(document.path, DEFAULT_DOWNLOAD_EXPIRY_SECONDS),
     expiresInSeconds: DEFAULT_DOWNLOAD_EXPIRY_SECONDS,
+  };
+}
+
+export async function getDocumentProcessingStatus(input: {
+  projectId: string;
+  documentId: string;
+  actor: AuthenticatedActor;
+}): Promise<{ status: DocumentStatus; progress: number; step: string | null }> {
+  await assertProjectAccess(input.projectId, input.actor);
+  const document = await findDocument(input.projectId, input.documentId);
+  if (!document) {
+    throw new NotFoundError('Document', input.documentId);
+  }
+
+  const metadata = (document.metadata as Record<string, unknown> | null) ?? {};
+  const processing = metadata['processing'] as { step?: string } | undefined;
+
+  return {
+    status: document.status,
+    progress: document.status === DocumentStatus.PROCESSED ? 100 : document.status === DocumentStatus.FAILED ? 0 : 50,
+    step: processing?.step ?? null,
   };
 }
 
