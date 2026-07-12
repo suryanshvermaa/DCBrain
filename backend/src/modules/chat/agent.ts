@@ -69,7 +69,31 @@ const hybridSearchTool = new DynamicStructuredTool({
   },
 });
 
-const tools = [hybridSearchTool];
+const getProjectDocumentsTool = new DynamicStructuredTool({
+  name: 'get_project_documents_info',
+  description: 'Get the total number of documents and their names for the given project.',
+  schema: z.object({
+    projectId: z.string().describe('The ID of the project to check'),
+  }),
+  func: async ({ projectId }) => {
+    try {
+      const docs = await prisma.document.findMany({
+        where: { projectId, deletedAt: null },
+        select: { originalName: true, status: true }
+      });
+      if (docs.length === 0) {
+        return "There are no documents in this project.";
+      }
+      const names = docs.map(d => `- ${d.originalName} (Status: ${d.status})`).join('\n');
+      return `Total documents: ${docs.length}\nDocuments:\n${names}`;
+    } catch (error) {
+      console.error('Tool error:', error);
+      return "An error occurred while fetching project documents.";
+    }
+  }
+});
+
+const tools = [hybridSearchTool, getProjectDocumentsTool];
 
 const llm = new ChatGoogleGenerativeAI({
   model: config.GEMINI_MODEL,
@@ -120,7 +144,26 @@ async function toolNode(state: AgentState) {
 function shouldContinue(state: AgentState) {
   const { messages } = state;
   const lastMessage = messages[messages.length - 1] as AIMessage;
+  
   if (lastMessage.tool_calls && lastMessage.tool_calls.length > 0) {
+    // Check for duplicate tool calls in the same conversational turn (ignoring tool call IDs)
+    let previousToolCallsStr = '';
+    for (let i = messages.length - 2; i >= 0; i--) {
+      const msg = messages[i];
+      if (msg._getType() === 'human') break;
+      if (msg._getType() === 'ai' && (msg as AIMessage).tool_calls && (msg as AIMessage).tool_calls!.length > 0) {
+        previousToolCallsStr = JSON.stringify((msg as AIMessage).tool_calls?.map(tc => ({name: tc.name, args: tc.args})));
+        break;
+      }
+    }
+    
+    const currentToolCallsStr = JSON.stringify(lastMessage.tool_calls.map(tc => ({name: tc.name, args: tc.args})));
+    
+    if (previousToolCallsStr && previousToolCallsStr === currentToolCallsStr) {
+      console.warn('[Agent] Detected identical duplicate tool calls. Forcing END to prevent loop.');
+      return END;
+    }
+
     return 'tools';
   }
   return END;
@@ -137,15 +180,12 @@ const app = graph.compile();
 
 const SYSTEM_PROMPT = `You are DCBrain, an expert AI assistant for Data Centre Engineering, Procurement, and Construction (EPC) projects.
 Your role is to answer questions using the provided tools to search project documents.
-Always search the project documents when asked factual questions about the project, compliance, or schedule.
-When answering, explicitly cite the sources provided by the tool (e.g. "According to [Document Name], Page [X]...").
-Keep answers concise and technically precise.
-Your current Project ID is injected via the tool schema.
-
-At the end of your response, ALWAYS provide 2-3 suggested follow-up questions that the user might want to ask next. Format them as a JSON array inside a <suggested_questions> tag. For example:
-<suggested_questions>
-["What is the compliance standard for X?", "How does this affect the schedule?"]
-</suggested_questions>`;
+- If the user asks a factual question about the project, compliance, or schedule, you MUST search the project documents.
+- If the user asks about the number of documents or wants a list of documents, use the get_project_documents_info tool.
+- If the user just greets you (e.g., "hi", "hello"), simply greet them back and ask how you can assist. DO NOT use the search tool for simple greetings.
+- If the search tool returns no relevant results, tell the user you couldn't find the answer in the documents.
+- When answering based on documents, explicitly cite the sources provided by the tool (e.g. "According to [Document Name], Page [X]...").
+- Keep answers concise and technically precise.`;
 
 export async function runChatAgent(
   projectId: string,
@@ -167,10 +207,23 @@ export async function runChatAgent(
   // If there's no history (i.e. just the system message), we shouldn't be calling this function without a user prompt.
   // Actually, the last message in history is the current user message, so we are good.
 
-  const resultState = await app.invoke(
-    { messages: lcMessages },
-    { recursionLimit: 5 }
-  );
+  let resultState;
+  try {
+    resultState = await app.invoke(
+      { messages: lcMessages },
+      { recursionLimit: 5 }
+    );
+  } catch (error: any) {
+    console.error('LangGraph error:', error);
+    if (error.name === 'GraphRecursionError' || error.message?.includes('Recursion limit')) {
+      return {
+        content: "I'm sorry, but I had trouble processing that and got stuck while searching the documents. Could you please rephrase or ask a more specific question?",
+        sources: [],
+        suggestedQuestions: []
+      };
+    }
+    throw error;
+  }
   
   const finalMessages = resultState.messages;
   const finalMessage = finalMessages[finalMessages.length - 1] as AIMessage;
@@ -180,17 +233,13 @@ export async function runChatAgent(
   const sources = toolMessages.map(tm => ({ content: tm.content }));
 
   let content = typeof finalMessage.content === 'string' ? finalMessage.content : String(finalMessage.content);
-  let suggestedQuestions: string[] = [];
-
-  const sqMatch = content.match(/<suggested_questions>\s*(\[[^\]]+\])\s*<\/suggested_questions>/);
-  if (sqMatch) {
-    try {
-      suggestedQuestions = JSON.parse(sqMatch[1]);
-      content = content.replace(sqMatch[0], '').trim();
-    } catch (e) {
-      console.error('Failed to parse suggested questions', e);
-    }
+  
+  // If the agent was forcefully stopped on a duplicate tool call, its content will be empty
+  if (!content && finalMessage.tool_calls && finalMessage.tool_calls.length > 0) {
+    content = "I searched the documents but couldn't find a definitive answer to your question. Could you please provide more specifics?";
   }
+
+  let suggestedQuestions: string[] = [];
 
   return {
     content,

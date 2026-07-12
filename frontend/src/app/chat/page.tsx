@@ -139,9 +139,6 @@ export default function ChatPage() {
     }
   }
 
-  function handleSuggestedQuestion(question: string) {
-    setInputValue(question);
-  }
 
   return (
     <ProtectedRoute>
@@ -260,20 +257,7 @@ export default function ChatPage() {
                         </div>
                       )}
                       
-                      {/* Suggested Questions */}
-                      {msg.role === 'ASSISTANT' && msg.metadata?.suggestedQuestions && Array.isArray(msg.metadata.suggestedQuestions) && (
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {msg.metadata.suggestedQuestions.map((sq: string, idx: number) => (
-                            <button
-                              key={idx}
-                              onClick={() => handleSuggestedQuestion(sq)}
-                              className="text-xs px-3 py-1.5 bg-white dark:bg-gray-900 border border-blue-200 dark:border-blue-800/50 text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-all text-left shadow-sm hover:shadow"
-                            >
-                              {sq}
-                            </button>
-                          ))}
-                        </div>
-                      )}
+
                     </div>
                   </div>
                 ))}

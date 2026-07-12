@@ -81,7 +81,6 @@ export async function sendMessage(sessionId: string, projectId: string, userId: 
       role: 'ASSISTANT',
       content: agentResponse.content,
       sources: agentResponse.sources as any,
-      metadata: agentResponse.suggestedQuestions.length > 0 ? { suggestedQuestions: agentResponse.suggestedQuestions } : undefined,
     },
   });
 

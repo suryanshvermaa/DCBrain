@@ -43,7 +43,6 @@ export interface ChatMessage {
   role: 'USER' | 'ASSISTANT' | 'SYSTEM';
   content: string;
   sources?: Array<{ content: string }>;
-  metadata?: { suggestedQuestions?: string[] } | null;
   createdAt: string;
 }
 
