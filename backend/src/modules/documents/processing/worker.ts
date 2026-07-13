@@ -26,6 +26,8 @@ const DUPLICATE_DISTANCE_THRESHOLD = 0.1; // L2 distance threshold for near-dupl
 export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Promise<void> {
   const { documentId, projectId, filename, mimeType, path, bucket, ownerId } = job.data;
 
+  let tempFilePath: string | undefined;
+
   try {
     const document = await prisma.document.findUnique({ where: { id: documentId } });
     if (!document) {
@@ -34,9 +36,9 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
 
     // 1. Download & Extract
     await updateDocumentProcessingStatus(documentId, DocumentStatus.PROCESSING, 'extraction.started');
-    const tempFilePath = `${process.cwd()}/tmp-${documentId}-${Date.now()}`;
+    tempFilePath = `${process.cwd()}/tmp-${documentId}-${Date.now()}`;
     await downloadFile(document.path, tempFilePath);
-    const fileBuffer = await import('fs/promises').then((fs) => fs.readFile(tempFilePath));
+    const fileBuffer = await import('fs/promises').then((fs) => fs.readFile(tempFilePath as string));
 
     const extracted = await extractDocumentText(fileBuffer, filename, mimeType);
     const rawText = extracted.text;
@@ -165,13 +167,15 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
       },
     });
 
-    await import('fs/promises').then((fs) => fs.unlink(tempFilePath).catch(() => undefined));
-
     logger.info('Document processing completed', { documentId, projectId, chunkCount: chunks.length, duplicateCount });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown processing error';
     await updateDocumentProcessingStatus(documentId, DocumentStatus.FAILED, message);
     logger.error('Document processing failed', { documentId, error: message });
     throw error;
+  } finally {
+    if (tempFilePath) {
+      await import('fs/promises').then((fs) => fs.unlink(tempFilePath as string).catch(() => undefined));
+    }
   }
 }

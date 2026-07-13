@@ -37,7 +37,7 @@ services:
     restart: unless-stopped
 
   chromadb:
-    image: chromadb/chroma:0.4.15
+    image: chromadb/chroma:0.5.0
     container_name: dcbrain-chromadb
     ports:
       - "8100:8000"
