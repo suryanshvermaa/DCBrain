@@ -474,6 +474,20 @@ export default function DashboardPage() {
                         trend={summary.schedule.highRiskCount > 5 ? 'down' : 'neutral'}
                       />
                       <StatCard
+                        label="Procurement Risk"
+                        value={`${summary.procurement.atRiskCount + summary.procurement.delayedCount}`}
+                        sub={`${summary.procurement.atRiskCount} at risk, ${summary.procurement.delayedCount} delayed`}
+                        icon={Package}
+                        accentClass={
+                          (summary.procurement.atRiskCount + summary.procurement.delayedCount) === 0
+                            ? 'bg-green-600'
+                            : (summary.procurement.atRiskCount + summary.procurement.delayedCount) <= 3
+                            ? 'bg-amber-500'
+                            : 'bg-red-600'
+                        }
+                        trend={(summary.procurement.atRiskCount + summary.procurement.delayedCount) > 0 ? 'down' : 'neutral'}
+                      />
+                      <StatCard
                         label="Recent Activities"
                         value={summary.recentActivity.length}
                         sub="Last 20 actions"
@@ -713,6 +727,96 @@ export default function DashboardPage() {
                       )}
                     </div>
 
+                    {/* Procurement Risk */}
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                      <h3 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Package className="h-4 w-4 text-purple-600" />
+                        Procurement Pipeline
+                      </h3>
+
+                      {summary.procurement.totalItems > 0 ? (
+                        <>
+                          {/* Vendor Score */}
+                          <div className="mb-5">
+                            <div className="flex items-end justify-between mb-1">
+                              <span className="text-sm text-gray-500">
+                                Avg Vendor Performance
+                              </span>
+                              <span
+                                className={`text-2xl font-bold ${
+                                  summary.procurement.overallPerformance >= 90
+                                    ? 'text-green-600'
+                                    : summary.procurement.overallPerformance >= 70
+                                    ? 'text-amber-600'
+                                    : 'text-red-600'
+                                }`}
+                              >
+                                {summary.procurement.overallPerformance}%
+                              </span>
+                            </div>
+                            <div className="h-3 rounded-full bg-gray-100">
+                              <div
+                                className="h-3 rounded-full transition-all duration-700"
+                                style={{
+                                  width: `${Math.min(summary.procurement.overallPerformance, 100)}%`,
+                                  background:
+                                    summary.procurement.overallPerformance >= 90
+                                      ? '#22c55e'
+                                      : summary.procurement.overallPerformance >= 70
+                                      ? '#f59e0b'
+                                      : '#ef4444',
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-3">
+                            {[
+                              {
+                                label: 'Items',
+                                value: summary.procurement.totalItems,
+                                cls: 'text-gray-900',
+                              },
+                              {
+                                label: 'At Risk',
+                                value: summary.procurement.atRiskCount,
+                                cls: 'text-amber-700',
+                              },
+                              {
+                                label: 'Delayed',
+                                value: summary.procurement.delayedCount,
+                                cls: 'text-red-700',
+                              },
+                            ].map(({ label, value, cls }) => (
+                              <div
+                                key={label}
+                                className="rounded-lg border border-gray-200 p-3 text-center"
+                              >
+                                <p className={`text-xl font-bold ${cls}`}>{value}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="mt-4 text-right">
+                             <Link href="/procurement" className="text-blue-600 underline text-sm">
+                              View Procurement Dashboard
+                            </Link>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+                          No procurement data imported yet.{' '}
+                          <Link href="/procurement" className="text-blue-600 underline">
+                            Import Data
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* ─── Row 4: Activity Feed ────────────── */}
+                  <section className="grid gap-6 lg:grid-cols-1">
                     {/* Activity feed */}
                     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">

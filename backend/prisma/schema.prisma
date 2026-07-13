@@ -57,6 +57,8 @@ model Project {
   complianceChecks ComplianceCheck[]
   scheduleActivities ScheduleActivity[]
   scheduleImports    ScheduleImport[]
+  vendors            Vendor[]
+  procurementItems   ProcurementItem[]
 
   @@index([code])
   @@index([status])
@@ -405,3 +407,66 @@ model ScheduleImport {
   @@index([importedAt])
   @@map("schedule_imports")
 }
+
+enum ProcurementStatus {
+  IDENTIFIED
+  RFQ
+  PO_ISSUED
+  IN_FABRICATION
+  SHIPPED
+  RECEIVED
+  INSTALLED
+}
+
+model Vendor {
+  id                 String   @id @default(cuid())
+  name               String
+  contactName        String?
+  contactEmail       String?
+  contactPhone       String?
+  onTimeDeliveryRate Float    @default(100)
+  qualityRate        Float    @default(100)
+  complianceRate     Float    @default(100)
+  overallScore       Float    @default(100)
+  metadata           Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  projectId          String
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  items              ProcurementItem[]
+
+  @@index([projectId])
+  @@map("vendors")
+}
+
+model ProcurementItem {
+  id                 String            @id @default(cuid())
+  poNumber           String?
+  lineItem           String?
+  material           String
+  description        String?
+  quantity           Float             @default(0)
+  unit               String?
+  status             ProcurementStatus @default(IDENTIFIED)
+  orderDate          DateTime?
+  promisedDate       DateTime?
+  requiredOnSiteDate DateTime?
+  actualDeliveryDate DateTime?
+  metadata           Json?
+  
+  vendorId           String?
+  vendor             Vendor?           @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  projectId          String
+  project            Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@index([projectId])
+  @@index([vendorId])
+  @@index([status])
+  @@index([requiredOnSiteDate])
+  @@map("procurement_items")
+}
+

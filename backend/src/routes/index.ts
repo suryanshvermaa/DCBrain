@@ -7,6 +7,7 @@ import { chatRouter } from '@/modules/chat/chat.routes';
 import { complianceRouter } from '@/modules/compliance/routes';
 import { scheduleRouter } from '@/modules/schedule/routes';
 import { dashboardRouter } from '@/modules/dashboard/routes';
+import { procurementRouter } from '@/modules/procurement';
 
 export const routes = Router();
 
@@ -42,3 +43,4 @@ routes.use('/v1/projects/:id/chat/sessions', chatRouter);
 routes.use('/v1/projects/:id/compliance', complianceRouter);
 routes.use('/v1/projects/:id/schedule', scheduleRouter);
 routes.use('/v1/projects/:id/dashboard', dashboardRouter);
+routes.use('/v1/projects/:id/procurement', procurementRouter);

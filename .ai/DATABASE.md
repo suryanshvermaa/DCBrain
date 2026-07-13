@@ -26,7 +26,7 @@ erDiagram
 - `rfis`: Requests for Information tracking.
 - `compliance_checks`: Validation results.
 - `schedule_activities`: P6 imported activities.
-- `procurement_items`: POs and statuses.
+- `procurement_items`, `vendors`: POs, statuses, vendor scoring.
 - `audit_log`, `agent_runs`
 - **NEW:** `simulations` (What-if scenario tracking)
 - **NEW:** `ncrs` (Non-Conformance Reports)

@@ -14,19 +14,19 @@ Build the Procurement Intelligence module: import procurement data (POs, line it
 
 ## Acceptance Criteria
 
-- [ ] Procurement CSV/XLSX import endpoint (`POST /api/v1/projects/{id}/procurement/import`)
-- [ ] `procurement_items` table with PO number, line item, vendor, material, quantity, status, order date, promised date, required-on-site date, actual delivery date
-- [ ] Vendor master table with contact info and historical performance baseline
-- [ ] Procurement status pipeline: identified → RFQ → PO issued → in fabrication → shipped → received → installed
-- [ ] Lead-time tracking and critical-date alerts (items approaching required-on-site date)
-- [ ] Vendor performance scoring (on-time delivery %, NCR frequency, compliance hit rate)
-- [ ] Match procurement line items to relevant specifications via RAG
-- [ ] At-risk item dashboard card and filtered list view
-- [ ] Alternative vendor suggestions for high-risk long-lead items
-- [ ] Procurement dashboard widget in main project dashboard
-- [ ] Database migrations for `procurement_items` and `vendors`
-- [ ] Frontend procurement page with import, pipeline view, and vendor scorecards
-- [ ] Unit tests for procurement calculations; integration tests for import endpoint
+- [x] Procurement CSV/XLSX import endpoint (`POST /api/v1/projects/{id}/procurement/import`)
+- [x] `procurement_items` table with PO number, line item, vendor, material, quantity, status, order date, promised date, required-on-site date, actual delivery date
+- [x] Vendor master table with contact info and historical performance baseline
+- [x] Procurement status pipeline: identified → RFQ → PO issued → in fabrication → shipped → received → installed
+- [x] Lead-time tracking and critical-date alerts (items approaching required-on-site date)
+- [x] Vendor performance scoring (on-time delivery %, NCR frequency, compliance hit rate)
+- [x] Match procurement line items to relevant specifications via RAG
+- [x] At-risk item dashboard card and filtered list view
+- [x] Alternative vendor suggestions for high-risk long-lead items
+- [x] Procurement dashboard widget in main project dashboard
+- [x] Database migrations for `procurement_items` and `vendors`
+- [x] Frontend procurement page with import, pipeline view, and vendor scorecards
+- [x] Unit tests for procurement calculations; integration tests for import endpoint
 
 ## Required APIs
 

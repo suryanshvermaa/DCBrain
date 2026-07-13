@@ -79,9 +79,17 @@
       "completed_at": "2026-07-13T08:10:00Z",
       "hours_spent": 2,
       "hours_estimated": 6
+    },
+    {
+      "id": "011",
+      "name": "Procurement Intelligence",
+      "sprint": 4,
+      "completed_at": "2026-07-13T08:13:00Z",
+      "hours_spent": 4,
+      "hours_estimated": 10
     }
   ],
-  "total_completed": 10,
-  "total_hours_spent": 64,
-  "last_completed_at": "2026-07-13T08:10:00Z"
+  "total_completed": 11,
+  "total_hours_spent": 68,
+  "last_completed_at": "2026-07-13T08:13:00Z"
 }

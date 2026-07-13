@@ -51,6 +51,13 @@ export interface DashboardSummary {
     overallRiskScore: number;
     lastImportedAt: string | null;
   };
+  procurement: {
+    totalItems: number;
+    vendorsCount: number;
+    atRiskCount: number;
+    delayedCount: number;
+    overallPerformance: number; // 0-100 average vendor score
+  };
   recentActivity: ActivityFeedItem[];
   generatedAt: string;
 }
@@ -216,6 +223,39 @@ export async function getDashboardSummary(input: {
   }
 
   // -------------------------------------------------------------------------
+  // 3.5. Procurement summary
+  // -------------------------------------------------------------------------
+  const procurementItems = await prisma.procurementItem.findMany({
+    where: { projectId: input.projectId },
+    select: { status: true, requiredOnSiteDate: true, promisedDate: true }
+  });
+  const vendors = await prisma.vendor.findMany({
+    where: { projectId: input.projectId },
+    select: { overallScore: true }
+  });
+
+  const now = new Date();
+  const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  const procurementStats = {
+    totalItems: procurementItems.length,
+    vendorsCount: vendors.length,
+    atRiskCount: procurementItems.filter(i => 
+      (i.status !== 'RECEIVED' && i.status !== 'INSTALLED') &&
+      i.requiredOnSiteDate &&
+      new Date(i.requiredOnSiteDate) <= thirtyDaysFromNow
+    ).length,
+    delayedCount: procurementItems.filter(i =>
+      (i.status !== 'RECEIVED' && i.status !== 'INSTALLED') &&
+      i.promisedDate &&
+      new Date(i.promisedDate) < now
+    ).length,
+    overallPerformance: vendors.length > 0 
+      ? Math.round(vendors.reduce((sum, v) => sum + v.overallScore, 0) / vendors.length)
+      : 100
+  };
+
+  // -------------------------------------------------------------------------
   // 4. Recent activity feed (last 20)
   // -------------------------------------------------------------------------
   const recentActivities = await prisma.activity.findMany({
@@ -252,6 +292,7 @@ export async function getDashboardSummary(input: {
     documents: docStats,
     compliance: complianceStats,
     schedule: scheduleStats,
+    procurement: procurementStats,
     recentActivity: activityFeed,
     generatedAt: new Date().toISOString(),
   };

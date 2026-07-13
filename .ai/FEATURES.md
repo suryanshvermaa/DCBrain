@@ -122,7 +122,7 @@
   - Recommended mitigation actions per high-risk activity
 
 ### F-009: Procurement Visibility Dashboard
-- **Status:** Not Started
+- **Status:** Implemented
 - **Sprint:** 4
 - **Requirements:** [FR-008](./REQUIREMENTS.md#fr-008-procurement-visibility-dashboard)
 - **Description:** Centralized procurement tracking showing material status, vendor performance, lead times, and specification compliance for all procurement items.

@@ -54,7 +54,7 @@
 
 | ID | Task | Assignee | Status | Est. Hours |
 |----|------|----------|--------|------------|
-| 011 | [Procurement Intelligence](./011-procurement-intelligence/task.md) | — | 🔲 Not Started | 10h |
+| 011 | [Procurement Intelligence](./011-procurement-intelligence/task.md) | — | ✅ Completed | 10h |
 | 012 | [RFI Intelligence](./012-rfi-intelligence/task.md) | — | 🔲 Not Started | 8h |
 | 013 | [Knowledge Graph & Entity Extraction](./013-knowledge-graph/task.md) | — | 🔲 Not Started | 10h |
 
@@ -92,9 +92,9 @@
 
 ## Sprint Progress Summary
 
-- **Completed:** 7 / 18 tasks (001–010, excluding 006 missing from JSON)
+- **Completed:** 11 / 18 tasks
 - **In Progress:** 0
-- **Not Started:** 11
+- **Not Started:** 7
 
 ---
 

@@ -26,6 +26,10 @@ Auth endpoints return the access token in the JSON response and set the refresh 
 
 ## EPC Intelligence
 - `POST /projects/{id}/compliance/check`: Run standards check
+- `POST /projects/{id}/procurement/import`: Import procurement CSV/XLSX
+- `GET /projects/{id}/procurement`: List procurement items
+- `GET /projects/{id}/procurement/vendors`: List vendors and scorecards
+- `GET /projects/{id}/procurement/alternatives/{itemId}`: AI alternatives for item
 - `GET /projects/{id}/ncrs`: List Non-Conformance Reports
 - `GET /projects/{id}/change-orders`: List Change Orders
 - `GET /projects/{id}/reports`: Fetch Executive/Daily reports

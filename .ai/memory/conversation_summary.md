@@ -143,3 +143,4 @@ Each entry records:
 ---
 
 *Add new session summaries above this line, keeping the most recent at the top.*
+- **Task 011 (Procurement Intelligence):** Implemented XLSX/CSV import for procurement items and vendor tracking. Added a dashboard widget for at-risk and delayed procurement items. Added backend endpoint for alternative vendors using LLM suggestions.

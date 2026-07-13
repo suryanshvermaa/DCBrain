@@ -38,6 +38,13 @@ export interface DashboardSummary {
     overallRiskScore: number;
     lastImportedAt: string | null;
   };
+  procurement: {
+    totalItems: number;
+    vendorsCount: number;
+    atRiskCount: number;
+    delayedCount: number;
+    overallPerformance: number;
+  };
   recentActivity: ActivityFeedItem[];
   generatedAt: string;
 }

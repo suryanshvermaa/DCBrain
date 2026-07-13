@@ -46,6 +46,9 @@ graph LR
     AgentSvc -->|Schedule| BullMQ
     SimSvc -->|Function Call| SchedSvc
     GraphSvc -->|Client| GraphDB
+    DashSvc -->|Aggregate| ProcSvc
+    DashSvc -->|Aggregate| SchedSvc
+    DashSvc -->|Aggregate| CompSvc
 ```
 
 ## Security
