@@ -55,9 +55,17 @@
       "completed_at": "2026-07-13T07:05:00Z",
       "hours_spent": 8,
       "hours_estimated": 8
+    },
+    {
+      "id": "009",
+      "name": "Dashboard",
+      "sprint": 3,
+      "completed_at": "2026-07-13T07:45:00Z",
+      "hours_spent": 2,
+      "hours_estimated": 8
     }
   ],
-  "total_completed": 8,
-  "total_hours_spent": 60,
-  "last_completed_at": "2026-07-13T07:05:00Z"
+  "total_completed": 9,
+  "total_hours_spent": 62,
+  "last_completed_at": "2026-07-13T07:45:00Z"
 }

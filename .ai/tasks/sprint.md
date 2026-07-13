@@ -37,10 +37,10 @@
 
 | ID | Task | Assignee | Status | Est. Hours |
 |----|------|----------|--------|------------|
-| 007 | [Compliance Checker](./007-compliance-checker/task.md) | — | 🔲 Not Started | 10h |
-| 009 | [Dashboard](./009-dashboard/task.md) | — | 🔲 Not Started | 8h |
+| 007 | [Compliance Checker](./007-compliance-checker/task.md) | — | ✅ Completed | 10h |
+| 009 | [Dashboard](./009-dashboard/task.md) | — | ✅ Completed | 8h |
 | 017 | [Notifications, Audit Logs & Activity Timeline](./017-notifications-audit/task.md) | — | 🔲 Not Started | 6h |
-| 008 | [Schedule Risk & Math Models](./008-schedule-risk/task.md) | — | 🔲 Not Started | 8h |
+| 008 | [Schedule Risk & Math Models](./008-schedule-risk/task.md) | — | ✅ Completed | 8h |
 | 016 | [Simulation & Mitigation Planner](./016-simulation-engine/task.md) | — | 🔲 Not Started | 10h |
 
 **Total Estimated Hours:** 42h

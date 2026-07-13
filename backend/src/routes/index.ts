@@ -6,6 +6,7 @@ import { searchRouter } from '@/modules/search/routes';
 import { chatRouter } from '@/modules/chat/chat.routes';
 import { complianceRouter } from '@/modules/compliance/routes';
 import { scheduleRouter } from '@/modules/schedule/routes';
+import { dashboardRouter } from '@/modules/dashboard/routes';
 
 export const routes = Router();
 
@@ -20,6 +21,7 @@ routes.get('/', (_req, res) => {
       chat: '/api/v1/projects/{id}/chat',
       compliance: '/api/v1/projects/{id}/compliance',
       schedule: '/api/v1/projects/{id}/schedule',
+      dashboard: '/api/v1/projects/{id}/dashboard',
       procurement: '/api/v1/projects/{id}/procurement',
       agents: '/api/v1/projects/{id}/agents',
       simulation: '/api/v1/projects/{id}/simulations',
@@ -39,3 +41,4 @@ routes.use('/v1/projects/:id/search', searchRouter);
 routes.use('/v1/projects/:id/chat/sessions', chatRouter);
 routes.use('/v1/projects/:id/compliance', complianceRouter);
 routes.use('/v1/projects/:id/schedule', scheduleRouter);
+routes.use('/v1/projects/:id/dashboard', dashboardRouter);
