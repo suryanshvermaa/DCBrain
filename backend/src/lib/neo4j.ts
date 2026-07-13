@@ -78,4 +78,23 @@ export async function closeNeo4j(): Promise<void> {
   await neo4jDriver.close();
 }
 
+export async function initializeNeo4jSchema(): Promise<void> {
+  try {
+    const constraints = [
+      'CREATE CONSTRAINT equipment_name_unique IF NOT EXISTS FOR (e:Equipment) REQUIRE e.name IS UNIQUE',
+      'CREATE CONSTRAINT vendor_name_unique IF NOT EXISTS FOR (v:Vendor) REQUIRE v.name IS UNIQUE',
+      'CREATE CONSTRAINT standard_name_unique IF NOT EXISTS FOR (s:Standard) REQUIRE s.name IS UNIQUE',
+      'CREATE CONSTRAINT document_id_unique IF NOT EXISTS FOR (d:Document) REQUIRE d.id IS UNIQUE',
+      'CREATE CONSTRAINT chunk_id_unique IF NOT EXISTS FOR (c:Chunk) REQUIRE c.id IS UNIQUE',
+      'CREATE CONSTRAINT activity_name_unique IF NOT EXISTS FOR (a:Activity) REQUIRE a.name IS UNIQUE',
+      'CREATE CONSTRAINT docref_name_unique IF NOT EXISTS FOR (dr:DocumentReference) REQUIRE dr.name IS UNIQUE',
+    ];
+    for (const query of constraints) {
+      await runQuery(query);
+    }
+  } catch (error) {
+    console.error('Failed to initialize Neo4j schema constraints:', error);
+  }
+}
+
 export default neo4jDriver;

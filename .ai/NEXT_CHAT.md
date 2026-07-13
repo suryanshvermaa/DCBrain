@@ -1,48 +1,45 @@
-# Next Chat Session: Task 013 — Knowledge Graph & Entity Extraction
+# Next Chat Session: Task 014 — AI Agent Framework
 
 ## 1. Current State
 
-- **Just Completed:** Task 012 (RFI Intelligence)
-  - Registered backend `rfisRouter` in `backend/src/routes/index.ts`.
-  - Added RFI unresolved and overdue statistics calculation to the `DashboardSummary` response.
-  - Implemented `GET /api/v1/projects/:id/members` route to return project member names and roles for form assignees.
-  - Created frontend API client at `frontend/src/lib/api/rfis.ts`.
-  - Built the main RFI dashboard at `frontend/src/app/rfis/page.tsx` supporting status/overdue filtering, master-detail side-by-side view, AI suggested RAG drafts and RAG citation details, and human response edit-and-approval triggers.
-  - Integrated sidebar links, stat cards, and overview widgets for RFIs on the main dashboard home page.
-  - Cleaned up compiler errors in the procurement controller.
-  - Added full test coverage (unit + integration tests) for the RFI service and controllers, ensuring all backend tests pass.
-- **Repository Health:** Backend linter/typecheck and all Jest test suites are passing cleanly.
+- **Just Completed:** Task 013 (Knowledge Graph & Entity Extraction)
+  - Configured Neo4j database constraints (unique IDs and Names) in `backend/src/server.ts`.
+  - Updated the Document Processing Pipeline (`backend/src/modules/documents/processing/entityExtractor.ts`) to extract relationship structures and write them to Neo4j.
+  - Implemented the Knowledge Graph backend API at `/api/v1/projects/:id/graph` to query for global dependencies, failure propagation, and entity listings.
+  - Added full test coverage for the Graph API using Neo4j's test suite pattern.
+  - Installed `@xyflow/react` and built the Frontend Knowledge Graph UI (`/graph`) featuring a React Flow canvas with dependency layers and failure trace mode.
+  - Updated `DATABASE.md`, `ARCHITECTURE.md`, and `AI_PIPELINES.md` to reflect the Graph DB integration.
+- **Repository Health:** Backend tests are passing. Prisma client matches the latest migrations (including Schedule imports).
 
-## 2. Deferred Items (non-blocking)
+## 2. Deferred Items (non-non-blocking)
 
-- Suggesting realistic alternative vendors in Procurement (Task 011) remains mocked pending database load.
-- Bulmq worker schedule triggers for checking RFI overdue status (Task 012) is managed as a background task.
+- Suggesting realistic alternative vendors in Procurement (Task 011) remains mocked pending deeper graph embeddings.
+- Graph UI auto-layout (e.g. ElkJS or Dagre) is not yet implemented; nodes start with simple randomized/initial placement.
 
 ## 3. Next Step
 
-- **Target Task:** Task 013 — Knowledge Graph & Entity Extraction
-- **Goal:** Build the Knowledge Graph service using Neo4j to map equipment tags, referenced standards clauses, and task dependencies. Perform name entity extraction during document processing.
-- **Dependencies:** Task 012 completed.
-- **Priority:** P1 — Sprint 4
+- **Target Task:** Task 014 — AI Agent Framework
+- **Goal:** Set up the multi-agent orchestration layer using LangGraph. This includes the Supervisor Agent and delegating sub-agents (Document Agent, Schedule Risk Agent, etc.).
+- **Dependencies:** Task 013 (Completed).
+- **Priority:** P1 — Sprint 5
 
 ## 4. Preparation Instructions for AI
 
-1. **Initialize Context:** Read files listed in §5 below before implementing.
+1. **Initialize Context:** Read the documentation in `TASKS.md` or `.ai/tasks/014-ai-agent-framework/task.md` to understand the agent workflow.
 2. **Key Reference Files:**
-   - `.ai/tasks/013-knowledge-graph/task.md`
-   - `.ai/tasks/013-knowledge-graph/plan.md`
-   - `.ai/DECISIONS.md` — ADR-010 regarding Neo4j 5.x graph configuration
-3. **Architecture to Follow:** Create module-based backend `backend/src/modules/graph/` and Neo4j driver configurations. Ingest entities during the document processing pipeline (Task 004).
+   - `.ai/tasks/014-ai-agent-framework/task.md`
+   - `.ai/AGENTS.md` (Agent system prompts and roles)
+   - `.ai/AI_PIPELINES.md`
+3. **Architecture to Follow:** Build on top of LangGraph. Use Gemini 2.5 Flash for agent reasoning and tool usage. Ensure the Supervisor correctly coordinates tasks via Redis/BullMQ if background persistence is needed.
 
 ## 5. Files to Read First
 
 - `.ai/NEXT_CHAT.md` (this file)
 - `.ai/CURRENT_STATE.md`
-- `.ai/tasks/013-knowledge-graph/task.md`
-- `.ai/tasks/013-knowledge-graph/plan.md`
-- `.ai/DECISIONS.md` (ADR-010)
+- `.ai/tasks/014-ai-agent-framework/task.md`
+- `.ai/AGENTS.md`
 
 ## 6. Warnings & Known Issues
 
-- Ensure the Neo4j container is running locally (configured in `docker-compose.yml`) before running tests that hit the graph database.
-- Use `neo4j-driver` for query execution. Keep transaction functions clean and close connections properly.
+- Do not change Prisma schema without confirming the effect on previous sprints. 
+- Ensure `GEMINI_API_KEY` is present in the `.env` during testing.

@@ -53,5 +53,13 @@ erDiagram
 - `project_{id}_documents`: Document chunk embeddings.
 - `project_{id}_standards`: Industry standard embeddings.
 
+## Knowledge Graph (Neo4j)
+- **Node Labels**: `Document`, `Chunk`, `Equipment`, `Vendor`, `Standard`, `Activity`, `DocumentReference`.
+- **Relationships**: 
+  - `(Document)-[:CONTAINS]->(Chunk)`
+  - `(Chunk)-[:MENTIONS]->(Entity)`
+  - Entity-to-Entity: `[:REFERENCES]`, `[:SUPPLIES]`, `[:DEPENDS_ON]`, `[:GOVERNS]`
+- **Constraints**: Name/ID uniqueness enforced for all entity types.
+
 ## Object Storage (MinIO)
 - Secure, S3-compatible storage for uploaded PDFs, Images, DOCX, and Excel files.

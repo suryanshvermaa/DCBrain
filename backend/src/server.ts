@@ -17,10 +17,12 @@ async function startServer(): Promise<void> {
     await ensureBucketExists();
     logger.info('MinIO bucket ready');
 
-    const { checkNeo4jHealth } = await import('@/lib/neo4j');
+    const { checkNeo4jHealth, initializeNeo4jSchema } = await import('@/lib/neo4j');
     const neo4jHealthy = await checkNeo4jHealth();
     if (neo4jHealthy) {
       logger.info('Neo4j connected');
+      await initializeNeo4jSchema();
+      logger.info('Neo4j schema initialized');
     } else {
       logger.warn('Neo4j not available');
     }

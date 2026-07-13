@@ -31,7 +31,7 @@ Prioritized list of tasks not yet assigned to a sprint. Tasks move from here to 
 | 010 | [Deployment](./010-deployment/task.md) | P1 | 6h | All | Sprint 6 |
 | 011 | [Procurement Intelligence](./011-procurement-intelligence/task.md) | P1 | 10h | 003, 004, 009 | Sprint 4 |
 | 012 | [RFI Intelligence](./012-rfi-intelligence/task.md) | P1 | 8h | 003, 005, 006 | Sprint 4 |
-| 013 | [Knowledge Graph & Entity Extraction](./013-knowledge-graph/task.md) | P1 | 10h | 004 | Sprint 4 |
+| 013 | [Knowledge Graph & Entity Extraction](./013-knowledge-graph/task.md) | P1 | 10h | 004 | Completed |
 | 014 | [AI Agent Framework & Supervisor](./014-ai-agent-framework/task.md) | P0 | 12h | 004, 005, 006, 013 | Sprint 5 |
 | 015 | [Reporting Engine](./015-reporting-engine/task.md) | P1 | 8h | 007, 008, 011, 012, 014 | Sprint 5 |
 | 016 | [Simulation & Mitigation Planner](./016-simulation-engine/task.md) | P0 | 10h | 008, 013, 014 | Sprint 3 |

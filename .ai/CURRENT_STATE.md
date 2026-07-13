@@ -3,7 +3,7 @@
 - **Current Planning Stage:** Master scope and architecture defined. Implementation Phase 2 in progress.
 - **Latest Decisions:** Neo4j selected for Knowledge Graph and Failure Propagation. 14-agent ensemble, Simulation Engine, MinIO object storage confirmed in stack.
 - **Open Questions:** None blocking.
-- **Immediate Next Task:** Task 013 — Knowledge Graph & Entity Extraction. See [tasks/013-knowledge-graph/](./tasks/013-knowledge-graph/).
+- **Immediate Next Task:** Task 014 — Simulation Engine. See [tasks/014-simulation-engine/](./tasks/014-simulation-engine/).
 - **Phase:** Phases 1 & 2 complete. Sprints 1–3 (tasks 001–009), Sprint 6 (task 010), and Sprint 4 (tasks 011 and 012) completed.
 - **Status:** Document processing, hybrid RAG search, Chat Interface, Compliance Engine, Schedule Risk Analysis, Dashboard, Procurement, RFIs, and Production Deployment Infrastructure are successfully implemented.
 - **Route Contract:** The canonical backend API prefix is `/api/v1`; auth routes are `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/me`. Frontend API clients must use the same prefix.

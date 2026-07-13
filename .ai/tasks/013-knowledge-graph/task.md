@@ -6,7 +6,7 @@
 - **Estimate:** 10 hours
 - **Sprint:** 4
 - **Dependencies:** 004 (Document Processing)
-- **Status:** Not Started
+- **Status:** Completed
 
 ## Objective
 
@@ -14,18 +14,18 @@ Build the Knowledge Graph layer on Neo4j: extract entities (equipment, vendors, 
 
 ## Acceptance Criteria
 
-- [ ] Neo4j schema design: node labels (`Document`, `Equipment`, `Vendor`, `Standard`, `ScheduleActivity`, `RFI`, `NCR`, `ProcurementItem`) and relationship types (`REFERENCES`, `SUPPLIES`, `DEPENDS_ON`, `GOVERNS`, `MENTIONS`)
-- [ ] Entity extraction step in document processing pipeline (Task 004 enhancement)
-- [ ] Relationship extraction between documents, equipment, vendors, and standards
-- [ ] Write entities/relationships to Neo4j during document processing
-- [ ] Graph query endpoint (`GET /api/v1/projects/{id}/graph/dependencies`)
-- [ ] Failure-propagation subgraph endpoint (`GET /api/v1/projects/{id}/graph/failures`)
-- [ ] Frontend Knowledge Graph viewer (React Flow or Cytoscape)
-- [ ] Graph filtering by entity type and relationship depth (up to 5 hops)
-- [ ] Cross-document linking: "documents that mention the same equipment"
-- [ ] Duplicate entity reconciliation (fuzzy matching on equipment tags and vendor names)
-- [ ] Database migration for any relational entity tables (if not already in Task 004)
-- [ ] Integration tests for Neo4j writes and graph queries
+- [x] Neo4j schema design: node labels (`Document`, `Equipment`, `Vendor`, `Standard`, `ScheduleActivity`, `RFI`, `NCR`, `ProcurementItem`) and relationship types (`REFERENCES`, `SUPPLIES`, `DEPENDS_ON`, `GOVERNS`, `MENTIONS`)
+- [x] Entity extraction step in document processing pipeline (Task 004 enhancement)
+- [x] Relationship extraction between documents, equipment, vendors, and standards
+- [x] Write entities/relationships to Neo4j during document processing
+- [x] Graph query endpoint (`GET /api/v1/projects/{id}/graph/dependencies`)
+- [x] Failure-propagation subgraph endpoint (`GET /api/v1/projects/{id}/graph/failures`)
+- [x] Frontend Knowledge Graph viewer (React Flow or Cytoscape)
+- [x] Graph filtering by entity type and relationship depth (up to 5 hops)
+- [x] Cross-document linking: "documents that mention the same equipment"
+- [x] Duplicate entity reconciliation (fuzzy matching on equipment tags and vendor names)
+- [x] Database migration for any relational entity tables (if not already in Task 004)
+- [x] Integration tests for Neo4j writes and graph queries
 
 ## Required APIs
 

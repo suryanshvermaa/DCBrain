@@ -9,6 +9,7 @@ import { scheduleRouter } from '@/modules/schedule/routes';
 import { dashboardRouter } from '@/modules/dashboard/routes';
 import { procurementRouter } from '@/modules/procurement';
 import { rfisRouter } from '@/modules/rfis';
+import { graphRouter } from '@/modules/graph/routes';
 
 export const routes = Router();
 
@@ -47,3 +48,4 @@ routes.use('/v1/projects/:id/schedule', scheduleRouter);
 routes.use('/v1/projects/:id/dashboard', dashboardRouter);
 routes.use('/v1/projects/:id/procurement', procurementRouter);
 routes.use('/v1/projects/:id/rfis', rfisRouter);
+routes.use('/v1/projects/:id/graph', graphRouter);

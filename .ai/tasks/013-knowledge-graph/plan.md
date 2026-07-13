@@ -3,34 +3,34 @@
 ## Execution Order
 
 ### Step 1: Neo4j Schema Design (60 min)
-1. Finalize node labels and relationship types.
-2. Create constraints and indexes (unique equipment tags, document numbers).
-3. Document schema in DATABASE.md.
+- [x] Finalize node labels and relationship types.
+- [x] Create constraints and indexes (unique equipment tags, document numbers).
+- [x] Document schema in DATABASE.md.
 
 ### Step 2: Entity Extraction (90 min)
-1. Extend Document Processing pipeline with entity extraction prompt.
-2. Extract equipment, vendors, standards, activities, document references.
-3. Normalize and deduplicate extracted entities.
+- [x] Extend Document Processing pipeline with entity extraction prompt.
+- [x] Extract equipment, vendors, standards, activities, document references.
+- [x] Normalize and deduplicate extracted entities.
 
 ### Step 3: Relationship Extraction (90 min)
-1. Implement relationship extraction prompt.
-2. Map relationships: `MENTIONS`, `REFERENCES`, `SUPPLIES`, `DEPENDS_ON`, `GOVERNS`.
-3. Write idempotent merge queries to Neo4j.
+- [x] Implement relationship extraction prompt.
+- [x] Map relationships: `MENTIONS`, `REFERENCES`, `SUPPLIES`, `DEPENDS_ON`, `GOVERNS`.
+- [x] Write idempotent merge queries to Neo4j.
 
 ### Step 4: Graph API (90 min)
-1. Implement dependency graph endpoint.
-2. Implement failure-propagation subgraph endpoint.
-3. Add depth filtering (up to 5 hops).
+- [x] Implement dependency graph endpoint.
+- [x] Implement failure-propagation subgraph endpoint.
+- [x] Add depth filtering (up to 5 hops).
 
 ### Step 5: Graph Viewer UI (120 min)
-1. Integrate React Flow or Cytoscape.
-2. Implement pan, zoom, selection, and detail panel.
-3. Add entity-type filters.
+- [x] Integrate React Flow or Cytoscape.
+- [x] Implement pan, zoom, selection, and detail panel.
+- [x] Add entity-type filters.
 
 ### Step 6: Tests & Docs (90 min)
-1. Integration tests for Neo4j writes and reads.
-2. AI pipeline tests for extraction accuracy.
-3. Update ARCHITECTURE.md, DATABASE.md, AI_PIPELINES.md, AGENTS.md.
+- [x] Integration tests for Neo4j writes and reads.
+- [x] AI pipeline tests for extraction accuracy.
+- [x] Update ARCHITECTURE.md, DATABASE.md, AI_PIPELINES.md, AGENTS.md.
 
 ## Validation
 

@@ -10,6 +10,13 @@ const EntityExtractionSchema = z.object({
   standards: z.array(z.string()).describe("List of compliance standards or codes (e.g., ASHRAE, NFPA) mentioned"),
   activities: z.array(z.string()).describe("List of project activities or tasks mentioned"),
   documents: z.array(z.string()).describe("List of other documents referenced"),
+  relationships: z.array(z.object({
+    source: z.string().describe("The name of the source entity"),
+    sourceLabel: z.enum(['Equipment', 'Vendor', 'Standard', 'Activity', 'DocumentReference']).describe("The label of the source entity"),
+    target: z.string().describe("The name of the target entity"),
+    targetLabel: z.enum(['Equipment', 'Vendor', 'Standard', 'Activity', 'DocumentReference']).describe("The label of the target entity"),
+    type: z.enum(['REFERENCES', 'SUPPLIES', 'DEPENDS_ON', 'GOVERNS', 'MENTIONS']).describe("The type of relationship"),
+  })).describe("List of relationships between the extracted entities").optional(),
 });
 
 export async function extractAndStoreEntities(
@@ -74,6 +81,21 @@ export async function extractAndStoreEntities(
       await linkEntities('Standard', result.standards);
       await linkEntities('Activity', result.activities);
       await linkEntities('DocumentReference', result.documents);
+
+      if (result.relationships) {
+        for (const rel of result.relationships) {
+          const sourceName = rel.source.trim().toUpperCase();
+          const targetName = rel.target.trim().toUpperCase();
+          if (!sourceName || !targetName) continue;
+          
+          await tx.run(
+            `MATCH (a:${rel.sourceLabel} {name: $sourceName})
+             MATCH (b:${rel.targetLabel} {name: $targetName})
+             MERGE (a)-[:${rel.type}]->(b)`,
+            { sourceName, targetName }
+          );
+        }
+      }
     });
     
   } catch (error) {

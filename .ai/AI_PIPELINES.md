@@ -41,7 +41,8 @@ sequenceDiagram
     Worker->>Worker: Chunk text
     Worker->>Embed: Generate embeddings
     Worker->>VectorDB: Store Vectors
-    Worker->>GraphDB: Store Node/Edge Relationships
+    Worker->>Extract: Prompt LLM for Entities & Relationships
+    Worker->>GraphDB: Store Node/Edge Relationships via Cypher MERGE
     Worker->>DB: Update status to `completed`
 ```
 

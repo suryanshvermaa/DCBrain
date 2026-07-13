@@ -6,8 +6,8 @@ DCBrain uses a **neuro-symbolic modular monolith** architecture. It combines AI 
 ## High-Level Architecture
 ```mermaid
 graph TD
-    Client["Next.js SPA + React Flow"] --> Nginx["NGINX Reverse Proxy"]
-    Nginx --> Backend["Express.js Application"]
+    Client["Next.js SPA + React Flow (Graph UI)"] --> Nginx["NGINX Reverse Proxy"]
+    Nginx --> Backend["Express.js Application (REST + Graph API)"]
     
     subgraph Backend_Services ["Backend Services"]
         AuthSvc
