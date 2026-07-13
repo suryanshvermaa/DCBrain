@@ -4,6 +4,7 @@ import { documentsRouter } from '@/modules/documents';
 import { projectsRouter } from '@/modules/projects';
 import { searchRouter } from '@/modules/search/routes';
 import { chatRouter } from '@/modules/chat/chat.routes';
+import { complianceRouter } from '@/modules/compliance/routes';
 
 export const routes = Router();
 
@@ -35,3 +36,4 @@ routes.use('/v1/projects', projectsRouter);
 routes.use('/v1/projects/:id/documents', documentsRouter);
 routes.use('/v1/projects/:id/search', searchRouter);
 routes.use('/v1/projects/:id/chat/sessions', chatRouter);
+routes.use('/v1/projects/:id/compliance', complianceRouter);

@@ -13,7 +13,7 @@ import type { ListDocumentsQuery } from './schemas';
 const MAX_FILES_PER_BATCH = 50;
 const DEFAULT_DOWNLOAD_EXPIRY_SECONDS = 15 * 60;
 
-interface AuthenticatedActor {
+export interface AuthenticatedActor {
   id: string;
   role: Role;
 }

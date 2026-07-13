@@ -28,6 +28,7 @@ model User {
   auditLogs     AuditLog[]
   searchHistory SearchHistory[]
   chatSessions  ChatSession[]
+  complianceChecks ComplianceCheck[]
 
   @@index([email])
   @@map("users")
@@ -53,6 +54,7 @@ model Project {
   activities    Activity[]
   searchHistory SearchHistory[]
   chatSessions  ChatSession[]
+  complianceChecks ComplianceCheck[]
 
   @@index([code])
   @@index([status])
@@ -280,6 +282,29 @@ model SearchHistory {
   @@index([userId])
   @@index([createdAt])
   @@map("search_history")
+}
+
+model ComplianceCheck {
+  id               String   @id @default(cuid())
+  status           String   @default("COMPLETED")
+  complianceScore  Int      @default(0)
+  standards        Json?
+  findings         Json?
+  summary          Json?
+  notes            String?
+  documentIds      Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  projectId        String
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  ownerId          String
+  owner            User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([ownerId])
+  @@index([createdAt])
+  @@map("compliance_checks")
 }
 
 model ChatSession {
