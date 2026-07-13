@@ -46,6 +46,13 @@ coverage/
 # Docker
 docker-compose.override.yml
 
+# Production secrets (NEVER commit)
+.env.prod
+
+# Database backups
+backups/
+nginx/certs/
+
 # Prisma
 # Migration files are committed so that `prisma migrate deploy` works in fresh clones.
 # Only ignore lock metadata if desired; keeping tracked for reproducibility.

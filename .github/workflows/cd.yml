@@ -1,0 +1,165 @@
+name: CD — Build & Deploy
+
+on:
+  push:
+    branches:
+      - develop   # → staging (automatic)
+      - main      # → production (requires manual approval)
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false   # never cancel an in-flight deploy
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/dcbrain
+  NODE_VERSION: "20"
+
+jobs:
+  # ─── Build & push Docker images ─────────────────────────────────────────────
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}
+          tags: |
+            type=sha,prefix=,format=short
+            type=ref,event=branch
+
+      - name: Build & push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          target: runner
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend:${{ steps.meta.outputs.version }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_SHA=${{ github.sha }}
+
+      - name: Build & push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          target: runner
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:${{ steps.meta.outputs.version }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_APP_NAME=DCBrain
+            BUILD_SHA=${{ github.sha }}
+
+  # ─── Deploy to Staging (develop branch) ─────────────────────────────────────
+  deploy-staging:
+    name: Deploy → Staging
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://staging.dcbrain.example.com
+
+    steps:
+      - name: Deploy to staging server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            cd /opt/dcbrain
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            export IMAGE_TAG=${{ needs.build-and-push.outputs.image-tag }}
+            docker compose -f docker-compose.prod.yml pull backend frontend
+            docker compose -f docker-compose.prod.yml up -d --no-build backend frontend worker
+            # Run migrations
+            docker compose -f docker-compose.prod.yml exec -T backend npx prisma migrate deploy
+            # Verify health
+            sleep 10
+            curl -sf http://localhost:8000/health || (echo "Health check failed"; exit 1)
+            echo "Staging deploy complete — image: $IMAGE_TAG"
+
+  # ─── Manual approval gate for production ─────────────────────────────────────
+  approve-production:
+    name: Approve Production Deploy
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production-approval
+    steps:
+      - name: Approval gate
+        run: echo "Production deploy approved for image ${{ needs.build-and-push.outputs.image-tag }}"
+
+  # ─── Deploy to Production (main branch, after approval) ─────────────────────
+  deploy-production:
+    name: Deploy → Production
+    needs: [build-and-push, approve-production]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://dcbrain.example.com
+
+    steps:
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            cd /opt/dcbrain
+            # Snapshot current image tags for rollback
+            PREV_BACKEND=$(docker inspect --format='{{index .RepoTags 0}}' dcbrain-backend 2>/dev/null || echo "none")
+            PREV_FRONTEND=$(docker inspect --format='{{index .RepoTags 0}}' dcbrain-frontend 2>/dev/null || echo "none")
+            echo "Previous images: backend=$PREV_BACKEND frontend=$PREV_FRONTEND" > /tmp/rollback_images.txt
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            export IMAGE_TAG=${{ needs.build-and-push.outputs.image-tag }}
+            docker compose -f docker-compose.prod.yml pull backend frontend
+            docker compose -f docker-compose.prod.yml up -d --no-build backend frontend worker
+            docker compose -f docker-compose.prod.yml exec -T backend npx prisma migrate deploy
+
+            # Health check with retry
+            for i in 1 2 3 4 5; do
+              sleep 10
+              if curl -sf http://localhost:8000/health; then
+                echo "Production deploy successful — image: $IMAGE_TAG"
+                exit 0
+              fi
+              echo "Health check attempt $i failed, retrying..."
+            done
+            echo "Health checks failed after 5 attempts. Manual rollback required."
+            exit 1

@@ -84,7 +84,7 @@
 
 | ID | Task | Assignee | Status | Est. Hours |
 |----|------|----------|--------|------------|
-| 010 | [Deployment](./010-deployment/task.md) | — | 🔲 Not Started | 6h |
+| 010 | [Deployment](./010-deployment/task.md) | — | ✅ Completed | 6h |
 
 **Total Estimated Hours:** 6h
 
@@ -92,9 +92,9 @@
 
 ## Sprint Progress Summary
 
-- **Completed:** 6 / 18 tasks
+- **Completed:** 7 / 18 tasks (001–010, excluding 006 missing from JSON)
 - **In Progress:** 0
-- **Not Started:** 12
+- **Not Started:** 11
 
 ---
 

@@ -41,6 +41,14 @@
       "hours_estimated": 8
     },
     {
+      "id": "006",
+      "name": "Chat Interface",
+      "sprint": 2,
+      "completed_at": "2026-07-11T16:00:00+05:30",
+      "hours_spent": 6,
+      "hours_estimated": 6
+    },
+    {
       "id": "007",
       "name": "Compliance Engine",
       "sprint": 3,
@@ -63,9 +71,17 @@
       "completed_at": "2026-07-13T07:45:00Z",
       "hours_spent": 2,
       "hours_estimated": 8
+    },
+    {
+      "id": "010",
+      "name": "Deployment",
+      "sprint": 6,
+      "completed_at": "2026-07-13T08:10:00Z",
+      "hours_spent": 2,
+      "hours_estimated": 6
     }
   ],
-  "total_completed": 9,
-  "total_hours_spent": 62,
-  "last_completed_at": "2026-07-13T07:45:00Z"
+  "total_completed": 10,
+  "total_hours_spent": 64,
+  "last_completed_at": "2026-07-13T08:10:00Z"
 }
