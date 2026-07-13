@@ -1,27 +1,27 @@
 {
-  "task_id": "006",
-  "task_name": "Project Chat",
-  "task_path": "tasks/006-chat",
+  "task_id": "008",
+  "task_name": "Schedule Risk Prediction",
+  "task_path": "tasks/008-schedule-risk",
   "priority": "P0",
-  "sprint": 2,
+  "sprint": 3,
   "status": "completed",
-  "estimated_hours": 6,
-  "actual_hours": 6,
-  "dependencies": ["005"],
+  "estimated_hours": 8,
+  "actual_hours": 8,
+  "dependencies": ["001"],
   "assigned_to": null,
-  "started_at": "2026-07-11T16:00:00Z",
-  "completed_at": "2026-07-11T16:55:00Z",
-  "description": "Build a conversational AI chat interface that leverages the RAG pipeline. Users can ask project questions in natural language, receive sourced answers, and maintain conversation context within a session.",
+  "started_at": "2026-07-13T06:40:00Z",
+  "completed_at": "2026-07-13T07:05:00Z",
+  "description": "Build a schedule risk analysis module that imports Primavera P6 schedule data, identifies critical path activities, calculates risk scores, and predicts potential delays. Provides a risk heat map visualization and recommended mitigation actions.",
   "files_to_read": [
     ".ai/ARCHITECTURE.md",
     ".ai/API.md",
     ".ai/DATABASE.md",
     ".ai/COMPONENTS.md"
   ],
-  "last_updated": "2026-07-11T16:55:00Z",
+  "last_updated": "2026-07-13T07:05:00Z",
   "next_task": {
-    "task_id": "007",
-    "task_name": "Compliance Engine",
-    "task_path": "tasks/007-compliance"
+    "task_id": "009",
+    "task_name": "Dashboard",
+    "task_path": "tasks/009-dashboard"
   }
 }

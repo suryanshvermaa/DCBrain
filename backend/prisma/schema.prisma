@@ -55,6 +55,8 @@ model Project {
   searchHistory SearchHistory[]
   chatSessions  ChatSession[]
   complianceChecks ComplianceCheck[]
+  scheduleActivities ScheduleActivity[]
+  scheduleImports    ScheduleImport[]
 
   @@index([code])
   @@index([status])
@@ -339,4 +341,67 @@ model ChatMessage {
   @@index([sessionId])
   @@index([createdAt])
   @@map("chat_messages")
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ScheduleImportStatus {
+  SUCCESS
+  PARTIAL
+  FAILED
+}
+
+model ScheduleActivity {
+  id                  String     @id @default(cuid())
+  activityId          String     // P6 activity_id
+  name                String
+  wbsCode             String?
+  wbsName             String?
+  plannedStart        DateTime?
+  plannedFinish       DateTime?
+  actualStart         DateTime?
+  actualFinish        DateTime?
+  durationDays        Float      @default(0)
+  totalFloat          Float      @default(0)
+  freeFloat           Float      @default(0)
+  isCritical          Boolean    @default(false)
+  riskScore           Float      @default(0)
+  riskLevel           RiskLevel  @default(LOW)
+  predecessors        Json?
+  resourceAssignments Json?
+  mitigationActions   Json?
+  importId            String
+  import              ScheduleImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+  projectId           String
+  project             Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@index([projectId])
+  @@index([importId])
+  @@index([isCritical])
+  @@index([riskLevel])
+  @@index([riskScore])
+  @@map("schedule_activities")
+}
+
+model ScheduleImport {
+  id             String                @id @default(cuid())
+  filename       String
+  activityCount  Int                   @default(0)
+  status         ScheduleImportStatus  @default(SUCCESS)
+  errorMessage   String?
+  projectId      String
+  project        Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  activities     ScheduleActivity[]
+  importedAt     DateTime              @default(now())
+
+  @@index([projectId])
+  @@index([importedAt])
+  @@map("schedule_imports")
 }

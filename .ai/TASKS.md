@@ -27,8 +27,8 @@ See [tasks/sprint.md](./tasks/sprint.md) for the active sprint. As of the latest
 
 | ID | Task | Sprint | Estimate | Status |
 |----|------|--------|----------|--------|
-| 007 | [Compliance Checker](./tasks/007-compliance-checker/task.md) | 3 | 10h | Not Started |
-| 008 | [Schedule Risk](./tasks/008-schedule-risk/task.md) | 4 | 8h | Not Started |
+| 007 | [Compliance Checker](./tasks/007-compliance-checker/task.md) | 3 | 10h | Completed |
+| 008 | [Schedule Risk](./tasks/008-schedule-risk/task.md) | 4 | 8h | Completed |
 | 010 | [Deployment](./tasks/010-deployment/task.md) | 6 | 6h | Not Started |
 | 011 | [Procurement Intelligence](./tasks/011-procurement-intelligence/task.md) | 4 | 10h | Not Started |
 | 012 | [RFI Intelligence](./tasks/012-rfi-intelligence/task.md) | 4 | 8h | Not Started |

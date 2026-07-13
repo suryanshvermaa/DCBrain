@@ -5,6 +5,8 @@ Only documents changes to planning and documentation.
 ## [Unreleased]
 
 ### Changed
+- **Task 008 — Schedule Risk Prediction completed.** Added `ScheduleActivity` and `ScheduleImport` Prisma models with migration `20260713065346_add_schedule_activities`. Implemented P6 XML parser (`fast-xml-parser`), deterministic risk scoring engine (float consumption, critical path, duration, overdue), Gemini LLM mitigation generator with fallback, and 4 REST endpoints at `/api/v1/projects/:id/schedule`. Frontend schedule page includes Recharts scatter heat map, filterable activities table with expandable mitigation rows, health indicator cards (SPI, predicted completion, float rate), and drag-and-drop XML import. All 8 test suites pass.
+- **Task 007 — Compliance Engine completed (initial).** Added `ComplianceCheck` Prisma model with migration. Backend compliance module with service, routes, and schemas. Frontend compliance page with run-check action and summary view. AI-powered evidence extraction and PDF export remain for future iteration.
 - **Task 006 — Chat Interface completed.** Built a responsive Next.js Chat UI with distinct RAG source cards, suggested question pills, and centered premium styling. Backend uses LangGraph for an autonomous ReAct AI agent powered by Gemini. Added PDF export functionality.
 - **Task 005 — RAG Search completed.** Built the backend retrieval pipeline using ChromaDB for semantic search and PostgreSQL for metadata filtering. AI agents successfully invoke `project_document_search` to cite sources.
 - **Task 003 — Document Upload completed.** Implemented document management API, storing files in MinIO and metadata in Postgres.

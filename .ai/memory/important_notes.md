@@ -100,3 +100,16 @@ Based on competitive analysis of similar document search tools:
 3. If you encounter a bug, add it to [KNOWN_ISSUES.md](../KNOWN_ISSUES.md).
 4. If you learn something important, add it to [LESSONS.md](../LESSONS.md).
 5. Always update [PROJECT_STATE.md](../PROJECT_STATE.md) and [NEXT_CHAT.md](../NEXT_CHAT.md) before ending a session.
+
+---
+
+## Task 008 — Schedule Risk Implementation Notes (2026-07-13)
+
+- **XML Parser:** `fast-xml-parser` and `xml2js` are transitive dependencies (not in `package.json`). Used `fast-xml-parser` via `import { XMLParser } from 'fast-xml-parser'`. If Docker image is rebuilt, verify they're still available (`ls node_modules/fast-xml-parser`).
+- **Gemini import pattern:** The project does NOT use `@google/generative-ai`. Use `@langchain/google-genai` → `ChatGoogleGenerativeAI` and `HumanMessage` from `@langchain/core/messages`. See `backend/src/modules/rag/generator.ts` as the canonical example.
+- **Config access:** Always use the typed `config` object from `@/core/config` (not raw `process.env`) to avoid TypeScript index-signature errors.
+- **Permission for schedule import:** The existing `import_schedule_data` permission in `ROLE_PERMISSION_MAP` covers schedule file uploads. Do not create new permission entries.
+- **P6 XML format:** Only Primavera P6 XML export is supported (not XER text format). The parser uses recursive node search to handle varied root element names. Activity nodes are identified by searching for `Activity`, `activity`, `ACTIVITY`, `Task`, or `task` keys.
+- **Risk score formula:** float-consumption × 40 + critical-path × 30 + long-duration × 15 + overdue × 15 = max 100.
+- **Multer in routes:** Memory storage is used for XML uploads (max 20 MB). The `fileFilter` accepts `application/xml`, `text/xml`, and files ending in `.xml`.
+- **Test pattern:** Schedule route tests use the same isolated express app pattern as compliance tests — mock `./service`, mock auth middleware to bypass, create local express app per test suite.
