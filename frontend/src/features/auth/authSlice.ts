@@ -125,7 +125,7 @@ const authSlice = createSlice({
         state.accessToken = null;
         state.user = null;
         state.status = 'anonymous';
-        state.error = action.payload ?? (action.error.message ? { message: action.error.message } : null);
+        state.error = null;
       });
   },
 });

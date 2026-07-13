@@ -224,7 +224,7 @@ function RiskTooltip({ active, payload }: { active?: boolean; payload?: { payloa
 
 type FilterLevel = 'ALL' | scheduleApi.RiskLevel;
 
-export default function SchedulePage() {
+function SchedulePageContent() {
   const [projects, setProjects] = useState<projectsApi.Project[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [summary, setSummary] = useState<scheduleApi.ScheduleRiskSummary | null>(null);
@@ -334,7 +334,6 @@ export default function SchedulePage() {
   // ---------- Render ----------
 
   return (
-    <ProtectedRoute>
       <main className="min-h-screen bg-gray-50 p-6">
         <div className="mx-auto flex max-w-7xl flex-col gap-6">
 
@@ -677,6 +676,13 @@ export default function SchedulePage() {
           ) : null}
         </div>
       </main>
+  );
+}
+
+export default function SchedulePage() {
+  return (
+    <ProtectedRoute>
+      <SchedulePageContent />
     </ProtectedRoute>
   );
 }

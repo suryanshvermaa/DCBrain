@@ -7,7 +7,7 @@ import * as projectsApi from '@/lib/api/projects';
 import * as complianceApi from '@/lib/api/compliance';
 import { ApiError } from '@/lib/api';
 
-export default function CompliancePage() {
+function CompliancePageContent() {
   const [projects, setProjects] = useState<projectsApi.Project[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [summary, setSummary] = useState<complianceApi.ComplianceSummaryResponse | null>(null);
@@ -85,7 +85,6 @@ export default function CompliancePage() {
   }
 
   return (
-    <ProtectedRoute>
       <main className="min-h-screen bg-gray-50 p-6">
         <div className="mx-auto flex max-w-7xl flex-col gap-6">
           <header className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -190,6 +189,13 @@ export default function CompliancePage() {
           </section>
         </div>
       </main>
+  );
+}
+
+export default function CompliancePage() {
+  return (
+    <ProtectedRoute>
+      <CompliancePageContent />
     </ProtectedRoute>
   );
 }

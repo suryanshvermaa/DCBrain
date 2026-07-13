@@ -70,7 +70,7 @@ function SourcesPanel({ sources }: { sources: Array<{ content: string }> }) {
   );
 }
 
-export default function ChatPage() {
+function ChatPageContent() {
   const accessToken = useAppSelector(selectAccessToken);
   const [projects, setProjects] = useState<projectsApi.Project[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
@@ -192,7 +192,6 @@ export default function ChatPage() {
   }
 
   return (
-    <ProtectedRoute>
       <div className="chat-page">
         {/* ── Header ── */}
         <header className="chat-header">
@@ -351,6 +350,13 @@ export default function ChatPage() {
           </main>
         </div>
       </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <ProtectedRoute>
+      <ChatPageContent />
     </ProtectedRoute>
   );
 }

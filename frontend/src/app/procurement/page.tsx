@@ -21,7 +21,7 @@ const navigation = [
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
-export default function ProcurementPage() {
+function ProcurementPageContent() {
   const pathname = usePathname();
 
   const [projects, setProjects] = useState<projectsApi.Project[]>([]);
@@ -94,7 +94,6 @@ export default function ProcurementPage() {
   const selectedProject = useMemo(() => projects.find((p) => p.id === projectId) ?? null, [projectId, projects]);
 
   return (
-    <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex overflow-hidden">
         {/* Sidebar */}
         <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
@@ -237,6 +236,13 @@ export default function ProcurementPage() {
           </div>
         </main>
       </div>
+  );
+}
+
+export default function ProcurementPage() {
+  return (
+    <ProtectedRoute>
+      <ProcurementPageContent />
     </ProtectedRoute>
   );
 }

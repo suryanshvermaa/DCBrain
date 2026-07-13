@@ -13,7 +13,7 @@ import { ApiError } from '@/lib/api';
 import * as documentsApi from '@/lib/api/documents';
 import * as projectsApi from '@/lib/api/projects';
 
-export default function DocumentsPage() {
+function DocumentsPageContent() {
   const [projects, setProjects] = useState<projectsApi.Project[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [projectError, setProjectError] = useState<string | null>(null);
@@ -118,7 +118,6 @@ export default function DocumentsPage() {
   }
 
   return (
-    <ProtectedRoute>
       <main className="min-h-screen bg-gray-50">
         <header className="border-b border-gray-200 bg-white">
           <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
@@ -231,6 +230,13 @@ export default function DocumentsPage() {
           onCreate={handleCreateProject}
         />
       </main>
+  );
+}
+
+export default function DocumentsPage() {
+  return (
+    <ProtectedRoute>
+      <DocumentsPageContent />
     </ProtectedRoute>
   );
 }

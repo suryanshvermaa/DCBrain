@@ -65,7 +65,7 @@ function PackageIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export default function RfisPage() {
+function RfisPageContent() {
   const pathname = usePathname();
 
   // Project states
@@ -324,7 +324,6 @@ export default function RfisPage() {
   };
 
   return (
-    <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex overflow-hidden">
         {/* Sidebar */}
         <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col shrink-0">
@@ -911,6 +910,13 @@ export default function RfisPage() {
           </div>
         </div>
       )}
+  );
+}
+
+export default function RfisPage() {
+  return (
+    <ProtectedRoute>
+      <RfisPageContent />
     </ProtectedRoute>
   );
 }

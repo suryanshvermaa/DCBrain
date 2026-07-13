@@ -237,7 +237,7 @@ function ActivityItem({ item }: { item: dashboardApi.ActivityFeedItem }) {
 // Main page
 // ---------------------------------------------------------------------------
 
-export default function DashboardPage() {
+function DashboardContent() {
   const pathname = usePathname();
 
   const [projects, setProjects] = useState<projectsApi.Project[]>([]);
@@ -297,7 +297,6 @@ export default function DashboardPage() {
   );
 
   return (
-    <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex h-screen overflow-hidden">
           {/* Sidebar */}
@@ -918,6 +917,13 @@ export default function DashboardPage() {
           </main>
         </div>
       </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
     </ProtectedRoute>
   );
 }
