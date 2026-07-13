@@ -29,6 +29,17 @@ export async function createProject(payload: CreateProjectPayload): Promise<{ pr
   return api.post<{ project: Project }>('/api/v1/projects', payload);
 }
 
+export interface ProjectMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+export async function getProjectMembers(projectId: string): Promise<{ members: ProjectMember[] }> {
+  return api.get<{ members: ProjectMember[] }>(`/api/v1/projects/${projectId}/members`);
+}
+
 // --- Chat APIs ---
 export interface ChatSession {
   id: string;

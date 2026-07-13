@@ -43,6 +43,7 @@ const navigation = [
   { name: 'Compliance', href: '/compliance', icon: Shield },
   { name: 'Schedule', href: '/schedule', icon: Calendar },
   { name: 'Procurement', href: '/procurement', icon: Package },
+  { name: 'RFIs', href: '/rfis', icon: HelpCircle },
   { name: 'Agents', href: '/agents', icon: Bot },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
@@ -488,6 +489,20 @@ export default function DashboardPage() {
                         trend={(summary.procurement.atRiskCount + summary.procurement.delayedCount) > 0 ? 'down' : 'neutral'}
                       />
                       <StatCard
+                        label="Unresolved RFIs"
+                        value={summary.rfis?.open ?? 0}
+                        sub={`${summary.rfis?.overdue ?? 0} overdue / ${summary.rfis?.total ?? 0} total`}
+                        icon={HelpCircle}
+                        accentClass={
+                          (summary.rfis?.open ?? 0) === 0
+                            ? 'bg-green-600'
+                            : (summary.rfis?.overdue ?? 0) > 0
+                            ? 'bg-red-600'
+                            : 'bg-amber-500'
+                        }
+                        trend={(summary.rfis?.overdue ?? 0) > 0 ? 'down' : 'neutral'}
+                      />
+                      <StatCard
                         label="Recent Activities"
                         value={summary.recentActivity.length}
                         sub="Last 20 actions"
@@ -815,8 +830,60 @@ export default function DashboardPage() {
                     </div>
                   </section>
 
-                  {/* ─── Row 4: Activity Feed ────────────── */}
-                  <section className="grid gap-6 lg:grid-cols-1">
+                  {/* ─── Row 4: RFIs & Activity Feed ────────────── */}
+                  <section className="grid gap-6 lg:grid-cols-2">
+                    {/* RFIs Overview Widget */}
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                      <h3 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <HelpCircle className="h-4 w-4 text-blue-600" />
+                        Requests for Information (RFIs)
+                      </h3>
+
+                      {summary.rfis && summary.rfis.total > 0 ? (
+                        <>
+                          <div className="grid grid-cols-3 gap-3 mb-5">
+                            {[
+                              {
+                                label: 'Total Raised',
+                                value: summary.rfis.total,
+                                cls: 'text-gray-900',
+                              },
+                              {
+                                label: 'Open / In-Review',
+                                value: summary.rfis.open,
+                                cls: 'text-amber-600',
+                              },
+                              {
+                                label: 'Overdue',
+                                value: summary.rfis.overdue,
+                                cls: summary.rfis.overdue > 0 ? 'text-red-600' : 'text-gray-900',
+                              },
+                            ].map(({ label, value, cls }) => (
+                              <div
+                                key={label}
+                                className="rounded-lg border border-gray-200 p-3 text-center"
+                              >
+                                <p className={`text-xl font-bold ${cls}`}>{value}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="mt-4 text-right">
+                             <Link href="/rfis" className="text-blue-600 underline text-sm">
+                              View RFI Management Dashboard
+                            </Link>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+                          No RFIs created yet.{' '}
+                          <Link href="/rfis" className="text-blue-600 underline">
+                            Create an RFI
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Activity feed */}
                     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">

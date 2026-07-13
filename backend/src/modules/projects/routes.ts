@@ -3,7 +3,8 @@ import { Role } from '@prisma/client';
 import { asyncHandler } from '@/core/middleware/errorHandler';
 import { requireAuth, requirePermission, type AuthenticatedRequest } from '@/modules/auth/middleware';
 import { createProjectSchema, projectIdParamSchema } from './schemas';
-import { createUserProject, getProject, listUserProjects } from './service';
+import { createUserProject, getProject, listUserProjects, assertProjectAccess } from './service';
+import prisma from '@/lib/prisma';
 
 export const projectsRouter = Router();
 
@@ -39,6 +40,33 @@ projectsRouter.get(
     const params = projectIdParamSchema.parse(req.params);
     const project = await getProject(params.id, { id: user?.id ?? '', role: user?.role ?? Role.VIEWER });
     res.status(200).json({ project });
+  })
+);
+
+projectsRouter.get(
+  '/:id/members',
+  asyncHandler(async (req: Request, res: Response) => {
+    const user = (req as AuthenticatedRequest).auth?.user;
+    const params = projectIdParamSchema.parse(req.params);
+    await assertProjectAccess(params.id, { id: user?.id ?? '', role: user?.role ?? Role.VIEWER });
+
+    const members = await prisma.projectMember.findMany({
+      where: { projectId: params.id },
+      include: {
+        user: {
+          select: { id: true, firstName: true, lastName: true, email: true }
+        }
+      }
+    });
+
+    res.status(200).json({
+      members: members.map(m => ({
+        id: m.user.id,
+        name: `${m.user.firstName} ${m.user.lastName}`,
+        email: m.user.email,
+        role: m.role
+      }))
+    });
   })
 );
 

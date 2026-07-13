@@ -58,6 +58,11 @@ export interface DashboardSummary {
     delayedCount: number;
     overallPerformance: number; // 0-100 average vendor score
   };
+  rfis: {
+    total: number;
+    open: number;
+    overdue: number;
+  };
   recentActivity: ActivityFeedItem[];
   generatedAt: string;
 }
@@ -256,6 +261,29 @@ export async function getDashboardSummary(input: {
   };
 
   // -------------------------------------------------------------------------
+  // 3.6. RFI summary
+  // -------------------------------------------------------------------------
+  const rfisList = await prisma.rfi.findMany({
+    where: { projectId: input.projectId },
+    select: { status: true, dueDate: true }
+  });
+
+  const rfiStats = {
+    total: rfisList.length,
+    open: rfisList.filter((r) => r.status === 'OPEN' || r.status === 'IN_REVIEW').length,
+    overdue: 0,
+  };
+
+  const resolvedStatuses = ['ANSWERED', 'CLOSED', 'VOID'];
+  for (const r of rfisList) {
+    if (r.dueDate && !resolvedStatuses.includes(r.status)) {
+      if (new Date(r.dueDate).getTime() < now.getTime()) {
+        rfiStats.overdue++;
+      }
+    }
+  }
+
+  // -------------------------------------------------------------------------
   // 4. Recent activity feed (last 20)
   // -------------------------------------------------------------------------
   const recentActivities = await prisma.activity.findMany({
@@ -293,6 +321,7 @@ export async function getDashboardSummary(input: {
     compliance: complianceStats,
     schedule: scheduleStats,
     procurement: procurementStats,
+    rfis: rfiStats,
     recentActivity: activityFeed,
     generatedAt: new Date().toISOString(),
   };

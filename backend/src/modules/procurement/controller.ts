@@ -7,7 +7,7 @@ import { updateVendorSchema } from './schema';
 export class ProcurementController {
   static async import(req: Request, res: Response) {
     try {
-      const { id: projectId } = req.params;
+      const projectId = req.params['id'] as string;
       const file = req.file;
       
       if (!file) {
@@ -30,7 +30,7 @@ export class ProcurementController {
 
   static async getItems(req: Request, res: Response) {
     try {
-      const { id: projectId } = req.params;
+      const projectId = req.params['id'] as string;
       const items = await ProcurementService.getItems(projectId);
       return res.status(200).json({ items });
     } catch (error) {
@@ -41,7 +41,7 @@ export class ProcurementController {
 
   static async getVendors(req: Request, res: Response) {
     try {
-      const { id: projectId } = req.params;
+      const projectId = req.params['id'] as string;
       const vendors = await ProcurementService.getVendors(projectId);
       return res.status(200).json({ vendors });
     } catch (error) {
@@ -52,7 +52,8 @@ export class ProcurementController {
 
   static async updateVendor(req: Request, res: Response) {
     try {
-      const { id: projectId, vendorId } = req.params;
+      const projectId = req.params['id'] as string;
+      const vendorId = req.params['vendorId'] as string;
       const data = updateVendorSchema.parse(req.body);
       
       const vendor = await prisma.vendor.update({
@@ -69,7 +70,8 @@ export class ProcurementController {
 
   static async getAlternatives(req: Request, res: Response) {
     try {
-      const { id: projectId, itemId } = req.params;
+      const projectId = req.params['id'] as string;
+      const itemId = req.params['itemId'] as string;
       const alternatives = await ProcurementService.getAlternatives(projectId, itemId);
       return res.status(200).json(alternatives);
     } catch (error) {

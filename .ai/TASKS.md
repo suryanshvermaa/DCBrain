@@ -29,9 +29,9 @@ See [tasks/sprint.md](./tasks/sprint.md) for the active sprint. As of the latest
 |----|------|--------|----------|--------|
 | 007 | [Compliance Checker](./tasks/007-compliance-checker/task.md) | 3 | 10h | Completed |
 | 008 | [Schedule Risk](./tasks/008-schedule-risk/task.md) | 4 | 8h | Completed |
-| 010 | [Deployment](./tasks/010-deployment/task.md) | 6 | 6h | Not Started |
-| 011 | [Procurement Intelligence](./tasks/011-procurement-intelligence/task.md) | 4 | 10h | Not Started |
-| 012 | [RFI Intelligence](./tasks/012-rfi-intelligence/task.md) | 4 | 8h | Not Started |
+| 010 | [Deployment](./tasks/010-deployment/task.md) | 6 | 6h | Completed |
+| 011 | [Procurement Intelligence](./tasks/011-procurement-intelligence/task.md) | 4 | 10h | Completed |
+| 012 | [RFI Intelligence](./tasks/012-rfi-intelligence/task.md) | 4 | 8h | Completed |
 | 013 | [Knowledge Graph & Entity Extraction](./tasks/013-knowledge-graph/task.md) | 4 | 10h | Not Started |
 | 015 | [Reporting Engine](./tasks/015-reporting-engine/task.md) | 5 | 8h | Not Started |
 | 016 | [Simulation & Mitigation Planner](./tasks/016-simulation-engine/task.md) | 5 | 10h | Not Started |

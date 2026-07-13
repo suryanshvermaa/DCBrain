@@ -44,6 +44,11 @@ erDiagram
 - `document_versions` stores immutable raw-file snapshots for each document version. Task 003 creates version `1` during initial upload.
 - MinIO object keys are project-scoped and UUID-based: `projects/{projectId}/documents/{uuid}/{sanitizedFilename}`.
 
+### Requests for Information (RFIs)
+
+- `rfis` stores project-scoped Requests for Information (RFIs) with project-specific sequential numbers (e.g. `RFI-0001`). It records the subject, question, priority (LOW to CRITICAL), status (OPEN to VOID), discipline, due date, official resolution, and AI suggested response with sources. It maintains FK links to `projects` and `users` (raisedBy, assignee, answeredBy).
+- `rfi_documents` is a junction table linking RFIs to project documents.
+
 ## Vector Store (ChromaDB)
 - `project_{id}_documents`: Document chunk embeddings.
 - `project_{id}_standards`: Industry standard embeddings.

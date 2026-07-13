@@ -21,6 +21,7 @@ export type AuthPermission =
   | 'run_compliance_checks'
   | 'import_schedule_data'
   | 'import_procurement_data'
+  | 'manage_rfis'
   | 'configure_agents'
   | 'view_dashboard'
   | 'export_data';
@@ -37,6 +38,7 @@ export const ROLE_PERMISSION_MAP: Record<Role, AuthPermission[]> = {
     'run_compliance_checks',
     'import_schedule_data',
     'import_procurement_data',
+    'manage_rfis',
     'configure_agents',
     'view_dashboard',
     'export_data',
@@ -51,6 +53,7 @@ export const ROLE_PERMISSION_MAP: Record<Role, AuthPermission[]> = {
     'run_compliance_checks',
     'import_schedule_data',
     'import_procurement_data',
+    'manage_rfis',
     'view_dashboard',
     'export_data',
   ],
@@ -62,11 +65,12 @@ export const ROLE_PERMISSION_MAP: Record<Role, AuthPermission[]> = {
     'run_compliance_checks',
     'import_schedule_data',
     'import_procurement_data',
+    'manage_rfis',
     'view_dashboard',
     'export_data',
   ],
   PROCUREMENT: ['upload_documents', 'search_documents', 'use_chat', 'import_procurement_data', 'view_dashboard', 'export_data'],
-  QA_QC: ['upload_documents', 'search_documents', 'use_chat', 'run_compliance_checks', 'view_dashboard', 'export_data'],
+  QA_QC: ['upload_documents', 'search_documents', 'use_chat', 'run_compliance_checks', 'manage_rfis', 'view_dashboard', 'export_data'],
   VIEWER: ['search_documents', 'use_chat', 'view_dashboard'],
 };
 

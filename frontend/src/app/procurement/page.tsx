@@ -16,6 +16,7 @@ const navigation = [
   { name: 'Compliance', href: '/compliance', icon: Shield },
   { name: 'Schedule', href: '/schedule', icon: Calendar },
   { name: 'Procurement', href: '/procurement', icon: Package },
+  { name: 'RFIs', href: '/rfis', icon: HelpCircle },
   { name: 'Agents', href: '/agents', icon: Bot },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];

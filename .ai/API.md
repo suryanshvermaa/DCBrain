@@ -8,6 +8,7 @@ Frontend clients must call the API with the `/api/v1` prefix. Do not drop the `/
 ## Authentication & Projects
 - `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `GET /auth/me`
 - `GET /projects`, `POST /projects`, `GET /projects/{id}`
+- `GET /projects/{id}/members`: Fetch name, email, and roles of project members
 
 Auth endpoints return the access token in the JSON response and set the refresh token as an HttpOnly cookie scoped to `/api/v1/auth`.
 
@@ -30,6 +31,12 @@ Auth endpoints return the access token in the JSON response and set the refresh 
 - `GET /projects/{id}/procurement`: List procurement items
 - `GET /projects/{id}/procurement/vendors`: List vendors and scorecards
 - `GET /projects/{id}/procurement/alternatives/{itemId}`: AI alternatives for item
+- `GET /projects/{id}/rfis`: List RFIs with optional status, overdue, and assigneeId query filters
+- `POST /projects/{id}/rfis`: Create a new RFI (subject, question, priority, discipline, dueDate, assigneeId, documentIds)
+- `GET /projects/{id}/rfis/{rfiId}`: Fetch detailed RFI with linked documents and suggested answer
+- `PUT /projects/{id}/rfis/{rfiId}`: Update RFI parameters (fields, status, assignee, resolution, document links)
+- `POST /projects/{id}/rfis/{rfiId}/suggest-answer`: Trigger RAG AI pipeline to suggest draft response
+- `GET /projects/{id}/rfis/analytics`: Fetch RFI overview statistics, aging buckets, and average resolution times
 - `GET /projects/{id}/ncrs`: List Non-Conformance Reports
 - `GET /projects/{id}/change-orders`: List Change Orders
 - `GET /projects/{id}/reports`: Fetch Executive/Daily reports

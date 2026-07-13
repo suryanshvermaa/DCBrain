@@ -8,6 +8,7 @@ import { complianceRouter } from '@/modules/compliance/routes';
 import { scheduleRouter } from '@/modules/schedule/routes';
 import { dashboardRouter } from '@/modules/dashboard/routes';
 import { procurementRouter } from '@/modules/procurement';
+import { rfisRouter } from '@/modules/rfis';
 
 export const routes = Router();
 
@@ -24,6 +25,7 @@ routes.get('/', (_req, res) => {
       schedule: '/api/v1/projects/{id}/schedule',
       dashboard: '/api/v1/projects/{id}/dashboard',
       procurement: '/api/v1/projects/{id}/procurement',
+      rfis: '/api/v1/projects/{id}/rfis',
       agents: '/api/v1/projects/{id}/agents',
       simulation: '/api/v1/projects/{id}/simulations',
       knowledgeGraph: '/api/v1/projects/{id}/graph',
@@ -44,3 +46,4 @@ routes.use('/v1/projects/:id/compliance', complianceRouter);
 routes.use('/v1/projects/:id/schedule', scheduleRouter);
 routes.use('/v1/projects/:id/dashboard', dashboardRouter);
 routes.use('/v1/projects/:id/procurement', procurementRouter);
+routes.use('/v1/projects/:id/rfis', rfisRouter);

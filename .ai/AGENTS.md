@@ -29,7 +29,7 @@ Each agent below is documented with:
 - **Outputs:** Routing plan (`{ agents_to_invoke: [...], extracted_parameters: {...} }`), final composed answer.
 - **Dependencies:** All other agents (it dispatches them), PostgreSQL (`agent_runs`), Redis (BullMQ), Gemini 2.5 Flash (intent classification), LangGraph.js.
 - **Prompt Summary:** "You are the Supervisor Agent. Route the user's query to the most appropriate sub-agent. Output JSON: `{ agent_to_invoke, extracted_parameters }`. Allowed agents: Document, Knowledge, Compliance, Schedule Risk, Procurement, Commissioning, Risk Analysis, Executive Copilot, Reporting, Recommendation, Mitigation Planner, Project Health, Data Validation."
-- **Future Improvements:** Reinforcement-learning-based routing from feedback; cost/latency budgets per dispatch; auto-fallback if a sub-agent fails twice.
+- **Future Improvements:** Reinforcement-learning-based routing from feedback; cost/latency budgets per dispatch; auto-fallback if a sub-agent fails twice; integration of the future RFI Intelligence Agent to proactively track, query, and flag unresolved contractor questions.
 
 ---
 

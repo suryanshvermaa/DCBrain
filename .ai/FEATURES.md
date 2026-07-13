@@ -134,7 +134,7 @@
   - Lead time tracking with critical date warnings
 
 ### F-010: RFI Management
-- **Status:** Not Started
+- **Status:** Completed
 - **Sprint:** 4
 - **Description:** Track Requests for Information (RFIs) with status management, assignment, and integration with document search. AI can suggest answers to new RFIs based on existing documents.
 - **Key Behaviors:**

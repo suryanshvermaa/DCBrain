@@ -17,6 +17,7 @@ graph TD
         CompSvc
         SchedSvc
         ProcSvc
+        RfiSvc
         DashSvc
         AgentSvc
         SimSvc["Simulation Svc"]
@@ -46,9 +47,11 @@ graph LR
     AgentSvc -->|Schedule| BullMQ
     SimSvc -->|Function Call| SchedSvc
     GraphSvc -->|Client| GraphDB
+    RfiSvc -->|RAG Pipeline| SearchSvc
     DashSvc -->|Aggregate| ProcSvc
     DashSvc -->|Aggregate| SchedSvc
     DashSvc -->|Aggregate| CompSvc
+    DashSvc -->|Aggregate| RfiSvc
 ```
 
 ## Security

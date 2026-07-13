@@ -6,7 +6,7 @@
 - **Estimate:** 8 hours
 - **Sprint:** 4
 - **Dependencies:** 003 (Document Upload), 005 (RAG Search), 006 (Chat Interface)
-- **Status:** Not Started
+- **Status:** Completed
 
 ## Objective
 
@@ -14,18 +14,18 @@ Build the RFI Intelligence module: create and track Requests for Information, li
 
 ## Acceptance Criteria
 
-- [ ] RFI CRUD endpoints (`GET/POST/PUT /api/v1/projects/{id}/rfis`)
-- [ ] `rfis` table with number, subject, question, status, assignee, due date, raised_by, answered_by, resolution
-- [ ] RFI statuses: open, in-review, answered, closed, void
-- [ ] Link RFIs to one or more documents/specifications
-- [ ] AI-suggested answer generation based on RAG retrieval across project documents
-- [ ] Overdue RFI detection and dashboard alerts
-- [ ] RFI ageing and resolution-time analytics
-- [ ] Inline chat-style thread for RFI question/answer
-- [ ] Frontend RFI list with status/due-date filters
-- [ ] Frontend RFI detail with suggested answer and edit/approve workflow
-- [ ] Database migration for `rfis` table and document-RFI linking table
-- [ ] Unit tests for RFI status transitions; integration tests for RFI endpoints
+- [x] RFI CRUD endpoints (`GET/POST/PUT /api/v1/projects/{id}/rfis`)
+- [x] `rfis` table with number, subject, question, status, assignee, due date, raised_by, answered_by, resolution
+- [x] RFI statuses: open, in-review, answered, closed, void
+- [x] Link RFIs to one or more documents/specifications
+- [x] AI-suggested answer generation based on RAG retrieval across project documents
+- [x] Overdue RFI detection and dashboard alerts
+- [x] RFI ageing and resolution-time analytics
+- [x] Inline chat-style thread for RFI question/answer
+- [x] Frontend RFI list with status/due-date filters
+- [x] Frontend RFI detail with suggested answer and edit/approve workflow
+- [x] Database migration for `rfis` table and document-RFI linking table
+- [x] Unit tests for RFI status transitions; integration tests for RFI endpoints
 
 ## Required APIs
 

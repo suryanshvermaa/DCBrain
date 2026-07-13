@@ -45,6 +45,11 @@ export interface DashboardSummary {
     delayedCount: number;
     overallPerformance: number;
   };
+  rfis?: {
+    total: number;
+    open: number;
+    overdue: number;
+  };
   recentActivity: ActivityFeedItem[];
   generatedAt: string;
 }
