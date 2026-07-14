@@ -113,3 +113,16 @@ Based on competitive analysis of similar document search tools:
 - **Risk score formula:** float-consumption × 40 + critical-path × 30 + long-duration × 15 + overdue × 15 = max 100.
 - **Multer in routes:** Memory storage is used for XML uploads (max 20 MB). The `fileFilter` accepts `application/xml`, `text/xml`, and files ending in `.xml`.
 - **Test pattern:** Schedule route tests use the same isolated express app pattern as compliance tests — mock `./service`, mock auth middleware to bypass, create local express app per test suite.
+
+---
+
+## Task 014 — AI Agent Framework Implementation Notes (2026-07-13)
+
+- **Module location:** `backend/src/modules/agents/` — registry pattern with `BaseAgentImpl.execute()` handling run logging, cost estimate, and notification fan-out.
+- **Supervisor flow:** Gemini JSON-mode routing → sub-agent `execute()` → Gemini summary composition. Sub-agent runs create separate `agent_runs` records.
+- **Async execution:** BullMQ queue `agent-execution` with worker in `backend/src/worker.ts`. Default `runAsync: true` in API; Supervisor runs synchronously from frontend for immediate response.
+- **Auto-triggers:** `triggers.ts` maps events to agents; wired into document processing worker, schedule import service, and procurement controller.
+- **Permissions:** `view_dashboard` for list/run/history; `configure_agents` for schedule PUT.
+- **LangGraph note:** Chat module uses full LangGraph `StateGraph`; agent framework uses class-based sequential delegation. Do not conflate the two patterns.
+- **Migration:** `20260713100000_add_agent_models` — run `npx prisma migrate deploy` after pulling.
+- **Frontend:** `/agents` page uses `frontend/src/lib/api/agents.ts`. Nav link already present in sidebar of other pages.

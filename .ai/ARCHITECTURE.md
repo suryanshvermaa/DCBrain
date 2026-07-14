@@ -45,6 +45,10 @@ graph LR
     ChatSvc -->|Function Call| SearchSvc
     CompSvc -->|Function Call| SearchSvc
     AgentSvc -->|Schedule| BullMQ
+    AgentSvc -->|Auto-trigger| BullMQ
+    DocSvc -->|On process complete| AgentSvc
+    SchedSvc -->|On import| AgentSvc
+    ProcSvc -->|On import| AgentSvc
     SimSvc -->|Function Call| SchedSvc
     GraphSvc -->|Client| GraphDB
     RfiSvc -->|RAG Pipeline| SearchSvc

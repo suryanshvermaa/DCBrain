@@ -3,20 +3,32 @@
 ## Supervisor Orchestration
 ```mermaid
 graph TD
-    UserQuery["User Request"] --> Supervisor["Supervisor Agent"]
+    UserQuery["User Request / System Event"] --> Supervisor["Supervisor Agent"]
     
-    subgraph Agents ["Delegated Agents"]
+    subgraph Agents ["Delegated Agents (14)"]
         DocAgent["Document Agent"]
+        KnowAgent["Knowledge Agent"]
         CompAgent["Compliance Agent"]
         SchedAgent["Schedule Risk Agent"]
-        ExecAgent["Executive Copilot"]
-        SimAgent["Simulation Engine"]
+        ProcAgent["Procurement Agent"]
+        HealthAgent["Project Health Agent"]
+        ValidAgent["Data Validation Agent"]
+        OtherAgents["Commissioning / Risk / Executive / Reporting / Recommendation / Mitigation"]
     end
     
-    Supervisor -->|Task 1| DocAgent
-    Supervisor -->|Task 2| CompAgent
-    Supervisor -->|Task N| Agents
+    Supervisor -->|Gemini JSON routing| Agents
+    Agents -->|findings| Notifications["In-App Notifications"]
+    Agents -->|log| AgentRuns["agent_runs table"]
 ```
+
+## Agent Auto-Trigger Events
+| Event | Triggered Agents |
+|-------|------------------|
+| Document processed | DOCUMENT, DATA_VALIDATION |
+| Schedule imported | SCHEDULE_RISK, PROJECT_HEALTH |
+| Procurement imported | PROCUREMENT, PROJECT_HEALTH |
+
+Agents execute via BullMQ `agent-execution` queue. Manual triggers available via `POST /agents/{type}/run`.
 
 ## Document Processing & Graph Indexing Pipeline
 ```mermaid

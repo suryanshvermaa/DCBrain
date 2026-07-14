@@ -12,7 +12,14 @@ jest.mock('./service', () => ({
   getRfiAnalytics: jest.fn(),
 }));
 
-const mockService = jest.requireMock('./service') as unknown as Record<string, jest.Mock>;
+const mockService = jest.requireMock('./service') as {
+  createRfi: jest.Mock;
+  listRfis: jest.Mock;
+  getRfi: jest.Mock;
+  updateRfi: jest.Mock;
+  suggestRfiAnswer: jest.Mock;
+  getRfiAnalytics: jest.Mock;
+};
 
 jest.mock('@/modules/auth/middleware', () => ({
   requireAuth: (_req: unknown, _res: unknown, next: () => void) => next(),
@@ -83,7 +90,7 @@ describe('RFI Routes', () => {
       const body = res.body as { total: number; rfis: Array<{ number: string }> };
       expect(res.status).toBe(200);
       expect(body.total).toBe(1);
-      expect(body.rfis[0].number).toBe('RFI-0001');
+      expect(body.rfis[0]!.number).toBe('RFI-0001');
       expect(mockService.listRfis).toHaveBeenCalledWith(
         expect.objectContaining({ projectId: 'proj-1', status: 'OPEN' })
       );

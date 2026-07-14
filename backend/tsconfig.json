@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "isolatedModules": true,
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./src",
@@ -14,13 +15,12 @@
     "declaration": false,
     "declarationMap": false,
     "sourceMap": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/core/*": ["src/core/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@/modules/*": ["src/modules/*"],
-      "@/routes/*": ["src/routes/*"]
+      "@/*": ["./src/*"],
+      "@/core/*": ["./src/core/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/modules/*": ["./src/modules/*"],
+      "@/routes/*": ["./src/routes/*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "allowSyntheticDefaultImports": true,

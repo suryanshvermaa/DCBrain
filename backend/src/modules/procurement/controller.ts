@@ -21,6 +21,12 @@ export class ProcurementController {
         file.mimetype
       );
 
+      const { triggerAgentsOnEvent } = await import('@/modules/agents/triggers');
+      const userId = (req as { auth?: { user: { id: string } } }).auth?.user.id;
+      await triggerAgentsOnEvent('procurement_imported', projectId, userId, {
+        importedCount: result.importedCount,
+      });
+
       return res.status(200).json(result);
     } catch (error: any) {
       logger.error('Error importing procurement data:', error);

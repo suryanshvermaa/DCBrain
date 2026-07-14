@@ -21,6 +21,20 @@ async function startWorker(): Promise<void> {
     }
   );
 
+  const agentWorker = new Worker(
+    'agent-execution',
+    async (job) => {
+      const { processAgentJob } = await import('@/modules/agents/worker');
+      await processAgentJob(job);
+    },
+    {
+      connection: bullMqRedis as any,
+      concurrency: config.BULLMQ_WORKER_CONCURRENCY,
+      removeOnComplete: { count: 100 },
+      removeOnFail: { count: 50 },
+    }
+  );
+
   worker.on('ready', () => {
     logger.info('Document processing worker ready');
   });
@@ -33,13 +47,25 @@ async function startWorker(): Promise<void> {
     logger.info('Document processing job completed', { jobId: job.id });
   });
 
+  agentWorker.on('ready', () => {
+    logger.info('Agent execution worker ready');
+  });
+
+  agentWorker.on('failed', (job, err) => {
+    logger.error('Agent execution job failed', { jobId: job?.id, error: err.message });
+  });
+
+  agentWorker.on('completed', (job) => {
+    logger.info('Agent execution job completed', { jobId: job.id });
+  });
+
   process.on('SIGINT', async () => {
-    await worker.close();
+    await Promise.all([worker.close(), agentWorker.close()]);
     process.exit(0);
   });
 
   process.on('SIGTERM', async () => {
-    await worker.close();
+    await Promise.all([worker.close(), agentWorker.close()]);
     process.exit(0);
   });
 }

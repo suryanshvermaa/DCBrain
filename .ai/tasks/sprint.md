@@ -55,8 +55,8 @@
 | ID | Task | Assignee | Status | Est. Hours |
 |----|------|----------|--------|------------|
 | 011 | [Procurement Intelligence](./011-procurement-intelligence/task.md) | — | ✅ Completed | 10h |
-| 012 | [RFI Intelligence](./012-rfi-intelligence/task.md) | — | 🔲 Not Started | 8h |
-| 013 | [Knowledge Graph & Entity Extraction](./013-knowledge-graph/task.md) | — | 🔲 Not Started | 10h |
+| 012 | [RFI Intelligence](./012-rfi-intelligence/task.md) | — | ✅ Completed | 8h |
+| 013 | [Knowledge Graph & Entity Extraction](./013-knowledge-graph/task.md) | — | ✅ Completed | 10h |
 
 **Total Estimated Hours:** 28h
 
@@ -69,7 +69,7 @@
 
 | ID | Task | Assignee | Status | Est. Hours |
 |----|------|----------|--------|------------|
-| 014 | [AI Agent Framework & Supervisor](./014-ai-agent-framework/task.md) | — | 🔲 Not Started | 12h |
+| 014 | [AI Agent Framework & Supervisor](./014-ai-agent-framework/task.md) | — | ✅ Completed | 12h |
 | 015 | [Reporting Engine](./015-reporting-engine/task.md) | — | 🔲 Not Started | 8h |
 | 018 | [Advanced EPC Intelligence](./018-advanced-epc-intelligence/task.md) | — | 🔲 Not Started | 12h |
 
@@ -92,9 +92,9 @@
 
 ## Sprint Progress Summary
 
-- **Completed:** 11 / 18 tasks
+- **Completed:** 14 / 18 tasks
 - **In Progress:** 0
-- **Not Started:** 7
+- **Not Started:** 4
 
 ---
 

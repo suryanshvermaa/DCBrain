@@ -168,6 +168,9 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
     });
 
     logger.info('Document processing completed', { documentId, projectId, chunkCount: chunks.length, duplicateCount });
+
+    const { triggerAgentsOnEvent } = await import('@/modules/agents/triggers');
+    await triggerAgentsOnEvent('document_processed', projectId, ownerId, { documentId });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown processing error';
     await updateDocumentProcessingStatus(documentId, DocumentStatus.FAILED, message);

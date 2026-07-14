@@ -147,6 +147,12 @@ export async function importSchedule(input: {
       activityCount: scored.length,
     });
 
+    const { triggerAgentsOnEvent } = await import('@/modules/agents/triggers');
+    await triggerAgentsOnEvent('schedule_imported', input.projectId, input.actor.id, {
+      importId: importRecord.id,
+      activityCount: scored.length,
+    });
+
     return { importId: importRecord.id, activityCount: scored.length };
   } catch (err) {
     // Mark import as failed

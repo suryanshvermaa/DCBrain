@@ -10,6 +10,7 @@ import { dashboardRouter } from '@/modules/dashboard/routes';
 import { procurementRouter } from '@/modules/procurement';
 import { rfisRouter } from '@/modules/rfis';
 import { graphRouter } from '@/modules/graph/routes';
+import { agentsRouter } from '@/modules/agents';
 
 export const routes = Router();
 
@@ -49,3 +50,4 @@ routes.use('/v1/projects/:id/dashboard', dashboardRouter);
 routes.use('/v1/projects/:id/procurement', procurementRouter);
 routes.use('/v1/projects/:id/rfis', rfisRouter);
 routes.use('/v1/projects/:id/graph', graphRouter);
+routes.use('/v1/projects/:id/agents', agentsRouter);

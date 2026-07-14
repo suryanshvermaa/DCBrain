@@ -36,6 +36,7 @@ This architecture was chosen to balance hackathon speed with production viabilit
 | 1.3 | 2026-07-05 | Authentication implementation | Added JWT auth module, RBAC middleware, refresh-token rotation, Redis-backed auth rate limiting, audit-log persistence, and frontend protected auth pages |
 | 1.4 | 2026-07-08 | Document upload implementation | Added project/document modules, private MinIO object storage, document metadata/version persistence, presigned download URLs, soft delete, and frontend document management UI |
 | 1.5 | 2026-07-11 | RAG & Chat Implementation | Built LangGraph ReAct agent, ChromaDB semantic search pipeline, frontend chat UI with PDF export, and distinct JSON metadata for chat follow-up suggestions |
+| 1.6 | 2026-07-13 | Knowledge Graph & Agent Framework | Neo4j entity/relationship extraction in document pipeline; graph API + React Flow UI; 14-agent framework with Supervisor routing, BullMQ async execution, auto-triggers, and `/agents` frontend |
 
 ---
 

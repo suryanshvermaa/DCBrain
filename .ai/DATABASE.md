@@ -27,7 +27,7 @@ erDiagram
 - `compliance_checks`: Validation results.
 - `schedule_activities`: P6 imported activities.
 - `procurement_items`, `vendors`: POs, statuses, vendor scoring.
-- `audit_log`, `agent_runs`
+- `audit_log`, `agent_runs`, `agent_schedules`, `notifications`
 - **NEW:** `simulations` (What-if scenario tracking)
 - **NEW:** `ncrs` (Non-Conformance Reports)
 - **NEW:** `change_orders` (Project financial/scope changes)
@@ -48,6 +48,12 @@ erDiagram
 
 - `rfis` stores project-scoped Requests for Information (RFIs) with project-specific sequential numbers (e.g. `RFI-0001`). It records the subject, question, priority (LOW to CRITICAL), status (OPEN to VOID), discipline, due date, official resolution, and AI suggested response with sources. It maintains FK links to `projects` and `users` (raisedBy, assignee, answeredBy).
 - `rfi_documents` is a junction table linking RFIs to project documents.
+
+### Agent Runs & Schedules
+
+- `agent_runs` logs every agent execution with `agentType`, `status` (PENDING/RUNNING/COMPLETED/FAILED), `input`/`output` JSON, `durationMs`, `costEstimate`, `projectId`, and optional `triggeredById`.
+- `agent_schedules` stores per-project cron expressions for repeatable agent runs. Unique constraint on `(projectId, agentType)`.
+- `notifications` stores in-app alerts surfaced when agents produce findings (type, title, message, data JSON, read status).
 
 ## Vector Store (ChromaDB)
 - `project_{id}_documents`: Document chunk embeddings.

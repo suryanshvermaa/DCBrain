@@ -18,6 +18,25 @@ Each entry records:
 
 ## Session Log
 
+### Session 008 — 2026-07-13
+
+- **AI Model:** Cursor Agent
+- **Topic:** Task 014 — AI Agent Framework & Supervisor (continuation)
+- **Key Decisions:**
+  - Backend agent framework was partially implemented in a prior session; this session completed migration, auto-triggers, tests, frontend UI, and full `.ai/` synchronization.
+  - Agent orchestration uses class-based sequential delegation (Supervisor classify → delegate → compose) with LangChain Gemini, rather than a full LangGraph StateGraph (reserved for Chat module).
+  - Auto-trigger mapping: document_processed → DOCUMENT + DATA_VALIDATION; schedule_imported → SCHEDULE_RISK + PROJECT_HEALTH; procurement_imported → PROCUREMENT + PROJECT_HEALTH.
+- **Key Outputs:**
+  - `backend/src/modules/agents/` — full 14-agent framework with Supervisor, BullMQ worker, triggers, tests.
+  - Migration `20260713100000_add_agent_models` for `agent_runs` and `agent_schedules`.
+  - Frontend `/agents` page with supervisor query, manual triggers, run history detail modal.
+  - Agent tests: 9/9 passing.
+  - All `.ai/` docs synchronized for Tasks 013 and 014.
+- **Unresolved Items:**
+  - Task 015 — Reporting Engine is next.
+  - P1/P2 agents use Gemini summarization stubs; deep service integration deferred.
+  - Graph integration tests require Neo4j running locally.
+
 ### Session 007 — 2026-07-13
 
 - **AI Model:** Antigravity

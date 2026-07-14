@@ -46,7 +46,12 @@ if (process.env['NODE_ENV'] !== 'production') {
 
 export async function connectRedis(): Promise<void> {
   if (redis.status === 'wait') {
-    await redis.connect();
+    try {
+      await redis.connect();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.warn('Redis unavailable, continuing without cache backend', { error: message });
+    }
   }
 }
 

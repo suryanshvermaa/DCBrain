@@ -32,6 +32,7 @@ model User {
   rfisRaised    Rfi[]             @relation("RfiRaisedBy")
   rfisAssigned  Rfi[]             @relation("RfiAssignee")
   rfisAnswered  Rfi[]             @relation("RfiAnsweredBy")
+  agentRuns     AgentRun[]
 
   @@index([email])
   @@map("users")
@@ -63,6 +64,8 @@ model Project {
   vendors            Vendor[]
   procurementItems   ProcurementItem[]
   rfis               Rfi[]
+  agentRuns          AgentRun[]
+  agentSchedules     AgentSchedule[]
 
   @@index([code])
   @@index([status])
@@ -541,5 +544,42 @@ model RfiDocument {
   @@index([rfiId])
   @@index([documentId])
   @@map("rfi_documents")
+}
+
+model AgentRun {
+  id            String    @id @default(cuid())
+  agentType     String
+  status        String    @default("PENDING") // PENDING, RUNNING, COMPLETED, FAILED
+  input         Json?
+  output        Json?
+  error         String?
+  durationMs    Int?
+  costEstimate  Float?
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  triggeredById String?
+  triggeredBy   User?     @relation(fields: [triggeredById], references: [id], onDelete: SetNull)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([projectId])
+  @@index([agentType])
+  @@index([status])
+  @@map("agent_runs")
+}
+
+model AgentSchedule {
+  id          String   @id @default(cuid())
+  agentType   String
+  schedule    String   // cron or interval: "daily", "weekly", "on-event"
+  isActive    Boolean  @default(true)
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([projectId, agentType])
+  @@index([projectId])
+  @@map("agent_schedules")
 }
 

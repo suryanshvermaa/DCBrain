@@ -6,7 +6,7 @@
 - **Estimate:** 12 hours
 - **Sprint:** 5
 - **Dependencies:** 004 (Document Processing), 005 (RAG Search), 006 (Chat Interface), 013 (Knowledge Graph)
-- **Status:** Not Started
+- **Status:** Completed
 
 ## Objective
 
@@ -14,19 +14,19 @@ Build the Agent Framework and Supervisor orchestration layer that enables the 14
 
 ## Acceptance Criteria
 
-- [ ] Agent service module with base `Agent` class/interface (`run(input, ctx) → output`)
-- [ ] Supervisor Agent with intent classification and routing to sub-agents
-- [ ] Implement P0 agents: Supervisor, Document, Knowledge (Chat), Compliance, Schedule Risk, Procurement, Project Health, Data Validation
-- [ ] Implement P1/P2 agents: Commissioning, Risk Analysis, Executive Copilot, Reporting, Recommendation, Mitigation Planner
-- [ ] Agent run endpoint (`POST /api/v1/projects/{id}/agents/{type}/run`)
-- [ ] Agent list endpoint (`GET /api/v1/projects/{id}/agents`)
-- [ ] Agent schedules: on-event, daily, weekly
-- [ ] `agent_runs` table with status, input, output, duration, cost estimate
-- [ ] Agent findings surfaced as in-app notifications
-- [ ] Agent run history UI with detail view
-- [ ] Manual trigger + auto-run on document upload / schedule import / procurement import
-- [ ] LangGraph.js state-machine wiring for multi-step agent flows
-- [ ] Integration tests for Supervisor routing and agent execution
+- [x] Agent service module with base `Agent` class/interface (`run(input, ctx) → output`)
+- [x] Supervisor Agent with intent classification and routing to sub-agents
+- [x] Implement P0 agents: Supervisor, Document, Knowledge (Chat), Compliance, Schedule Risk, Procurement, Project Health, Data Validation
+- [x] Implement P1/P2 agents: Commissioning, Risk Analysis, Executive Copilot, Reporting, Recommendation, Mitigation Planner
+- [x] Agent run endpoint (`POST /api/v1/projects/{id}/agents/{type}/run`)
+- [x] Agent list endpoint (`GET /api/v1/projects/{id}/agents`)
+- [x] Agent schedules: on-event, daily, weekly (via cron + BullMQ repeatable jobs)
+- [x] `agent_runs` table with status, input, output, duration, cost estimate
+- [x] Agent findings surfaced as in-app notifications
+- [x] Agent run history UI with detail view
+- [x] Manual trigger + auto-run on document upload / schedule import / procurement import
+- [x] LangChain Gemini wiring for multi-step agent flows (Supervisor classify → delegate → compose)
+- [x] Integration tests for Supervisor routing and agent execution
 
 ## Required APIs
 

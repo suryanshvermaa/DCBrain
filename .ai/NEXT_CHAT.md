@@ -1,45 +1,82 @@
-# Next Chat Session: Task 014 — AI Agent Framework
+# Next Chat Session: Task 015 — Reporting Engine
 
-## 1. Current State
+## 1. Current Project Status
 
-- **Just Completed:** Task 013 (Knowledge Graph & Entity Extraction)
-  - Configured Neo4j database constraints (unique IDs and Names) in `backend/src/server.ts`.
-  - Updated the Document Processing Pipeline (`backend/src/modules/documents/processing/entityExtractor.ts`) to extract relationship structures and write them to Neo4j.
-  - Implemented the Knowledge Graph backend API at `/api/v1/projects/:id/graph` to query for global dependencies, failure propagation, and entity listings.
-  - Added full test coverage for the Graph API using Neo4j's test suite pattern.
-  - Installed `@xyflow/react` and built the Frontend Knowledge Graph UI (`/graph`) featuring a React Flow canvas with dependency layers and failure trace mode.
-  - Updated `DATABASE.md`, `ARCHITECTURE.md`, and `AI_PIPELINES.md` to reflect the Graph DB integration.
-- **Repository Health:** Backend tests are passing. Prisma client matches the latest migrations (including Schedule imports).
+- **Phase:** Phase 2 — Intelligence & Deployment (in progress)
+- **Sprints Completed:** 1–4 (tasks 001–013), Sprint 6 (task 010), Sprint 5 Task 014
+- **Tasks Completed:** 14 / 18
+- **Repository Health:** Backend agent module tests 9/9 passing. Full suite 47 tests (graph tests require Neo4j running locally).
 
-## 2. Deferred Items (non-non-blocking)
+## 2. Just Completed — Task 014 (AI Agent Framework)
 
-- Suggesting realistic alternative vendors in Procurement (Task 011) remains mocked pending deeper graph embeddings.
-- Graph UI auto-layout (e.g. ElkJS or Dagre) is not yet implemented; nodes start with simple randomized/initial placement.
+- Implemented full agent module at `backend/src/modules/agents/`:
+  - `BaseAgentImpl` with `run(input, ctx)` contract, run logging, cost estimate, notification fan-out
+  - `SupervisorAgent` with Gemini JSON-mode intent classification and sub-agent delegation
+  - All 14 sub-agents registered in `registry.ts`
+  - REST API: `GET /agents`, `POST /agents/:type/run`, `GET /agents/runs`, `GET /agents/runs/:runId`, `PUT /agents/schedule`
+  - BullMQ `agent-execution` queue + worker in `backend/src/worker.ts`
+  - Prisma models `AgentRun`, `AgentSchedule` with migration `20260713100000_add_agent_models`
+  - Auto-triggers via `triggers.ts` on document processing, schedule import, procurement import
+  - Frontend `/agents` page with supervisor query, manual triggers, run history detail modal
+  - Tests: `routes.test.ts` (6), `triggers.test.ts` (3)
 
-## 3. Next Step
+## 3. Also Completed — Task 013 (Knowledge Graph)
 
-- **Target Task:** Task 014 — AI Agent Framework
-- **Goal:** Set up the multi-agent orchestration layer using LangGraph. This includes the Supervisor Agent and delegating sub-agents (Document Agent, Schedule Risk Agent, etc.).
-- **Dependencies:** Task 013 (Completed).
+- Neo4j constraints in `server.ts`
+- Entity/relationship extraction in document pipeline
+- Graph API at `/api/v1/projects/:id/graph`
+- React Flow frontend at `/graph`
+
+## 4. Architecture Summary
+
+- **Style:** Neuro-symbolic modular monolith (Express + Next.js + BullMQ workers)
+- **AI:** Gemini 2.5 Flash via LangChain; LangGraph StateGraph in Chat; class-based agent delegation in Agent Framework
+- **Data:** PostgreSQL (relational), ChromaDB (vectors), Neo4j (graph), MinIO (files), Redis (cache + queues)
+- **Agents:** 14 specialized agents + Supervisor; auto-trigger on import/process events; findings → notifications
+
+## 5. Important Decisions
+
+- Agent orchestration uses sequential delegate pattern (classify → delegate → compose), not full LangGraph StateGraph
+- P1/P2 agents (Commissioning, Risk Analysis, Executive Copilot, Reporting, Recommendation, Mitigation Planner) use Gemini summarization stubs — sufficient for demo
+- Auto-trigger mapping documented in `AI_PIPELINES.md` and `important_notes.md`
+
+## 6. Active Task
+
+- **None** — Task 014 just completed.
+
+## 7. Recommended Next Task
+
+- **Task 015 — Reporting Engine** (`tasks/015-reporting-engine/`)
+- **Goal:** Generate periodic human-readable project reports (daily/weekly/executive) from platform data and agent outputs; render Markdown + PDF; distribute via notifications.
+- **Dependencies:** Task 014 (completed)
 - **Priority:** P1 — Sprint 5
 
-## 4. Preparation Instructions for AI
+## 8. Remaining Work (Sprint 5+)
 
-1. **Initialize Context:** Read the documentation in `TASKS.md` or `.ai/tasks/014-ai-agent-framework/task.md` to understand the agent workflow.
-2. **Key Reference Files:**
-   - `.ai/tasks/014-ai-agent-framework/task.md`
-   - `.ai/AGENTS.md` (Agent system prompts and roles)
-   - `.ai/AI_PIPELINES.md`
-3. **Architecture to Follow:** Build on top of LangGraph. Use Gemini 2.5 Flash for agent reasoning and tool usage. Ensure the Supervisor correctly coordinates tasks via Redis/BullMQ if background persistence is needed.
+| Task | Name | Status |
+|------|------|--------|
+| 015 | Reporting Engine | Not Started |
+| 016 | Simulation Engine | Not Started |
+| 017 | Notifications & Audit | Not Started |
+| 018 | Advanced EPC Intelligence | Not Started |
 
-## 5. Files to Read First
+## 9. Warnings & Known Issues
 
-- `.ai/NEXT_CHAT.md` (this file)
-- `.ai/CURRENT_STATE.md`
-- `.ai/tasks/014-ai-agent-framework/task.md`
-- `.ai/AGENTS.md`
+- Run `npx prisma migrate deploy` to apply `20260713100000_add_agent_models` migration
+- Ensure `GEMINI_API_KEY` is set in `.env` for agent/Supervisor testing
+- Graph integration tests fail without Neo4j running locally (environmental, not code defect)
+- Do not change Prisma schema without confirming effect on previous sprints
 
-## 6. Warnings & Known Issues
+## 10. Files to Read First
 
-- Do not change Prisma schema without confirming the effect on previous sprints. 
-- Ensure `GEMINI_API_KEY` is present in the `.env` during testing.
+1. `.ai/NEXT_CHAT.md` (this file)
+2. `.ai/CURRENT_STATE.md`
+3. `.ai/tasks/015-reporting-engine/task.md`
+4. `.ai/AGENTS.md` (Reporting Agent spec)
+5. `backend/src/modules/agents/` (agent framework reference for report generation)
+
+## 11. Deferred Items (non-blocking)
+
+- Graph UI auto-layout (ElkJS/Dagre) not implemented
+- Procurement alternative vendor suggestions remain mocked
+- Full LangGraph unification of Chat and Agent orchestration deferred

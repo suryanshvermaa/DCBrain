@@ -22,8 +22,11 @@ Auth endpoints return the access token in the JSON response and set the refresh 
 
 ## Chat & Agents
 - `POST /projects/{id}/chat/sessions`: Create context-aware chat
-- `GET /projects/{id}/agents`: List all 14 Agents
-- `POST /projects/{id}/agents/{type}/run`: Manual trigger
+- `GET /projects/{id}/agents`: List all 14 agents with schedule config and latest run status
+- `POST /projects/{id}/agents/{type}/run`: Manual trigger (body: `query`, `documentIds`, `standards`, `notes`, `runAsync`)
+- `GET /projects/{id}/agents/runs`: Agent run history (optional `?agentType=` filter)
+- `GET /projects/{id}/agents/runs/{runId}`: Single run detail with input/output
+- `PUT /projects/{id}/agents/schedule`: Configure cron schedule for an agent (requires `configure_agents` permission)
 
 ## EPC Intelligence
 - `POST /projects/{id}/compliance/check`: Run standards check
