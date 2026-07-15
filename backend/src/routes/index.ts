@@ -11,6 +11,7 @@ import { procurementRouter } from '@/modules/procurement';
 import { rfisRouter } from '@/modules/rfis';
 import { graphRouter } from '@/modules/graph/routes';
 import { agentsRouter } from '@/modules/agents';
+import { reportsRouter } from '@/modules/reports';
 
 export const routes = Router();
 
@@ -29,6 +30,7 @@ routes.get('/', (_req, res) => {
       procurement: '/api/v1/projects/{id}/procurement',
       rfis: '/api/v1/projects/{id}/rfis',
       agents: '/api/v1/projects/{id}/agents',
+      reports: '/api/v1/projects/{id}/reports',
       simulation: '/api/v1/projects/{id}/simulations',
       knowledgeGraph: '/api/v1/projects/{id}/graph',
     },
@@ -51,3 +53,4 @@ routes.use('/v1/projects/:id/procurement', procurementRouter);
 routes.use('/v1/projects/:id/rfis', rfisRouter);
 routes.use('/v1/projects/:id/graph', graphRouter);
 routes.use('/v1/projects/:id/agents', agentsRouter);
+routes.use('/v1/projects/:id/reports', reportsRouter);

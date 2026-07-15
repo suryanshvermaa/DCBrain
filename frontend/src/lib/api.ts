@@ -125,6 +125,35 @@ class ApiClient {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
+  async getBlob(endpoint: string, options: RequestInit = {}): Promise<Blob> {
+    const token = await this.getToken();
+    const headers = new Headers(options.headers);
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    const config: RequestInit = {
+      ...options,
+      method: 'GET',
+      headers,
+    };
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+
+    if (!response.ok) {
+      let payload: ApiErrorPayload;
+      try {
+        const body = await response.json();
+        payload = normalizeApiErrorBody(body);
+      } catch {
+        payload = { message: response.statusText || 'An error occurred' };
+      }
+      throw new ApiError(payload.message, response.status, payload.code, payload.details);
+    }
+
+    return response.blob();
+  }
+
   post<T>(endpoint: string, data: unknown, options: RequestInit = {}): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,

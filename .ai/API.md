@@ -42,7 +42,10 @@ Auth endpoints return the access token in the JSON response and set the refresh 
 - `GET /projects/{id}/rfis/analytics`: Fetch RFI overview statistics, aging buckets, and average resolution times
 - `GET /projects/{id}/ncrs`: List Non-Conformance Reports
 - `GET /projects/{id}/change-orders`: List Change Orders
-- `GET /projects/{id}/reports`: Fetch Executive/Daily reports
+- `POST /projects/{id}/reports/generate`: Generate a new report. Body: `{ type: DAILY|WEEKLY|EXECUTIVE|COMPLIANCE|RISK|PROCUREMENT, runAsync?: boolean }`. Returns `{ reportId, status, report? }`.
+- `GET /projects/{id}/reports`: List generated reports. Query: `?type=`, `?page=`, `?pageSize=`. Returns `{ reports, total, page, pageSize }`.
+- `GET /projects/{id}/reports/{reportId}`: Report detail with Markdown content and metadata.
+- `GET /projects/{id}/reports/{reportId}/download`: Download report. Query: `?format=pdf|md`. Returns presigned URL (PDF) or raw Markdown content.
 
 ## Schedule & Simulations
 - `POST /projects/{id}/schedule/import`: Import Primavera P6 XML

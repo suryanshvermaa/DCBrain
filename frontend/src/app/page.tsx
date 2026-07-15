@@ -47,6 +47,7 @@ const navigation = [
   { name: 'RFIs', href: '/rfis', icon: HelpCircle },
   { name: 'Agents', href: '/agents', icon: Bot },
   { name: 'Knowledge Graph', href: '/graph', icon: Network },
+  { name: 'Reports', href: '/reports', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 

@@ -20,6 +20,7 @@ graph TD
         RfiSvc
         DashSvc
         AgentSvc
+        ReportSvc
         SimSvc["Simulation Svc"]
         GraphSvc["Knowledge Graph Svc"]
     end
@@ -56,6 +57,12 @@ graph LR
     DashSvc -->|Aggregate| SchedSvc
     DashSvc -->|Aggregate| CompSvc
     DashSvc -->|Aggregate| RfiSvc
+    ReportSvc -->|Aggregate| DocSvc
+    ReportSvc -->|Aggregate| CompSvc
+    ReportSvc -->|Aggregate| SchedSvc
+    ReportSvc -->|Aggregate| ProcSvc
+    ReportSvc -->|Aggregate| RfiSvc
+    ReportSvc -->|Schedule/Trigger| BullMQ
 ```
 
 ## Security

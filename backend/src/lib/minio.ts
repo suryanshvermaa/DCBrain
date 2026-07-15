@@ -66,6 +66,10 @@ export async function downloadFile(objectName: string, filePath: string): Promis
   await minio.fGetObject(config.MINIO_BUCKET_NAME, objectName, filePath);
 }
 
+export async function getObjectStream(objectName: string): Promise<NodeJS.ReadableStream> {
+  return minio.getObject(config.MINIO_BUCKET_NAME, objectName);
+}
+
 export async function deleteObject(objectName: string): Promise<void> {
   await minio.removeObject(config.MINIO_BUCKET_NAME, objectName);
 }

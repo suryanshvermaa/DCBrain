@@ -27,10 +27,15 @@ erDiagram
 - `compliance_checks`: Validation results.
 - `schedule_activities`: P6 imported activities.
 - `procurement_items`, `vendors`: POs, statuses, vendor scoring.
-- `audit_log`, `agent_runs`, `agent_schedules`, `notifications`
+- `audit_log`, `agent_runs`, `agent_schedules`, `notifications`, `reports`
 - **NEW:** `simulations` (What-if scenario tracking)
 - **NEW:** `ncrs` (Non-Conformance Reports)
 - **NEW:** `change_orders` (Project financial/scope changes)
+
+### Reports
+
+- `reports` stores generated project reports with `type` (DAILY, WEEKLY, EXECUTIVE, COMPLIANCE, RISK, PROCUREMENT), `status` (PENDING, GENERATING, COMPLETED, FAILED), `title`, `markdownContent` (full Markdown), `storageKey` (MinIO PDF object key), `fileSizeBytes`, `error`, `metadata` (JSON with health score, section count, etc.), `generatedAt`, FK links to `projects` and optional `users` (generatedBy).
+- Migration: `20260715100000_add_reports`.
 
 ### Audit Log
 

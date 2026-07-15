@@ -493,21 +493,52 @@ export class ReportingAgent extends BaseAgentImpl {
   readonly name = 'Reporting Agent';
 
   async run(input: AgentInput, ctx: AgentContext): Promise<AgentOutput> {
-    const prompt = `You are the Reporting Agent. Generate a comprehensive weekly project status report.
-Include sections for:
-- Executive Summary
-- Document Ingestion Health
-- Compliance & Code Adherence
-- Schedule Drift
-- Procurement & Vendor Status`;
+    const reportType = (input['reportType'] as string) || 'EXECUTIVE';
+    const validTypes = ['DAILY', 'WEEKLY', 'EXECUTIVE', 'COMPLIANCE', 'RISK', 'PROCUREMENT'];
+    const type = validTypes.includes(reportType) ? reportType : 'EXECUTIVE';
 
-    const summary = await askGemini(prompt);
+    try {
+      const { generateReport } = await import('@/modules/reports/service');
 
-    return {
-      success: true,
-      content: summary,
-      confidence: 0.9,
-    };
+      const result = await generateReport({
+        projectId: input.projectId,
+        type: type as any,
+        userId: ctx.userId,
+        runAsync: false,
+      });
+
+      const findings: AgentFinding[] = [{
+        type: 'SUCCESS',
+        title: 'Report Generated',
+        message: `${type} report has been generated successfully. Report ID: ${result.reportId}`,
+        severity: 'low',
+        details: { reportId: result.reportId, type },
+      }];
+
+      return {
+        success: true,
+        content: `${type} report generated successfully. Report ID: ${result.reportId}. Access it from the Reports page or download via API.`,
+        confidence: 0.95,
+        findings,
+        metadata: {
+          reportId: result.reportId,
+          reportType: type,
+          status: result.status,
+        },
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        content: `Failed to generate ${type} report: ${error.message}`,
+        confidence: 0,
+        findings: [{
+          type: 'ERROR',
+          title: 'Report Generation Failed',
+          message: error.message,
+          severity: 'high',
+        }],
+      };
+    }
   }
 }
 

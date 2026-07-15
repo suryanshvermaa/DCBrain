@@ -22,7 +22,10 @@ import {
   ArrowRight,
   Filter,
   CheckSquare,
-  Bookmark
+  Bookmark,
+  Network,
+  BarChart3,
+  Package as PackageIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -41,6 +44,8 @@ const navigation = [
   { name: 'Procurement', href: '/procurement', icon: PackageIcon },
   { name: 'RFIs', href: '/rfis', icon: HelpCircle },
   { name: 'Agents', href: '/agents', icon: Bot },
+  { name: 'Knowledge Graph', href: '/graph', icon: Network },
+  { name: 'Reports', href: '/reports', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 

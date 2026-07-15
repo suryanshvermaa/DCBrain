@@ -33,6 +33,7 @@ model User {
   rfisAssigned  Rfi[]             @relation("RfiAssignee")
   rfisAnswered  Rfi[]             @relation("RfiAnsweredBy")
   agentRuns     AgentRun[]
+  reports       Report[]          @relation("ReportGeneratedBy")
 
   @@index([email])
   @@map("users")
@@ -66,6 +67,7 @@ model Project {
   rfis               Rfi[]
   agentRuns          AgentRun[]
   agentSchedules     AgentSchedule[]
+  reports            Report[]
 
   @@index([code])
   @@index([status])
@@ -581,5 +583,47 @@ model AgentSchedule {
   @@unique([projectId, agentType])
   @@index([projectId])
   @@map("agent_schedules")
+}
+
+enum ReportType {
+  DAILY
+  WEEKLY
+  EXECUTIVE
+  COMPLIANCE
+  RISK
+  PROCUREMENT
+}
+
+enum ReportStatus {
+  PENDING
+  GENERATING
+  COMPLETED
+  FAILED
+}
+
+model Report {
+  id              String       @id @default(cuid())
+  type            ReportType
+  title           String
+  status          ReportStatus @default(PENDING)
+  markdownContent String?      // Full Markdown report content
+  storageKey      String?      // MinIO object key for PDF
+  fileSizeBytes   Int?
+  error           String?
+  metadata        Json?        // Section metadata, AI summary stats, etc.
+  generatedAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  projectId       String
+  project         Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  generatedById   String?
+  generatedBy     User?        @relation("ReportGeneratedBy", fields: [generatedById], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("reports")
 }
 

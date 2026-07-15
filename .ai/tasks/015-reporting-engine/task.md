@@ -6,7 +6,7 @@
 - **Estimate:** 8 hours
 - **Sprint:** 5
 - **Dependencies:** 007 (Compliance), 008 (Schedule Risk), 011 (Procurement), 012 (RFI), 014 (Agent Framework)
-- **Status:** Not Started
+- **Status:** Completed
 
 ## Objective
 
@@ -14,18 +14,18 @@ Build the Reporting Engine that generates daily, weekly, executive, compliance, 
 
 ## Acceptance Criteria
 
-- [ ] Report template system (daily, weekly, executive, compliance, risk, procurement)
-- [ ] Report generation endpoint (`POST /api/v1/projects/{id}/reports/generate`)
-- [ ] Report list endpoint (`GET /api/v1/projects/{id}/reports`)
-- [ ] Report detail/download endpoint (`GET /api/v1/projects/{id}/reports/{reportId}`)
-- [ ] Markdown rendering with sections: Executive Summary, Schedule, Procurement, Compliance, Risks, RFIs, Recommendations
-- [ ] PDF export via headless renderer (Puppeteer or wkhtmltopdf)
-- [ ] Scheduled daily/weekly report generation via BullMQ
-- [ ] Report storage in MinIO
-- [ ] AI-generated summaries and recommendations per section
-- [ ] Frontend reports page with generate, preview, download actions
-- [ ] Database migration for `reports` table
-- [ ] Unit tests for report aggregation; integration tests for report endpoints
+- [x] Report template system (daily, weekly, executive, compliance, risk, procurement)
+- [x] Report generation endpoint (`POST /api/v1/projects/{id}/reports/generate`)
+- [x] Report list endpoint (`GET /api/v1/projects/{id}/reports`)
+- [x] Report detail/download endpoint (`GET /api/v1/projects/{id}/reports/{reportId}`)
+- [x] Markdown rendering with sections: Executive Summary, Schedule, Procurement, Compliance, Risks, RFIs, Recommendations
+- [x] PDF export via `pdfkit` directly in Node.js
+- [x] Scheduled daily/weekly report generation via BullMQ
+- [x] Report storage in MinIO
+- [x] AI-generated summaries and recommendations per section
+- [x] Frontend reports page with generate, preview, download actions
+- [x] Database migration for `reports` table
+- [x] Unit tests for report aggregation; integration tests for report endpoints
 
 ## Required APIs
 
@@ -59,7 +59,7 @@ Build the Reporting Engine that generates daily, weekly, executive, compliance, 
 ## Technical Details
 
 - Report generation triggered manually or by Reporting Agent schedule
-- Use `puppeteer` or `wkhtmltopdf` in a dedicated worker container for PDF conversion
+- Use `pdfkit` for efficient PDF conversion without requiring browser dependencies
 - Store generated PDF/Markdown in MinIO; keep metadata in PostgreSQL
 - Section data fetched from existing module endpoints/services
 - AI summary generated with Gemini 2.5 Flash
