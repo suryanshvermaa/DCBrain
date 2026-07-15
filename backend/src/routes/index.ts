@@ -4,12 +4,7 @@ import { documentsRouter } from '@/modules/documents';
 import { projectsRouter } from '@/modules/projects';
 import { searchRouter } from '@/modules/search/routes';
 import { chatRouter } from '@/modules/chat/chat.routes';
-import { Router } from 'express';
-import { authRouter } from '@/modules/auth';
-import { documentsRouter } from '@/modules/documents';
-import { projectsRouter } from '@/modules/projects';
-import { searchRouter } from '@/modules/search/routes';
-import { chatRouter } from '@/modules/chat/chat.routes';
+
 import { complianceRouter } from '@/modules/compliance/routes';
 import { scheduleRouter } from '@/modules/schedule/routes';
 import { dashboardRouter } from '@/modules/dashboard/routes';
