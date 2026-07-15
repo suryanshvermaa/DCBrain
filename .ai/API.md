@@ -47,6 +47,13 @@ Auth endpoints return the access token in the JSON response and set the refresh 
 - `GET /projects/{id}/reports/{reportId}`: Report detail with Markdown content and metadata.
 - `GET /projects/{id}/reports/{reportId}/download`: Download report. Query: `?format=pdf|md`. Returns presigned URL (PDF) or raw Markdown content.
 
+## Simulations
+
+- `GET /api/v1/projects/:id/simulations` - List all simulations
+- `POST /api/v1/projects/:id/simulations/delay` - Run a what-if delay cascade
+- `GET /api/v1/projects/:id/simulations/:simId` - Get simulation details
+- `POST /api/v1/projects/:id/simulations/:simId/mitigate` - Generate Mitigation Plans
+
 ## Schedule & Simulations
 - `POST /projects/{id}/schedule/import`: Import Primavera P6 XML
 - `POST /projects/{id}/simulations/delay`: Run Delay/What-if Simulation

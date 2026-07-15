@@ -4,6 +4,12 @@ import { documentsRouter } from '@/modules/documents';
 import { projectsRouter } from '@/modules/projects';
 import { searchRouter } from '@/modules/search/routes';
 import { chatRouter } from '@/modules/chat/chat.routes';
+import { Router } from 'express';
+import { authRouter } from '@/modules/auth';
+import { documentsRouter } from '@/modules/documents';
+import { projectsRouter } from '@/modules/projects';
+import { searchRouter } from '@/modules/search/routes';
+import { chatRouter } from '@/modules/chat/chat.routes';
 import { complianceRouter } from '@/modules/compliance/routes';
 import { scheduleRouter } from '@/modules/schedule/routes';
 import { dashboardRouter } from '@/modules/dashboard/routes';
@@ -12,6 +18,7 @@ import { rfisRouter } from '@/modules/rfis';
 import { graphRouter } from '@/modules/graph/routes';
 import { agentsRouter } from '@/modules/agents';
 import { reportsRouter } from '@/modules/reports';
+import { simulationRoutes } from '@/modules/simulations';
 
 export const routes = Router();
 
@@ -54,3 +61,4 @@ routes.use('/v1/projects/:id/rfis', rfisRouter);
 routes.use('/v1/projects/:id/graph', graphRouter);
 routes.use('/v1/projects/:id/agents', agentsRouter);
 routes.use('/v1/projects/:id/reports', reportsRouter);
+routes.use('/v1/projects/:id/simulations', simulationRoutes);

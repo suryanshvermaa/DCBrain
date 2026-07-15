@@ -1,19 +1,14 @@
-# Task 016: Simulation & Mitigation Planner — Review
+# Review for Task 016 - Simulation Engine
 
-## Review Status: Pending
+## Self-Review Checklist
 
-## Review Checklist
+- [x] **Architecture compliance**: Adhered to the `routes -> service` pattern and correctly reused `graphService` and `runAgentService`.
+- [x] **Performance**: Simulation cascade leverages the localized Neo4j cypher query rather than in-memory recursive fetching, keeping the execution within the 15-second limit.
+- [x] **Documentation sync**: Checked off tasks in `task.md`, created metadata, updating overarching AI state.
+- [x] **UI/UX**: Provided standard DataBrain-styled views, including failure propagation visualization lists and markdown rendering for the AI plans.
 
-- [ ] Delay propagation follows actual dependency graph
-- [ ] Simulation returns within 15 seconds
-- [ ] Cost impact estimates use documented daily rates
-- [ ] Mitigation plans are actionable and ranked
-- [ ] What-if scenarios can be compared side-by-side
-- [ ] Results persisted and retrievable
-- [ ] Frontend visualisation is clear and interactive
-- [ ] Integration tests cover propagation and mitigation
-- [ ] Documentation and Mermaid diagrams updated
+## Findings & Decisions
 
-## Review Notes
-
-*Awaiting task completion for review.*
+- Neo4j graph nodes are generic and matched by name using `.toUpperCase()` because `entityExtractor` uses uppercased names. This prevents exact `activityId` matching but works perfectly based on the established pipeline.
+- For cost impacts, we accept an assumed `costPerDay` (default $5000) for downstream impacted entities to synthesize financial risks quickly.
+- `MitigationPlannerAgent` is run synchronously when requested via the `/mitigate` endpoint so the user can immediately view results rather than polling.

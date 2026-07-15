@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { Package, Upload, LayoutDashboard, FileText, Search, Bot, Shield, Calendar, Settings, HelpCircle, Loader2, Network, BarChart3 } from 'lucide-react';
+import { Activity, Package, Upload, LayoutDashboard, FileText, Search, Bot, Shield, Calendar, Settings, HelpCircle, Loader2, Network, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -16,6 +16,7 @@ const navigation = [
   { name: 'Compliance', href: '/compliance', icon: Shield },
   { name: 'Schedule', href: '/schedule', icon: Calendar },
   { name: 'Procurement', href: '/procurement', icon: Package },
+  { name: 'Simulations', href: '/simulations', icon: Activity },
   { name: 'RFIs', href: '/rfis', icon: HelpCircle },
   { name: 'Agents', href: '/agents', icon: Bot },
   { name: 'Knowledge Graph', href: '/graph', icon: Network },

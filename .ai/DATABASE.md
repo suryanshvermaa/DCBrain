@@ -70,7 +70,18 @@ erDiagram
   - `(Document)-[:CONTAINS]->(Chunk)`
   - `(Chunk)-[:MENTIONS]->(Entity)`
   - Entity-to-Entity: `[:REFERENCES]`, `[:SUPPLIES]`, `[:DEPENDS_ON]`, `[:GOVERNS]`
-- **Constraints**: Name/ID uniqueness enforced for all entity types.
+- **Constraints**: Name/ID uniqueness enforced for entity types EXCEPT `Activity` (Activity names are not globally unique to allow multi-schedule uploads without conflicts).
+
+### 14. `reports`
+- Project-scoped reporting artifacts (Daily, Weekly, Exec, Risk, Compliance).
+- Ties directly into MinIO storage via `storageKey`.
+
+### 15. `simulations`
+- `id`, `name`, `targetActivityId`, `delayDays`, `status`
+- Stores results of what-if scenario simulations.
+- `impacts` JSON tracks downstream entities affected.
+- `mitigationPlans` JSON stores strategies returned by MitigationPlannerAgent.
+- `costImpact` and `timeImpactDays` represent high-level project exposure.
 
 ## Object Storage (MinIO)
 - Secure, S3-compatible storage for uploaded PDFs, Images, DOCX, and Excel files.

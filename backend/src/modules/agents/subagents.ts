@@ -575,9 +575,26 @@ export class MitigationPlannerAgent extends BaseAgentImpl {
   readonly name = 'Mitigation Planner Agent';
 
   async run(input: AgentInput, ctx: AgentContext): Promise<AgentOutput> {
-    const prompt = `You are the Mitigation Planner. Develop a schedule recovery logic.
+    const simData = input['simulationData'] as any;
+    
+    let prompt = `You are the Mitigation Planner. Develop a schedule recovery logic.
 If a project is critical path delayed on Generator Testing or Chiller delivery by 4 weeks, what sequencing modifications can minimize delay propagation?
 Provide concrete EPC work-around solutions.`;
+
+    if (simData) {
+      prompt = `You are the Mitigation Planner Agent. A delay simulation has just been run.
+Target Activity ID: ${simData.targetActivityId}
+Delay: ${simData.delayDays} days
+Estimated Cost Impact: $${simData.costImpact || 0}
+Impacted Downstream Entities: ${simData.impacts ? simData.impacts.map((i: any) => i.entityName).join(', ') : 'None'}
+
+Provide 3 concrete alternative mitigation strategies to recover the schedule and minimize cost impact. For each strategy, provide:
+1. Title
+2. Description of the sequencing change or resource acceleration
+3. Estimated recovery in days
+4. Trade-off (e.g., cost increase vs time saved)
+`;
+    }
 
     const summary = await askGemini(prompt);
 

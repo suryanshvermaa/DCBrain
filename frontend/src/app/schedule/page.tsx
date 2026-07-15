@@ -283,9 +283,10 @@ function SchedulePageContent() {
     try {
       const result = await scheduleApi.importScheduleFile(projectId, file);
       setImportSuccess(
-        `Import complete — ${result.activityCount} activities processed. Refreshing data…`
+        `Import complete — ${result.activityCount} activities processed.`
       );
       await loadProjectData(projectId);
+      setTimeout(() => setImportSuccess(null), 5000);
     } catch (err) {
       setImportError(err instanceof ApiError ? err.message : String(err));
     } finally {

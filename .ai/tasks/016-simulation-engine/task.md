@@ -6,7 +6,7 @@
 - **Estimate:** 10 hours
 - **Sprint:** 3
 - **Dependencies:** 008 (Schedule Risk), 013 (Knowledge Graph), 014 (AI Agent Framework)
-- **Status:** Not Started
+- **Status:** Completed
 
 ## Objective
 
@@ -14,19 +14,19 @@ Build the Delay Simulation and What-if Analysis Engine. Users can inject synthet
 
 ## Acceptance Criteria
 
-- [ ] Delay simulation endpoint (`POST /api/v1/projects/{id}/simulations/delay`)
-- [ ] Simulation input: target activity, delay duration (days), scenario name, optional resource/cost assumptions
-- [ ] Load project dependency graph from Neo4j
-- [ ] Propagate delay across `DEPENDS_ON` relationships up to 5 hops
-- [ ] Compute impacted activities, new predicted completion date, and cost impact
-- [ ] Cascade impact analysis (resource, cost, downstream activities)
-- [ ] What-if scenario comparison (baseline vs simulated)
-- [ ] Mitigation Planner Agent generates 3 alternative mitigation strategies
-- [ ] Simulation results persisted in `simulations` table
-- [ ] Frontend simulation builder and results viewer
-- [ ] Gantt-style before/after timeline visualization
-- [ ] Database migration for `simulations` table
-- [ ] Integration tests for simulation propagation and mitigation endpoints
+- [x] Delay simulation endpoint (`POST /api/v1/projects/{id}/simulations/delay`)
+- [x] Simulation input: target activity, delay duration (days), scenario name, optional resource/cost assumptions
+- [x] Load project dependency graph from Neo4j
+- [x] Propagate delay across `DEPENDS_ON` relationships up to 5 hops
+- [x] Compute impacted activities, new predicted completion date, and cost impact
+- [x] Cascade impact analysis (resource, cost, downstream activities)
+- [x] What-if scenario comparison (baseline vs simulated)
+- [x] Mitigation Planner Agent generates 3 alternative mitigation strategies
+- [x] Simulation results persisted in `simulations` table
+- [x] Frontend simulation builder and results viewer
+- [x] Gantt-style before/after timeline visualization
+- [x] Database migration for `simulations` table
+- [x] Integration tests for simulation propagation and mitigation endpoints
 
 ## Required APIs
 

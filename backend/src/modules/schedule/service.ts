@@ -136,6 +136,40 @@ export async function importSchedule(input: {
       )
     );
 
+    // Sync to Neo4j
+    const { executeWrite } = await import('@/lib/neo4j');
+    await executeWrite(async (tx) => {
+      // 1. Create nodes
+      for (const act of scored) {
+        await tx.run(`
+          MERGE (n:Activity:Schedule {id: $id, projectId: $projectId})
+          SET n.name = $name, n.durationDays = $durationDays, n.isCritical = $isCritical
+        `, {
+          id: act.activityId,
+          projectId: input.projectId,
+          name: act.name,
+          durationDays: act.durationDays,
+          isCritical: act.isCritical
+        });
+      }
+      // 2. Create edges
+      for (const act of scored) {
+        if (act.predecessors && act.predecessors.length > 0) {
+          for (const pred of act.predecessors) {
+            await tx.run(`
+              MATCH (p:Activity:Schedule {id: $predId, projectId: $projectId})
+              MATCH (s:Activity:Schedule {id: $succId, projectId: $projectId})
+              MERGE (s)-[:DEPENDS_ON]->(p)
+            `, {
+              predId: pred,
+              succId: act.activityId,
+              projectId: input.projectId
+            });
+          }
+        }
+      }
+    });
+
     // Update the import record with final count
     await prisma.scheduleImport.update({
       where: { id: importRecord.id },
@@ -180,8 +214,18 @@ export async function getScheduleActivities(input: {
 }): Promise<{ activities: ScheduleActivityResponse[]; total: number }> {
   await assertProjectAccess(input.projectId, input.actor);
 
+  const latestImport = await prisma.scheduleImport.findFirst({
+    where: { projectId: input.projectId, status: 'SUCCESS' },
+    orderBy: { importedAt: 'desc' },
+  });
+
+  if (!latestImport) {
+    return { total: 0, activities: [] };
+  }
+
   const where = {
     projectId: input.projectId,
+    importId: latestImport.id,
     ...(input.riskLevel ? { riskLevel: input.riskLevel } : {}),
     ...(input.isCritical !== undefined ? { isCritical: input.isCritical } : {}),
   };

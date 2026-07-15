@@ -85,7 +85,7 @@
   - Responsive layout for desktop and tablet
 
 ### F-006a: Dependency Graph & Failure Simulator
-- **Status:** Not Started
+- **Status:** Completed
 - **Sprint:** 3
 - **Description:** Deterministic Neo4j graph tracking equipment, vendor, and task dependencies. Calculates delay and failure propagation using PRISM math models.
 - **Key Behaviors:**

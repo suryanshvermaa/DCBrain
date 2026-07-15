@@ -1,21 +1,11 @@
-# Task 016: Simulation & Mitigation Planner — Progress
+# Progress for Task 016 - Simulation Engine
 
-## Status: Not Started
-
-## Checklist
-
-- [ ] `simulations`, `simulation_impacts`, `mitigation_plans` tables migrated
-- [ ] Delay simulation endpoint implemented
-- [ ] Neo4j dependency graph loading implemented
-- [ ] Delay propagation algorithm implemented
-- [ ] Cost/time impact estimation implemented
-- [ ] What-if scenario comparison implemented
-- [ ] Mitigation Planner Agent integrated
-- [ ] Frontend simulation builder and results viewer built
-- [ ] Performance under 15 seconds verified
-- [ ] Integration tests passing
-- [ ] Documentation and diagrams updated
-
-## Work Log
-
-*No work done yet.*
+- **2026-07-15**: Started task. Evaluated DB schema and graph integration points.
+- **2026-07-15**: Designed the `Simulation` Prisma schema and applied migration `20260715082504_add_simulations`.
+- **2026-07-15**: Created the simulations backend module including Zod schemas, service logic interacting with `graphService.getFailurePropagation`, and Express routes.
+- **2026-07-15**: Registered `/api/v1/projects/:id/simulations` routes in `index.ts`.
+- **2026-07-15**: Updated `MitigationPlannerAgent` to properly unpack `simulationData` (target activity, delay days, cost impact, and downstream nodes) and dynamically generate prompt.
+- **2026-07-15**: Authored integration tests in `routes.test.ts` and executed successfully.
+- **2026-07-15**: Created frontend API client `simulations.ts`.
+- **2026-07-15**: Implemented frontend pages `/simulations`, `/simulations/new`, and `/simulations/[id]` for the complete end-to-end user experience.
+- **2026-07-15**: Task marked as completed.

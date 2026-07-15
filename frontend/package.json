@@ -17,6 +17,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.0",
     "@tailwindcss/postcss": "^4.3.2",
+    "@tailwindcss/typography": "^0.5.20",
     "@xyflow/react": "^12.11.2",
     "lucide-react": "^0.400.0",
     "next": "^15.0.0",

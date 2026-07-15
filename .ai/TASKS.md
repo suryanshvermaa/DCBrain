@@ -19,7 +19,7 @@ See [tasks/sprint.md](./tasks/sprint.md) for the active sprint. As of the latest
 | 005 | [RAG Search](./tasks/005-rag/task.md) | 2 | 8h | Not Started |
 | 006 | [Chat Interface](./tasks/006-chat/task.md) | 2 | 6h | Not Started |
 | 009 | [Dashboard](./tasks/009-dashboard/task.md) | 3 | 8h | Not Started |
-| 014 | [AI Agent Framework & Supervisor](./tasks/014-ai-agent-framework/task.md) | 5 | 12h | Not Started |
+| 014 | [AI Agent Framework & Supervisor](./tasks/014-ai-agent-framework/task.md) | 5 | 12h | Completed |
 
 ---
 
@@ -32,9 +32,9 @@ See [tasks/sprint.md](./tasks/sprint.md) for the active sprint. As of the latest
 | 010 | [Deployment](./tasks/010-deployment/task.md) | 6 | 6h | Completed |
 | 011 | [Procurement Intelligence](./tasks/011-procurement-intelligence/task.md) | 4 | 10h | Completed |
 | 012 | [RFI Intelligence](./tasks/012-rfi-intelligence/task.md) | 4 | 8h | Completed |
-| 013 | [Knowledge Graph & Entity Extraction](./tasks/013-knowledge-graph/task.md) | 4 | 10h | Not Started |
-| 015 | [Reporting Engine](./tasks/015-reporting-engine/task.md) | 5 | 8h | Not Started |
-| 016 | [Simulation & Mitigation Planner](./tasks/016-simulation-engine/task.md) | 5 | 10h | Not Started |
+| 013 | [Knowledge Graph & Entity Extraction](./tasks/013-knowledge-graph/task.md) | 4 | 10h | Completed |
+| 015 | [Reporting Engine](./tasks/015-reporting-engine/task.md) | 5 | 8h | Completed |
+| 016 | [Simulation & Mitigation Planner](./tasks/016-simulation-engine/task.md) | 5 | 10h | Completed |
 | 017 | [Notifications, Audit Logs & Activity Timeline](./tasks/017-notifications-audit/task.md) | 3 | 6h | Not Started |
 
 ---
