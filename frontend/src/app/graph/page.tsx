@@ -200,7 +200,7 @@ function GraphPageContent() {
   return (
     <AppShell title="Knowledge Graph" subtitle="Explore entity dependencies and simulate failure propagation">
       <div className="flex flex-col md:flex-row" style={{ height: 'calc(100vh - 73px)' }}>
-      <div className="flex-1 relative bg-slate-950">
+      <div className="flex-1 relative bg-[var(--color-bg)]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -214,7 +214,7 @@ function GraphPageContent() {
           proOptions={{ hideAttribution: true }}
         >
           <Background color="#334155" gap={20} size={1} />
-          <Controls className="!bg-slate-800 !border-slate-700 !shadow-lg [&>button]:!bg-slate-700 [&>button]:!border-slate-600 [&>button]:!text-white [&>button:hover]:!bg-slate-600" />
+          <Controls className="!bg-[var(--color-surface)] !border-[var(--color-border)] !shadow-lg [&>button]:!bg-[var(--color-surface-raised)] [&>button]:!border-[var(--color-input)] [&>button]:!text-[var(--color-text-primary)] [&>button:hover]:!bg-[var(--color-surface-hover)]" />
           <MiniMap
             nodeColor={(n: any) => n.style?.background as string || '#64748b'}
             maskColor="rgba(15, 23, 42, 0.7)"
@@ -224,16 +224,16 @@ function GraphPageContent() {
           {/* ── Top-left Controls ── */}
           <Panel position="top-left" className="space-y-3 max-w-xs">
             {/* Title + Project */}
-            <div className="bg-slate-800/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-slate-700/50 space-y-3">
+            <div className="bg-[var(--color-surface)] backdrop-blur-sm p-4 rounded-xl shadow-lg border border-[var(--color-border)] space-y-3">
               <div>
-                <h2 className="text-base font-bold flex items-center gap-2 text-white">
-                  <Network className="w-4 h-4 text-blue-400" /> Knowledge Graph
+                <h2 className="text-base font-bold flex items-center gap-2 text-[var(--color-text-primary)]">
+                  <Network className="w-4 h-4 text-[var(--color-primary)]" /> Knowledge Graph
                 </h2>
               </div>
 
               <div>
                 <select
-                  className="w-full h-8 text-xs px-2 border border-slate-600 rounded-lg bg-slate-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-8 text-xs px-2 border border-[var(--color-input)] rounded-lg bg-[var(--color-surface-raised)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={projectId ?? ''}
                   onChange={(e) => setProjectId(e.target.value)}
                 >
@@ -247,8 +247,8 @@ function GraphPageContent() {
                 <button
                   className={`flex-1 inline-flex items-center justify-center px-2 py-1.5 text-xs font-medium rounded-lg transition-all ${
                     mode === 'dependencies'
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                      : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                      ? 'bg-[var(--color-primary)] text-[var(--color-text-primary)] shadow-md shadow-[var(--color-focus-ring)]'
+                      : 'bg-[var(--color-surface-raised)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] transition-colors'
                   }`}
                   onClick={() => setMode('dependencies')}
                 >
@@ -258,8 +258,8 @@ function GraphPageContent() {
                 <button
                   className={`flex-1 inline-flex items-center justify-center px-2 py-1.5 text-xs font-medium rounded-lg transition-all ${
                     mode === 'failures'
-                      ? 'bg-red-600 text-white shadow-md shadow-red-600/30'
-                      : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                      ? 'bg-red-600 text-[var(--color-text-primary)] shadow-md shadow-red-600/30'
+                      : 'bg-[var(--color-surface-raised)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] transition-colors'
                   }`}
                   onClick={() => setMode('failures')}
                 >
@@ -274,10 +274,10 @@ function GraphPageContent() {
                     placeholder="Root entity name..."
                     value={failureRoot}
                     onChange={(e) => setFailureRoot(e.target.value)}
-                    className="h-7 text-xs flex-1 px-2 border border-slate-600 rounded-lg bg-slate-700 text-gray-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="h-7 text-xs flex-1 px-2 border border-[var(--color-input)] rounded-lg bg-[var(--color-surface-raised)] text-[var(--color-text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                   <button
-                    className="inline-flex items-center px-3 h-7 text-xs font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-40 transition-colors"
+                    className="inline-flex items-center px-3 h-7 text-xs font-medium rounded-lg bg-red-600 text-[var(--color-text-primary)] hover:bg-red-700 disabled:opacity-40 transition-colors"
                     onClick={fetchGraph}
                     disabled={!failureRoot || loading}
                   >
@@ -293,47 +293,47 @@ function GraphPageContent() {
               )}
 
               {loading && (
-                <div className="flex items-center gap-2 text-xs text-slate-400">
+                <div className="flex items-center gap-2 text-xs text-[var(--color-text-tertiary)]">
                   <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading graph...
                 </div>
               )}
             </div>
 
             {/* ── Collapsible Legend ── */}
-            <div className="bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-lg border border-slate-700/50 overflow-hidden">
+            <div className="bg-[var(--color-surface)] backdrop-blur-sm rounded-xl shadow-lg border border-[var(--color-border)] overflow-hidden">
               <button
                 onClick={() => setLegendOpen(!legendOpen)}
-                className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700/50 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-raised)]/50 transition-colors"
               >
                 <span className="flex items-center gap-2">
-                  <Info className="w-3.5 h-3.5 text-slate-400" /> Legend
+                  <Info className="w-3.5 h-3.5 text-[var(--color-text-tertiary)]" /> Legend
                 </span>
                 {legendOpen
-                  ? <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                  : <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  ? <ChevronDown className="w-3.5 h-3.5 text-[var(--color-text-tertiary)]" />
+                  : <ChevronRight className="w-3.5 h-3.5 text-[var(--color-text-tertiary)]" />
                 }
               </button>
 
               {legendOpen && (
                 <div className="px-4 pb-3 space-y-3">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">Nodes</p>
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)] font-semibold mb-1.5">Nodes</p>
                     <div className="grid grid-cols-2 gap-1.5">
                       {Object.entries(nodeColors).map(([type, color]) => (
                         <div key={type} className="flex items-center gap-2">
                           <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: color }} />
-                          <span className="text-[11px] text-slate-300">{nodeLabels[type] || type}</span>
+                          <span className="text-[11px] text-[var(--color-text-secondary)]">{nodeLabels[type] || type}</span>
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div className="border-t border-slate-700/50 pt-2">
-                    <p className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">Edges</p>
+                  <div className="border-t border-[var(--color-border)] pt-2">
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)] font-semibold mb-1.5">Edges</p>
                     <div className="grid grid-cols-2 gap-1.5">
                       {Object.entries(edgeColors).map(([type, color]) => (
                         <div key={type} className="flex items-center gap-2">
                           <span className="w-4 h-0.5 flex-shrink-0 rounded-full" style={{ background: color }} />
-                          <span className="text-[11px] text-slate-300">{edgeLabels[type] || type}</span>
+                          <span className="text-[11px] text-[var(--color-text-secondary)]">{edgeLabels[type] || type}</span>
                         </div>
                       ))}
                     </div>
@@ -361,7 +361,7 @@ function GraphPageContent() {
                 {selectedNode.labels.map(l => (
                   <span
                     key={l}
-                    className="inline-block px-2 py-0.5 text-[10px] font-medium rounded-full text-white/90"
+                    className="inline-block px-2 py-0.5 text-[10px] font-medium rounded-full text-[var(--color-text-primary)]/90"
                     style={{ background: `${nodeColors[l] || '#64748b'}cc` }}
                   >
                     {l}

@@ -271,20 +271,20 @@ function RfisPageContent() {
 
   const getPriorityColor = (p: string) => {
     switch(p) {
-      case 'CRITICAL': return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300';
-      case 'HIGH': return 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300';
-      case 'MEDIUM': return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700/30 dark:text-gray-300';
+      case 'CRITICAL': return 'status-danger';
+      case 'HIGH': return 'status-warning';
+      case 'MEDIUM': return 'status-info';
+      default: return 'bg-[var(--color-badge-default-bg)] text-[var(--color-badge-default-text)] border border-[var(--color-border)]';
     }
   };
 
   const getStatusColor = (s: string) => {
     switch(s) {
-      case 'ANSWERED': return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300';
-      case 'CLOSED': return 'bg-gray-200 text-gray-800 border-gray-300 dark:bg-gray-800 dark:text-gray-300';
-      case 'IN_REVIEW': return 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300';
-      case 'VOID': return 'bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300';
-      default: return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300'; // OPEN
+      case 'ANSWERED': return 'status-success';
+      case 'CLOSED': return 'bg-[var(--color-badge-default-bg)] text-[var(--color-badge-default-text)] border border-[var(--color-border)]';
+      case 'IN_REVIEW': return 'status-warning';
+      case 'VOID': return 'status-danger';
+      default: return 'status-info'; // OPEN
     }
   };
 
@@ -333,20 +333,20 @@ function RfisPageContent() {
             {/* Quick Analytics Cards */}
             {analytics && (
               <section className="grid gap-4 sm:grid-cols-4 shrink-0">
-                <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-800 p-5 shadow-sm">
-                  <span className="text-xs font-semibold text-gray-400 uppercase">Total RFIs</span>
-                  <p className="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{analytics.total}</p>
+                <div className="rounded-xl card-level-1 p-5">
+                  <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase">Total RFIs</span>
+                  <p className="text-3xl font-bold mt-1 text-[var(--color-text-primary)]">{analytics.total}</p>
                 </div>
-                <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-800 p-5 shadow-sm">
-                  <span className="text-xs font-semibold text-gray-400 uppercase">Open / In-Review</span>
+                <div className="rounded-xl card-level-1 p-5">
+                  <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase">Open / In-Review</span>
                   <p className="text-3xl font-bold mt-1 text-amber-600">{analytics.open}</p>
                 </div>
-                <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-800 p-5 shadow-sm">
-                  <span className="text-xs font-semibold text-gray-400 uppercase">Overdue RFIs</span>
+                <div className="rounded-xl card-level-1 p-5">
+                  <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase">Overdue RFIs</span>
                   <p className="text-3xl font-bold mt-1 text-red-600">{analytics.overdue}</p>
                 </div>
-                <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-800 p-5 shadow-sm">
-                  <span className="text-xs font-semibold text-gray-400 uppercase">Avg Resolution Days</span>
+                <div className="rounded-xl card-level-1 p-5">
+                  <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase">Avg Resolution Days</span>
                   <p className="text-3xl font-bold mt-1 text-green-600">
                     {analytics.avgResolutionDays !== null ? `${analytics.avgResolutionDays} days` : 'N/A'}
                   </p>
@@ -357,28 +357,28 @@ function RfisPageContent() {
             {/* Filter and Content Panel */}
             <div className="flex-1 flex gap-6 overflow-hidden min-h-0">
               {/* Left Side: RFI List */}
-              <div className="w-1/2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
+              <div className="w-1/2 card-level-1 transition-theme flex flex-col overflow-hidden">
                 {/* Search & Filter Header */}
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 space-y-3">
+                <div className="p-4 border-b border-[var(--color-border)] space-y-3">
                   <div className="relative">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-[var(--color-text-tertiary)]" />
                     <input
                       type="text"
                       placeholder="Search RFI number, subject, query..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-transparent rounded-lg text-sm outline-none"
+                      className="w-full pl-10 pr-4 py-2 border border-[var(--color-input)] bg-transparent rounded-lg text-sm outline-none"
                     />
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-semibold text-gray-400 uppercase mr-1">Status:</span>
+                    <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase mr-1">Status:</span>
                     <button
                       onClick={() => setStatusFilter('')}
                       className={`px-3 py-1 rounded-full text-xs font-medium border ${
                         statusFilter === ''
-                          ? 'bg-blue-50 border-blue-200 text-blue-700'
-                          : 'border-gray-200 dark:border-gray-700'
+                          ? 'bg-[var(--color-primary-100)] border-[var(--color-primary)] text-[var(--color-primary)]'
+                          : 'border-[var(--color-border)]'
                       }`}
                     >
                       All
@@ -389,8 +389,8 @@ function RfisPageContent() {
                         onClick={() => setStatusFilter(st)}
                         className={`px-3 py-1 rounded-full text-xs font-medium border capitalize ${
                           statusFilter === st
-                            ? 'bg-blue-50 border-blue-200 text-blue-700'
-                            : 'border-gray-200 dark:border-gray-700'
+                            ? 'bg-[var(--color-primary-100)] border-[var(--color-primary)] text-[var(--color-primary)]'
+                            : 'border-[var(--color-border)]'
                         }`}
                       >
                         {st.replace('_', ' ').toLowerCase()}
@@ -399,12 +399,12 @@ function RfisPageContent() {
                   </div>
 
                   <div className="flex items-center gap-4">
-                    <label className="inline-flex items-center gap-2 text-xs font-medium text-gray-600 dark:text-gray-300 cursor-pointer">
+                    <label className="inline-flex items-center gap-2 text-xs font-medium text-[var(--color-text-secondary)] cursor-pointer">
                       <input
                         type="checkbox"
                         checked={overdueFilter === true}
                         onChange={(e) => setOverdueFilter(e.target.checked ? true : undefined)}
-                        className="rounded border-gray-300 text-blue-600 outline-none"
+                        className="rounded border-[var(--color-input)] text-blue-600 outline-none"
                       />
                       Show Overdue Only
                     </label>
@@ -412,14 +412,14 @@ function RfisPageContent() {
                 </div>
 
                 {/* List Body */}
-                <div className="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
+                <div className="flex-1 overflow-y-auto divide-y divide-[var(--color-divider)]">
                   {loading ? (
                     <div className="flex items-center justify-center p-8 text-sm text-gray-500">
                       <Loader2 className="animate-spin h-5 w-5 mr-2" />
                       Loading RFIs...
                     </div>
                   ) : filteredRfis.length === 0 ? (
-                    <div className="p-8 text-center text-sm text-gray-400">
+                    <div className="p-8 text-center text-sm text-[var(--color-text-tertiary)]">
                       No Requests for Information matched these filters.
                     </div>
                   ) : (
@@ -431,12 +431,12 @@ function RfisPageContent() {
                           onClick={() => handleSelectRfi(rfi)}
                           className={`p-4 cursor-pointer transition-colors text-left flex flex-col gap-2 ${
                             isSelected
-                              ? 'bg-blue-50/50 dark:bg-blue-900/10 border-l-4 border-blue-600'
-                              : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                              ? 'bg-[var(--color-sidebar-active)] border-l-4 border-[var(--color-primary)]'
+                              : 'hover:bg-[var(--color-surface-hover)] transition-colors'
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-400">{rfi.number}</span>
+                            <span className="text-xs font-bold text-[var(--color-text-tertiary)]">{rfi.number}</span>
                             <div className="flex gap-2">
                               <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider border uppercase ${getPriorityColor(rfi.priority)}`}>
                                 {rfi.priority}
@@ -447,7 +447,7 @@ function RfisPageContent() {
                             </div>
                           </div>
 
-                          <h4 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-1">
+                          <h4 className="text-sm font-semibold text-[var(--color-text-primary)] line-clamp-1">
                             {rfi.subject}
                           </h4>
                           
@@ -455,7 +455,7 @@ function RfisPageContent() {
                             {rfi.question}
                           </p>
 
-                          <div className="flex items-center justify-between text-[11px] text-gray-400 mt-1">
+                          <div className="flex items-center justify-between text-[11px] text-[var(--color-text-tertiary)] mt-1">
                             <span className="flex items-center gap-1">
                               <User className="h-3 w-3" />
                               {rfi.assignee ? `Assignee: ${rfi.assignee.name}` : 'Unassigned'}
@@ -475,7 +475,7 @@ function RfisPageContent() {
               </div>
 
               {/* Right Side: RFI Detail View */}
-              <div className="w-1/2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
+              <div className="w-1/2 card-level-1 transition-theme flex flex-col overflow-hidden">
                 {loadingDetail ? (
                   <div className="flex-1 flex flex-col items-center justify-center p-8 text-sm text-gray-500">
                     <Loader2 className="animate-spin h-8 w-8 text-blue-600 mb-2" />
@@ -484,9 +484,9 @@ function RfisPageContent() {
                 ) : selectedRfi ? (
                   <div className="flex-1 flex flex-col overflow-hidden text-left">
                     {/* Detail Header */}
-                    <div className="p-6 border-b border-gray-200 dark:border-gray-700 space-y-3 shrink-0">
+                    <div className="p-6 border-b border-[var(--color-border)] space-y-3 shrink-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-gray-400">{selectedRfi.number}</span>
+                        <span className="text-sm font-bold text-[var(--color-text-tertiary)]">{selectedRfi.number}</span>
                         <div className="flex gap-2">
                           <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${getPriorityColor(selectedRfi.priority)}`}>
                             {selectedRfi.priority}
@@ -497,26 +497,26 @@ function RfisPageContent() {
                         </div>
                       </div>
 
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                      <h3 className="text-lg font-bold text-[var(--color-text-primary)]">
                         {selectedRfi.subject}
                       </h3>
 
-                      <div className="grid grid-cols-2 gap-4 text-xs border-t border-gray-100 dark:border-gray-700 pt-3">
+                      <div className="grid grid-cols-2 gap-4 text-xs border-t border-[var(--color-border)] pt-3">
                         <div className="space-y-1">
-                          <p className="text-gray-400">Raised By</p>
-                          <p className="font-semibold text-gray-900 dark:text-white">{selectedRfi.raisedBy?.name || 'Unknown'}</p>
+                          <p className="text-[var(--color-text-tertiary)]">Raised By</p>
+                          <p className="font-semibold text-[var(--color-text-primary)]">{selectedRfi.raisedBy?.name || 'Unknown'}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-400">Assigned To</p>
-                          <p className="font-semibold text-gray-900 dark:text-white">{selectedRfi.assignee?.name || 'Unassigned'}</p>
+                          <p className="text-[var(--color-text-tertiary)]">Assigned To</p>
+                          <p className="font-semibold text-[var(--color-text-primary)]">{selectedRfi.assignee?.name || 'Unassigned'}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-400">Discipline</p>
-                          <p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedRfi.discipline || 'General'}</p>
+                          <p className="text-[var(--color-text-tertiary)]">Discipline</p>
+                          <p className="font-semibold text-[var(--color-text-primary)] capitalize">{selectedRfi.discipline || 'General'}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-400">Due Date</p>
-                          <p className={`font-semibold ${selectedRfi.overdue ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>
+                          <p className="text-[var(--color-text-tertiary)]">Due Date</p>
+                          <p className={`font-semibold ${selectedRfi.overdue ? 'text-red-500' : 'text-[var(--color-text-primary)]'}`}>
                             {selectedRfi.dueDate ? new Date(selectedRfi.dueDate).toLocaleDateString() : 'None'}
                           </p>
                         </div>
@@ -527,8 +527,8 @@ function RfisPageContent() {
                     <div className="flex-1 overflow-y-auto p-6 space-y-6">
                       {/* Question Section */}
                       <div className="space-y-2">
-                        <h4 className="text-sm font-bold uppercase tracking-wider text-gray-400">Question</h4>
-                        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        <h4 className="text-sm font-bold uppercase tracking-wider text-[var(--color-text-tertiary)]">Question</h4>
+                        <div className="bg-[var(--color-surface-raised)] rounded-lg p-4 text-sm text-[var(--color-text-secondary)] whitespace-pre-wrap">
                           {selectedRfi.question}
                         </div>
                       </div>
@@ -536,16 +536,16 @@ function RfisPageContent() {
                       {/* Linked Documents */}
                       {selectedRfi.documents.length > 0 && (
                         <div className="space-y-2">
-                          <h4 className="text-sm font-bold uppercase tracking-wider text-gray-400">Linked Reference Documents</h4>
+                          <h4 className="text-sm font-bold uppercase tracking-wider text-[var(--color-text-tertiary)]">Linked Reference Documents</h4>
                           <div className="space-y-2">
                             {selectedRfi.documents.map((doc) => (
                               <div
                                 key={doc.documentId}
-                                className="flex items-center justify-between border border-gray-100 dark:border-gray-700 rounded-lg p-3 text-xs bg-white dark:bg-gray-800"
+                                className="flex items-center justify-between border border-[var(--color-border)] rounded-lg p-3 text-xs bg-[var(--color-surface)]"
                               >
                                 <div className="flex items-center gap-2 min-w-0">
                                   <FileText className="h-4 w-4 text-blue-500 shrink-0" />
-                                  <span className="font-medium text-gray-900 dark:text-white truncate">
+                                  <span className="font-medium text-[var(--color-text-primary)] truncate">
                                     {doc.originalName}
                                   </span>
                                 </div>
@@ -564,16 +564,16 @@ function RfisPageContent() {
                       )}
 
                       {/* AI Answer Generation */}
-                      <div className="border border-blue-100 dark:border-blue-900/50 bg-blue-50/20 dark:bg-blue-900/10 rounded-lg p-5 space-y-4">
+                      <div className="border border-[var(--color-primary)] bg-[var(--color-primary-100)] rounded-lg p-5 space-y-4">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
+                          <h4 className="text-sm font-bold text-[var(--color-primary)] flex items-center gap-1.5">
                             <Bot className="h-4 w-4 text-blue-600" />
                             AI Suggested Draft Response
                           </h4>
                           <button
                             onClick={handleSuggestAnswer}
                             disabled={generatingAnswer || selectedRfi.status === 'CLOSED'}
-                            className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 disabled:opacity-50"
+                            className="text-xs bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 disabled:opacity-50"
                           >
                             {generatingAnswer ? (
                               <>
@@ -591,7 +591,7 @@ function RfisPageContent() {
 
                         {selectedRfi.suggestedAnswer ? (
                           <div className="space-y-4 text-xs">
-                            <div className="bg-white dark:bg-gray-800 border border-blue-50 dark:border-blue-900 rounded-lg p-3 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                            <div className="bg-[var(--color-surface)] border border-blue-50 dark:border-blue-900 rounded-lg p-3 text-[var(--color-text-secondary)] whitespace-pre-wrap">
                               {selectedRfi.suggestedAnswer}
                             </div>
 
@@ -602,18 +602,18 @@ function RfisPageContent() {
                                   {selectedRfi.suggestedSources.map((source, index) => (
                                     <div
                                       key={index}
-                                      className="border border-gray-100 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-gray-800 text-[11px] space-y-1.5"
+                                      className="border border-[var(--color-border)] rounded-lg p-3 bg-[var(--color-surface)] text-[11px] space-y-1.5"
                                     >
-                                      <div className="flex items-center justify-between text-gray-400">
+                                      <div className="flex items-center justify-between text-[var(--color-text-tertiary)]">
                                         <span className="font-bold flex items-center gap-1">
                                           <Bookmark className="h-3.5 w-3.5 text-amber-500" />
                                           {source.documentName}
                                         </span>
-                                        <span className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                                        <span className="bg-[var(--color-primary-100)] text-[var(--color-primary)] px-1.5 py-0.5 rounded text-[10px] font-bold">
                                           {(source.relevanceScore * 100).toFixed(0)}% Match
                                         </span>
                                       </div>
-                                      <p className="text-gray-600 dark:text-gray-300 italic whitespace-pre-wrap">
+                                      <p className="text-[var(--color-text-secondary)] italic whitespace-pre-wrap">
                                         &ldquo;{source.excerpt}&rdquo;
                                       </p>
                                     </div>
@@ -631,14 +631,14 @@ function RfisPageContent() {
 
                       {/* Official Resolution Section */}
                       {selectedRfi.status !== 'CLOSED' && selectedRfi.status !== 'VOID' ? (
-                        <div className="space-y-3 border-t border-gray-100 dark:border-gray-700 pt-5">
-                          <h4 className="text-sm font-bold uppercase tracking-wider text-gray-400">Human Approval & Resolution</h4>
+                        <div className="space-y-3 border-t border-[var(--color-border)] pt-5">
+                          <h4 className="text-sm font-bold uppercase tracking-wider text-[var(--color-text-tertiary)]">Human Approval & Resolution</h4>
                           <textarea
                             value={officialResolution}
                             onChange={(e) => setOfficialResolution(e.target.value)}
                             placeholder="Enter the official answer for this RFI. You can copy-paste and edit the AI suggested draft response above."
                             rows={5}
-                            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-sm outline-none resize-y"
+                            className="w-full p-3 border border-[var(--color-input)] rounded-lg bg-transparent text-sm outline-none resize-y"
                           />
                           <div className="flex items-center gap-3">
                             <button
@@ -653,7 +653,7 @@ function RfisPageContent() {
                               <button
                                 onClick={() => handleTransitionStatus('CLOSED')}
                                 disabled={approving}
-                                className="bg-gray-800 hover:bg-gray-900 text-white font-semibold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5"
+                                className="bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-primary)] text-white font-semibold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5"
                               >
                                 Close RFI
                               </button>
@@ -668,13 +668,13 @@ function RfisPageContent() {
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-2 border-t border-gray-100 dark:border-gray-700 pt-5">
-                          <h4 className="text-sm font-bold uppercase tracking-wider text-gray-400">Official Approved Answer</h4>
-                          <div className="bg-green-50/50 dark:bg-green-900/10 border border-green-200 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-300">
+                        <div className="space-y-2 border-t border-[var(--color-border)] pt-5">
+                          <h4 className="text-sm font-bold uppercase tracking-wider text-[var(--color-text-tertiary)]">Official Approved Answer</h4>
+                          <div className="bg-green-50/50 dark:bg-green-900/10 border border-green-200 rounded-lg p-4 text-sm text-[var(--color-text-secondary)]">
                             {selectedRfi.resolution || 'No answer recorded.'}
                           </div>
                           {selectedRfi.answeredAt && (
-                            <p className="text-[11px] text-gray-400">
+                            <p className="text-[11px] text-[var(--color-text-tertiary)]">
                               Answered by {selectedRfi.answeredBy?.name} on {new Date(selectedRfi.answeredAt).toLocaleString()}
                             </p>
                           )}
@@ -683,7 +683,7 @@ function RfisPageContent() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center p-8 text-sm text-gray-400">
+                  <div className="flex-1 flex flex-col items-center justify-center p-8 text-sm text-[var(--color-text-tertiary)]">
                     <HelpCircle className="h-10 w-10 text-gray-300 mb-2" />
                     Select an RFI from the list to view full details and suggestions.
                   </div>
@@ -695,12 +695,12 @@ function RfisPageContent() {
       {/* New RFI Dialog Modal */}
       {createModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-lg overflow-hidden text-left">
-            <header className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center shrink-0">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Create Request for Information</h3>
+          <div className="bg-[var(--color-surface)] rounded-xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-lg overflow-hidden text-left">
+            <header className="p-6 border-b border-[var(--color-border)] flex justify-between items-center shrink-0">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Create Request for Information</h3>
               <button
                 onClick={() => setCreateModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 text-lg"
+                className="text-[var(--color-text-tertiary)] hover:text-gray-600 text-lg"
               >
                 &times;
               </button>
@@ -713,36 +713,36 @@ function RfisPageContent() {
                 </div>
               )}
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase text-gray-400">Subject</label>
+                <label className="text-xs font-bold uppercase text-[var(--color-text-tertiary)]">Subject</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. AHU compliance with ASHRAE standards"
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
-                  className="w-full p-2.5 border border-gray-300 dark:border-gray-600 bg-transparent rounded-lg text-sm outline-none"
+                  className="w-full p-2.5 border border-[var(--color-input)] bg-transparent rounded-lg text-sm outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase text-gray-400">Question / Details</label>
+                <label className="text-xs font-bold uppercase text-[var(--color-text-tertiary)]">Question / Details</label>
                 <textarea
                   required
                   rows={4}
                   placeholder="Describe your inquiry or discrepancy in detail..."
                   value={newQuestion}
                   onChange={(e) => setNewQuestion(e.target.value)}
-                  className="w-full p-2.5 border border-gray-300 dark:border-gray-600 bg-transparent rounded-lg text-sm outline-none resize-none"
+                  className="w-full p-2.5 border border-[var(--color-input)] bg-transparent rounded-lg text-sm outline-none resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-400">Priority</label>
+                  <label className="text-xs font-bold uppercase text-[var(--color-text-tertiary)]">Priority</label>
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value as any)}
-                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 bg-transparent rounded-lg text-sm outline-none"
+                    className="w-full p-2.5 border border-[var(--color-input)] bg-transparent rounded-lg text-sm outline-none"
                   >
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
@@ -752,24 +752,24 @@ function RfisPageContent() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-400">Discipline</label>
+                  <label className="text-xs font-bold uppercase text-[var(--color-text-tertiary)]">Discipline</label>
                   <input
                     type="text"
                     placeholder="e.g. Electrical, Mechanical"
                     value={newDiscipline}
                     onChange={(e) => setNewDiscipline(e.target.value)}
-                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 bg-transparent rounded-lg text-sm outline-none"
+                    className="w-full p-2.5 border border-[var(--color-input)] bg-transparent rounded-lg text-sm outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-400">Assignee</label>
+                  <label className="text-xs font-bold uppercase text-[var(--color-text-tertiary)]">Assignee</label>
                   <select
                     value={newAssigneeId}
                     onChange={(e) => setNewAssigneeId(e.target.value)}
-                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 bg-transparent rounded-lg text-sm outline-none"
+                    className="w-full p-2.5 border border-[var(--color-input)] bg-transparent rounded-lg text-sm outline-none"
                   >
                     <option value="">Unassigned</option>
                     {members.map((m) => (
@@ -779,38 +779,38 @@ function RfisPageContent() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-400">Due Date</label>
+                  <label className="text-xs font-bold uppercase text-[var(--color-text-tertiary)]">Due Date</label>
                   <input
                     type="date"
                     value={newDueDate}
                     onChange={(e) => setNewDueDate(e.target.value)}
-                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 bg-transparent rounded-lg text-sm outline-none"
+                    className="w-full p-2.5 border border-[var(--color-input)] bg-transparent rounded-lg text-sm outline-none"
                   />
                 </div>
               </div>
 
               {/* Document Linking Checklist */}
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-gray-400">Link Reference Documents</label>
+                <label className="text-xs font-bold uppercase text-[var(--color-text-tertiary)]">Link Reference Documents</label>
                 {documents.length === 0 ? (
-                  <p className="text-xs text-gray-400 italic">No project documents available to link.</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)] italic">No project documents available to link.</p>
                 ) : (
-                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg max-h-32 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
+                  <div className="border border-[var(--color-border)] rounded-lg max-h-32 overflow-y-auto divide-y divide-[var(--color-divider)]">
                     {documents.map((doc) => {
                       const isLinked = newDocumentIds.includes(doc.id);
                       return (
                         <div
                           key={doc.id}
                           onClick={() => toggleDocumentLink(doc.id)}
-                          className="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs cursor-pointer"
+                          className="flex items-center gap-2 p-2 hover:bg-[var(--color-surface-hover)] transition-colors text-xs cursor-pointer"
                         >
                           <input
                             type="checkbox"
                             checked={isLinked}
                             readOnly
-                            className="rounded border-gray-300 text-blue-600"
+                            className="rounded border-[var(--color-input)] text-blue-600"
                           />
-                          <span className="font-medium text-gray-700 dark:text-gray-300 truncate">{doc.originalName}</span>
+                          <span className="font-medium text-[var(--color-text-secondary)] truncate">{doc.originalName}</span>
                         </div>
                       );
                     })}
@@ -818,17 +818,17 @@ function RfisPageContent() {
                 )}
               </div>
 
-              <footer className="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 shrink-0">
+              <footer className="pt-4 border-t border-[var(--color-border)] flex justify-end gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={() => setCreateModalOpen(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-semibold rounded-lg"
+                  className="px-4 py-2 border border-[var(--color-input)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] transition-colors text-xs font-semibold rounded-lg"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg"
+                  className="px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-semibold rounded-lg"
                 >
                   Submit RFI
                 </button>
