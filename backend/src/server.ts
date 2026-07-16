@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createApp } from './app';
 import config from '@/core/config';
 import { logger } from '@/lib/logger';

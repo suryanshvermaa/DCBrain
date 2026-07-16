@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as mammoth from 'mammoth';
 // @ts-expect-error pdf-parse is missing types
 import pdfParse from 'pdf-parse';

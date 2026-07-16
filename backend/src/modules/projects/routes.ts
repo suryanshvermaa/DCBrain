@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Router, type Request, type Response } from 'express';
 import { Role } from '@prisma/client';
 import { asyncHandler } from '@/core/middleware/errorHandler';

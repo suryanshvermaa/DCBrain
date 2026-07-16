@@ -1,0 +1,140 @@
+# docker-compose.prod.test.yml
+# Production Testing Docker Compose
+# Uses test env files and isolated volumes/networks (Relative paths for local testing)
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: dcbrain-postgres-test
+    env_file:
+      - ./.env.db.test
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./postgres_data_test:/var/lib/postgresql/data
+      - ./backend/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - dcbrain-network-test
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: dcbrain-redis-test
+    env_file:
+      - ./.env.db.test
+    ports:
+      - "6386:6379"
+    volumes:
+      - ./redis_data_test:/data
+    networks:
+      - dcbrain-network-test
+    restart: unless-stopped
+
+  chromadb:
+    image: chromadb/chroma:0.5.0
+    container_name: dcbrain-chromadb-test
+    env_file:
+      - ./.env.app.test
+    ports:
+      - "8006:8000"
+    volumes:
+      - ./chromadb_data_test:/chroma/chroma
+    networks:
+      - dcbrain-network-test
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    container_name: dcbrain-minio-test
+    command: server /data --console-address ":9001"
+    env_file:
+      - ./.env.minio.test
+    ports:
+      - "9007:9000"
+      - "9008:9001"
+    volumes:
+      - ./minio_data_test:/data
+    networks:
+      - dcbrain-network-test
+    restart: unless-stopped
+
+  neo4j:
+    image: neo4j:5-community
+    container_name: dcbrain-neo4j-test
+    env_file:
+      - ./.env.db.test
+    ports:
+      - "7476:7474"
+      - "7689:7687"
+    volumes:
+      - ./neo4j_data_test:/data
+      - ./neo4j_logs_test:/logs
+      - ./neo4j_import_test:/var/lib/neo4j/import
+      - ./neo4j_plugins_test:/plugins
+    networks:
+      - dcbrain-network-test
+    restart: unless-stopped
+
+  backend:
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-backend:${IMAGE_TAG:-latest}
+    container_name: dcbrain-backend-test
+    env_file:
+      - ./.env.app.test
+      - ./.env.db.test
+      - ./.env.minio.test
+    ports:
+      - "8020:8000"
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      chromadb:
+        condition: service_started
+      minio:
+        condition: service_started
+      neo4j:
+        condition: service_started
+    networks:
+      - dcbrain-network-test
+    restart: unless-stopped
+
+  worker:
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-backend:${IMAGE_TAG:-latest}
+    container_name: dcbrain-worker-test
+    command: [ "node", "dist/worker.js" ]
+    env_file:
+      - ./.env.app.test
+      - ./.env.db.test
+      - ./.env.minio.test
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      chromadb:
+        condition: service_started
+      minio:
+        condition: service_started
+      neo4j:
+        condition: service_started
+    networks:
+      - dcbrain-network-test
+    restart: unless-stopped
+
+  frontend:
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-frontend:${IMAGE_TAG:-latest}
+    container_name: dcbrain-frontend-test
+    env_file:
+      - ./.env.app.test
+    ports:
+      - "3020:3000"
+    depends_on:
+      - backend
+    networks:
+      - dcbrain-network-test
+    restart: unless-stopped
+
+networks:
+  dcbrain-network-test:
+    driver: bridge

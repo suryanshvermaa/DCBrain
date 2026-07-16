@@ -1,17 +1,17 @@
-import { pipeline, env } from '@xenova/transformers';
 import { logger } from '@/lib/logger';
 import config from '@/core/config';
 
-// Ensure the models are downloaded locally and not fetched repeatedly if cached.
-env.allowLocalModels = true;
-// In production/docker, you'd likely mount a cache dir or bundle it.
-
 let extractorPipeline: any = null;
+let transformersEnv: any = null;
 
 export async function getExtractorPipeline() {
   if (!extractorPipeline) {
+    const transformers = await import('@xenova/transformers');
+    const pipeline = transformers.pipeline;
+    transformersEnv = transformers.env;
+    transformersEnv.allowLocalModels = true;
+
     logger.info(`Initializing embedding pipeline with model ${config.EMBEDDING_MODEL}...`);
-    // Note: BAAI/bge-m3 is mapped to Xenova/bge-m3 in the transformers.js hub
     const modelName = config.EMBEDDING_MODEL === 'BAAI/bge-m3' ? 'Xenova/bge-m3' : (config.EMBEDDING_MODEL || 'Xenova/bge-m3');
     extractorPipeline = await pipeline('feature-extraction', modelName);
     logger.info('Embedding pipeline initialized');

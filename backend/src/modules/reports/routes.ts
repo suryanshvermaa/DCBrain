@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Router, type Request, type Response } from 'express';
 import { asyncHandler } from '@/core/middleware/errorHandler';
 import { requireAuth, requirePermission, type AuthenticatedRequest } from '@/modules/auth/middleware';

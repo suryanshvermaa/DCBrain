@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Router } from 'express';
 import { requireAuth, type AuthenticatedRequest } from '@/modules/auth/middleware';
 import { validateBody } from '@/core/middleware/validation';

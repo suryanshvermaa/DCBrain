@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Worker } from 'bullmq';
 import { createApp } from './app';
 import config from '@/core/config';

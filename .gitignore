@@ -77,4 +77,10 @@ temp/
 
 # Editor
 .vs/
-*.vscode/
+*.vscode/
+
+# Test data volumes
+*_data_test/
+*_logs_test/
+*_import_test/
+*_plugins_test/

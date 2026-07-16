@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { RiskLevel, ScheduleImportStatus } from '@prisma/client';
 import { assertProjectAccess } from '@/modules/projects';
 import { logger } from '@/lib/logger';

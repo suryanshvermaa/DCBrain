@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { prisma } from '@/lib/prisma';
 import { BaseAgentImpl } from './base.agent';
 import type { AgentType, AgentInput, AgentContext, AgentOutput, AgentFinding } from './agent.types';

@@ -9,7 +9,7 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # =============================================================================
 # Stage 2: builder — compile Next.js application

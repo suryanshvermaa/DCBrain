@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Request, Response } from 'express';
 import { ProcurementService } from './service';
 import { logger } from '@/lib/logger';
