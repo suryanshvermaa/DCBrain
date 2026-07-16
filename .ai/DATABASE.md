@@ -27,7 +27,7 @@ erDiagram
 - `compliance_checks`: Validation results.
 - `schedule_activities`: P6 imported activities.
 - `procurement_items`, `vendors`: POs, statuses, vendor scoring.
-- `audit_log`, `agent_runs`, `agent_schedules`, `notifications`, `reports`
+- `audit_log`, `agent_runs`, `agent_schedules`, `notifications`, `reports`, `notification_preferences`
 - **NEW:** `simulations` (What-if scenario tracking)
 - **NEW:** `ncrs` (Non-Conformance Reports)
 - **NEW:** `change_orders` (Project financial/scope changes)
@@ -58,7 +58,8 @@ erDiagram
 
 - `agent_runs` logs every agent execution with `agentType`, `status` (PENDING/RUNNING/COMPLETED/FAILED), `input`/`output` JSON, `durationMs`, `costEstimate`, `projectId`, and optional `triggeredById`.
 - `agent_schedules` stores per-project cron expressions for repeatable agent runs. Unique constraint on `(projectId, agentType)`.
-- `notifications` stores in-app alerts surfaced when agents produce findings (type, title, message, data JSON, read status).
+- `notifications` stores in-app alerts surfaced when agents or background pipelines produce findings (type, title, message, link, data JSON, read status).
+- `notification_preferences` records user configurations for in-app and email digests.
 
 ## Vector Store (ChromaDB)
 - `project_{id}_documents`: Document chunk embeddings.
@@ -85,3 +86,7 @@ erDiagram
 
 ## Object Storage (MinIO)
 - Secure, S3-compatible storage for uploaded PDFs, Images, DOCX, and Excel files.
+
+### 16. `notification_preferences`
+- User-scoped notification settings (`userId` @unique, `inApp` boolean default true, `emailDigest` boolean default false, timestamps).
+- Ties directly into `users` table.

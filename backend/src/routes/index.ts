@@ -14,6 +14,9 @@ import { graphRouter } from '@/modules/graph/routes';
 import { agentsRouter } from '@/modules/agents';
 import { reportsRouter } from '@/modules/reports';
 import { simulationRoutes } from '@/modules/simulations';
+import { notificationsRouter } from '@/modules/notifications';
+import { adminRouter } from '@/modules/audit/routes';
+import { auditMiddleware } from '@/modules/audit/middleware';
 
 export const routes = Router();
 
@@ -43,6 +46,8 @@ routes.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+routes.use(auditMiddleware);
+
 routes.use('/v1/auth', authRouter);
 routes.use('/v1/projects', projectsRouter);
 routes.use('/v1/projects/:id/documents', documentsRouter);
@@ -57,3 +62,5 @@ routes.use('/v1/projects/:id/graph', graphRouter);
 routes.use('/v1/projects/:id/agents', agentsRouter);
 routes.use('/v1/projects/:id/reports', reportsRouter);
 routes.use('/v1/projects/:id/simulations', simulationRoutes);
+routes.use('/v1/notifications', notificationsRouter);
+routes.use('/v1/admin', adminRouter);

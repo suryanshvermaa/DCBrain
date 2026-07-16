@@ -169,11 +169,40 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
 
     logger.info('Document processing completed', { documentId, projectId, chunkCount: chunks.length, duplicateCount });
 
-    const { triggerAgentsOnEvent } = await import('@/modules/agents/triggers');
+    try {
+      const { createNotification } = await import('../../notifications/index.js');
+      await createNotification({
+        userId: ownerId,
+        type: 'DOCUMENT_READY',
+        title: 'Document Processed',
+        message: `Your document "${filename}" has been processed successfully.`,
+        link: '/documents',
+        data: { projectId, documentId },
+      });
+    } catch (notifErr) {
+      logger.error('Failed to send success notification for document', { error: notifErr });
+    }
+
+    const { triggerAgentsOnEvent } = await import('../../agents/triggers.js');
     await triggerAgentsOnEvent('document_processed', projectId, ownerId, { documentId });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown processing error';
     await updateDocumentProcessingStatus(documentId, DocumentStatus.FAILED, message);
+
+    try {
+      const { createNotification } = await import('../../notifications/index.js');
+      await createNotification({
+        userId: ownerId,
+        type: 'ERROR',
+        title: 'Document Processing Failed',
+        message: `Processing failed for document "${filename}".`,
+        link: '/documents',
+        data: { projectId, documentId, error: message },
+      });
+    } catch (notifErr) {
+      logger.error('Failed to send fail notification for document', { error: notifErr });
+    }
+
     logger.error('Document processing failed', { documentId, error: message });
     throw error;
   } finally {

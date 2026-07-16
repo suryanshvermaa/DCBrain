@@ -6,7 +6,7 @@
 Frontend clients must call the API with the `/api/v1` prefix. Do not drop the `/api` segment when wiring browser requests.
 
 ## Authentication & Projects
-- `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `GET /auth/me`
+- `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `POST /auth/refresh`, `GET /auth/me`
 - `GET /projects`, `POST /projects`, `GET /projects/{id}`
 - `GET /projects/{id}/members`: Fetch name, email, and roles of project members
 
@@ -62,3 +62,12 @@ Auth endpoints return the access token in the JSON response and set the refresh 
 ## Knowledge Graph
 - `GET /projects/{id}/graph/dependencies`: Get Project Dependency Graph
 - `GET /projects/{id}/graph/failures`: Get Failure Propagation Graph
+
+## Notifications & Audits
+- `GET /notifications`: List notifications for the authenticated user.
+- `PUT /notifications/{id}/read`: Mark a specific notification as read.
+- `PUT /notifications/read-all`: Mark all notifications as read.
+- `GET /notifications/preferences`: Get notification preferences.
+- `PUT /notifications/preferences`: Update preferences (body: `{ inApp?: boolean, emailDigest?: boolean }`).
+- `GET /projects/{id}/activity`: Get project-scoped activity feed.
+- `GET /admin/audit-log`: Fetch administrative audit logs (Restricted to Role.ADMIN; supports query parameters `page`, `limit`, `action`, `resourceType`, `userId`).

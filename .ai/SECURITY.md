@@ -230,6 +230,14 @@ All significant actions are logged to the `audit_log` table:
 - Production: Cloud secret manager (AWS Secrets Manager / Azure Key Vault)
 - See [ENVIRONMENT.md](./ENVIRONMENT.md) for variable reference
 
+## Security Auditing & Operations Log
+
+### Immutable Audit Trail
+- A relational `audit_log` table captures user write actions (logins, logouts, registers, document uploads, document deletions, compliance checks, schedule imports, procurement imports, agent runs, and user role updates).
+- The logs are database-persisted and cannot be updated or deleted through standard application routing.
+- The IP address, User-Agent, and exact actor user ID are stored along with metadata payload detail keys.
+- Access to query the system-wide audit log is restricted to users with the `ADMIN` role.
+
 ## Related Documents
 
 - [ENVIRONMENT.md](./ENVIRONMENT.md) — Environment variable configuration

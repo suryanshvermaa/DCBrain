@@ -2,9 +2,10 @@ import { Router, type Request, type Response } from 'express';
 import { asyncHandler } from '@/core/middleware/errorHandler';
 import { authResponseSchema, loginRequestSchema, registerRequestSchema } from './schemas';
 import { assertAuthRateLimit, resetAuthRateLimit } from './rateLimit';
-import { requireAuth, requirePermission } from './middleware';
+import { requireAuth, requirePermission, type AuthenticatedRequest } from './middleware';
 import { login, refresh, register, getCurrentUser } from './service';
 import { buildRefreshCookieOptions, REFRESH_COOKIE_NAME } from './security';
+import { createAuditLog } from './repository';
 
 export const authRouter = Router();
 
@@ -192,5 +193,30 @@ authRouter.get(
   requirePermission('manage_users'),
   asyncHandler(async (_req: Request, res: Response) => {
     res.status(200).json({ message: 'admin access granted' });
+  })
+);
+
+authRouter.post(
+  '/logout',
+  requireAuth,
+  asyncHandler(async (req: Request, res: Response) => {
+    const request = req as AuthenticatedRequest;
+    const userId = request.auth?.user.id;
+    const ipAddress = getRequestIp(req);
+
+    res.clearCookie(REFRESH_COOKIE_NAME, buildRefreshCookieOptions(0));
+
+    if (userId) {
+      await createAuditLog({
+        userId,
+        action: 'auth.logout',
+        resourceType: 'user',
+        resourceId: userId,
+        ipAddress,
+        userAgent: req.headers['user-agent'],
+      });
+    }
+
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
   })
 );

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import type { AgentType, AgentInput, AgentContext, AgentOutput, BaseAgent } from './agent.types';
+import { createNotification } from '@/modules/notifications';
 
 export abstract class BaseAgentImpl implements BaseAgent {
   abstract readonly type: AgentType;
@@ -90,18 +91,17 @@ export abstract class BaseAgentImpl implements BaseAgent {
 
       for (const recipientId of recipientIds) {
         for (const finding of findings) {
-          await prisma.notification.create({
+          await createNotification({
+            userId: recipientId,
+            type: finding.type === 'ERROR' ? 'COMPLIANCE_ISSUE' : 'INFO',
+            title: `${this.name} Finding: ${finding.title}`,
+            message: finding.message,
+            link: '/agents',
             data: {
-              userId: recipientId,
-              type: finding.type === 'ERROR' ? 'COMPLIANCE_ISSUE' : 'INFO',
-              title: `${this.name} Finding: ${finding.title}`,
-              message: finding.message,
-              data: {
-                projectId,
-                agentType: this.type,
-                severity: finding.severity,
-                details: finding.details,
-              },
+              projectId,
+              agentType: this.type,
+              severity: finding.severity,
+              details: finding.details,
             },
           });
         }

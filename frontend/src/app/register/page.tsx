@@ -119,6 +119,7 @@ export default function RegisterPage() {
               onChange={(event) => setForm((current) => ({ ...current, firstName: event.target.value }))}
               className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
               placeholder="Aanya"
+              suppressHydrationWarning
             />
           </div>
 
@@ -134,6 +135,7 @@ export default function RegisterPage() {
               onChange={(event) => setForm((current) => ({ ...current, lastName: event.target.value }))}
               className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
               placeholder="Kapoor"
+              suppressHydrationWarning
             />
           </div>
         </div>
@@ -150,6 +152,7 @@ export default function RegisterPage() {
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
             className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
             placeholder="name@company.com"
+            suppressHydrationWarning
           />
         </div>
 
@@ -166,6 +169,7 @@ export default function RegisterPage() {
               onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
               className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
               placeholder="Create a password"
+              suppressHydrationWarning
             />
           </div>
 
@@ -181,6 +185,7 @@ export default function RegisterPage() {
               onChange={(event) => setForm((current) => ({ ...current, confirmPassword: event.target.value }))}
               className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
               placeholder="Repeat password"
+              suppressHydrationWarning
             />
           </div>
         </div>
@@ -191,6 +196,7 @@ export default function RegisterPage() {
           type="submit"
           disabled={isSubmitting}
           className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+          suppressHydrationWarning
         >
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           Create account

@@ -4,6 +4,7 @@ import { logger } from '@/lib/logger';
 import { disconnectPrisma } from '@/lib/prisma';
 import { disconnectRedis } from '@/lib/redis';
 import { closeNeo4j } from '@/lib/neo4j';
+import { initWebSocketServer } from '@/modules/notifications';
 
 const app = createApp();
 
@@ -35,6 +36,8 @@ async function startServer(): Promise<void> {
         version: config.APP_VERSION,
       });
     });
+
+    initWebSocketServer(server);
 
     const shutdown = (signal: string): void => {
       logger.info(`${signal} received, shutting down gracefully`);

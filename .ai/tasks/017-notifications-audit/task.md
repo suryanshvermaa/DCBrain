@@ -6,7 +6,7 @@
 - **Estimate:** 6 hours
 - **Sprint:** 3
 - **Dependencies:** 002 (Authentication), 009 (Dashboard)
-- **Status:** Not Started
+- **Status:** Completed
 
 ## Objective
 
@@ -14,18 +14,18 @@ Build the cross-cutting platform services: real-time in-app notifications, compr
 
 ## Acceptance Criteria
 
-- [ ] `audit_log` table capturing user actions: login/logout, document upload/delete, search queries, compliance checks, imports, agent runs, role changes
-- [ ] Audit log middleware auto-records API actions with user_id, action, resource_type, resource_id, details, ip_address, timestamp
-- [ ] `notifications` table with type, title, message, read status, link, created_at
-- [ ] WebSocket-based real-time notification delivery
-- [ ] Notification bell UI with unread count
-- [ ] Per-user notification preferences (in-app, email digest)
-- [ ] Activity timeline widget on dashboard showing last 20 actions
-- [ ] Activity timeline detail page with filtering
-- [ ] Rate-limiting and RBAC enforcement on audit log access (admin only)
-- [ ] Database migrations for `audit_log` and `notifications`
-- [ ] Frontend components: NotificationBell, NotificationPanel, ActivityFeed, ActivityTimeline
-- [ ] Integration tests for audit middleware and notification endpoints
+- [x] `audit_log` table capturing user actions: login/logout, document upload/delete, search queries, compliance checks, imports, agent runs, role changes
+- [x] Audit log middleware auto-records API actions with user_id, action, resource_type, resource_id, details, ip_address, timestamp
+- [x] `notifications` table with type, title, message, read status, link, created_at
+- [x] WebSocket-based real-time notification delivery
+- [x] Notification bell UI with unread count
+- [x] Per-user notification preferences (in-app, email digest)
+- [x] Activity timeline widget on dashboard showing last 20 actions
+- [x] Activity timeline detail page with filtering
+- [x] Rate-limiting and RBAC enforcement on audit log access (admin only)
+- [x] Database migrations for `audit_log` and `notifications`
+- [x] Frontend components: NotificationBell, NotificationPanel, ActivityFeed, ActivityTimeline
+- [x] Integration tests for audit middleware and notification endpoints
 
 ## Required APIs
 

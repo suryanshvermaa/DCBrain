@@ -232,6 +232,12 @@ Define the application shell and page structure.
 | AgentRunHistory | `components/agents/AgentRunHistory.tsx` | Logs and findings of a specific agent |
 | SupervisorMetrics | `components/agents/SupervisorMetrics.tsx` | Metrics on Supervisor delegation accuracy |
 
+### Notifications & Audits Module
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| NotificationBell | `components/notifications/NotificationBell.tsx` | Glassmorphic dropdown panel for real-time WebSocket notifications |
+
 ---
 
 ## Pages
@@ -242,7 +248,7 @@ Pages compose layout and feature components. Each page maps to a route.
 |------|-------|---------------|
 | LoginPage | `/login` | Input, Button, Card |
 | RegisterPage | `/register` | Input, Button, Card |
-| DashboardPage | `/dashboard` | DashboardGrid, HealthScoreGauge, StatCard, ActivityFeed |
+| DashboardPage | `/dashboard` | DashboardGrid, HealthScoreGauge, StatCard, ActivityFeed, NotificationBell |
 | DocumentsPage | `/documents` | DocumentList, DocumentFilterBar, DocumentPreview, DocumentUploadModal |
 | SearchPage | `/search` | SearchInput, AssistantMessage, SourceCitation |
 | ChatPage | `/chat` | ChatWindow, ChatSessionList |
@@ -252,7 +258,9 @@ Pages compose layout and feature components. Each page maps to a route.
 | GraphPage | `/graph` | GraphVisualizer, SearchInput |
 | SimulationPage | `/simulation` | SimulationTimeline, MitigationCards |
 | AgentsPage | `/agents` | AgentDashboard, AgentRunHistory |
-| SettingsPage | `/settings` | Input, Select, Button, Card |
+| SettingsPage | `/settings` | UserProfileCard, NotificationPreferencesToggle |
+| ActivityPage | `/activity` | ActivityTimelineVertical, FilterBar |
+| AdminAuditLogPage | `/admin/audit-log` | AuditTable, FilterBar, JSONDetailsModal |
 
 ## Related Documents
 

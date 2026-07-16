@@ -35,6 +35,7 @@ model User {
   agentRuns     AgentRun[]
   reports       Report[]          @relation("ReportGeneratedBy")
   simulationsCreated Simulation[] @relation("SimulationCreatedBy")
+  notificationPreference NotificationPreference?
 
   @@index([email])
   @@map("users")
@@ -188,6 +189,7 @@ model Notification {
   type      NotificationType
   title     String
   message   String
+  link      String?
   data      Json?
   read      Boolean             @default(false)
   readAt    DateTime?
@@ -661,4 +663,16 @@ model Simulation {
   @@index([projectId])
   @@index([targetActivityId])
   @@map("simulations")
+}
+
+model NotificationPreference {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inApp       Boolean  @default(true)
+  emailDigest Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notification_preferences")
 }

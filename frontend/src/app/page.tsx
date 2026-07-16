@@ -31,6 +31,9 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import * as projectsApi from '@/lib/api/projects';
 import * as dashboardApi from '@/lib/api/dashboard';
 import { ApiError } from '@/lib/api';
+import { useAppSelector } from '@/lib/hooks';
+import { selectAuthenticatedUser } from '@/features/auth/authSlice';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 
 // ---------------------------------------------------------------------------
 // Navigation
@@ -241,6 +244,7 @@ function ActivityItem({ item }: { item: dashboardApi.ActivityFeedItem }) {
 
 function DashboardContent() {
   const pathname = usePathname();
+  const user = useAppSelector(selectAuthenticatedUser);
 
   const [projects, setProjects] = useState<projectsApi.Project[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
@@ -336,6 +340,15 @@ function DashboardContent() {
                   </Link>
                 );
               })}
+              {user?.role === 'ADMIN' && (
+                <Link
+                  href="/admin/audit-log"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <Shield className="w-5 h-5 text-rose-500" />
+                  Audit Logs
+                </Link>
+              )}
             </nav>
 
             <div className="p-4 border-t border-gray-200 dark:border-gray-700">
@@ -396,6 +409,8 @@ function DashboardContent() {
                     )}
                     Refresh
                   </button>
+                  <div className="h-6 w-px bg-gray-200 dark:bg-gray-700" />
+                  <NotificationBell />
                 </div>
               </div>
             </header>
@@ -895,11 +910,18 @@ function DashboardContent() {
                       </h3>
 
                       {summary.recentActivity.length > 0 ? (
-                        <div className="overflow-y-auto max-h-72">
-                          {summary.recentActivity.map((item) => (
-                            <ActivityItem key={item.id} item={item} />
-                          ))}
-                        </div>
+                        <>
+                          <div className="overflow-y-auto max-h-72">
+                            {summary.recentActivity.map((item) => (
+                              <ActivityItem key={item.id} item={item} />
+                            ))}
+                          </div>
+                          <div className="mt-4 text-right">
+                             <Link href="/activity" className="text-blue-600 hover:text-blue-500 dark:text-sky-400 dark:hover:text-sky-300 underline text-xs font-semibold">
+                              View Full Activity Timeline
+                            </Link>
+                          </div>
+                        </>
                       ) : (
                         <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
                           No activity recorded yet.
