@@ -71,6 +71,10 @@ model Project {
   agentSchedules     AgentSchedule[]
   reports            Report[]
   simulations        Simulation[]
+  ncrs               Ncr[]
+  inspections        Inspection[]
+  commissioningRecords CommissioningRecord[]
+  changeOrders       ChangeOrder[]
 
   @@index([code])
   @@index([status])
@@ -674,5 +678,175 @@ model NotificationPreference {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+
   @@map("notification_preferences")
+}
+
+// =============================================================================
+// Task 018 — Advanced EPC Intelligence
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// NCR (Non-Conformance Report)
+// ---------------------------------------------------------------------------
+
+enum NcrSeverity {
+  MINOR
+  MAJOR
+  CRITICAL
+}
+
+enum NcrStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  CLOSED
+  VOID
+}
+
+model Ncr {
+  id               String      @id @default(cuid())
+  number           String      // Project-scoped e.g. "NCR-0001"
+  title            String
+  description      String
+  severity         NcrSeverity @default(MINOR)
+  status           NcrStatus   @default(OPEN)
+  discipline       String?
+  rootCause        String?
+  resolutionNote   String?
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+  metadata         Json?
+
+  projectId        String
+  project          Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  raisedById       String?
+  documentId       String?
+  rfiId            String?
+  vendorId         String?
+
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@unique([projectId, number])
+  @@index([projectId])
+  @@index([severity])
+  @@index([status])
+  @@map("ncrs")
+}
+
+// ---------------------------------------------------------------------------
+// Inspection / ITP (Inspection Test Plan)
+// ---------------------------------------------------------------------------
+
+enum InspectionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  PASSED
+  FAILED
+  ON_HOLD
+  WAIVED
+}
+
+model Inspection {
+  id              String           @id @default(cuid())
+  itpRef          String?
+  title           String
+  discipline      String?
+  holdPoint       Boolean          @default(false)
+  inspector       String?
+  scheduledDate   DateTime?
+  completedDate   DateTime?
+  status          InspectionStatus @default(SCHEDULED)
+  result          String?
+  vendorId        String?
+  documentId      String?
+  metadata        Json?
+
+  projectId       String
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([projectId])
+  @@index([status])
+  @@index([scheduledDate])
+  @@map("inspections")
+}
+
+// ---------------------------------------------------------------------------
+// Commissioning Record
+// ---------------------------------------------------------------------------
+
+enum CommissioningStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PASSED
+  FAILED
+  CLOSED
+}
+
+model CommissioningRecord {
+  id            String               @id @default(cuid())
+  testRef       String?
+  systemName    String
+  discipline    String?
+  status        CommissioningStatus  @default(NOT_STARTED)
+  procedure     String?
+  result        String?
+  testedBy      String?
+  completedDate DateTime?
+  documentId    String?
+  metadata      Json?
+
+  projectId     String
+  project       Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([projectId])
+  @@index([status])
+  @@map("commissioning_records")
+}
+
+// ---------------------------------------------------------------------------
+// Change Order
+// ---------------------------------------------------------------------------
+
+enum ChangeOrderStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model ChangeOrder {
+  id                  String            @id @default(cuid())
+  number              String
+  title               String
+  description         String
+  reason              String?
+  costImpact          Float             @default(0)
+  scheduleImpactDays  Int               @default(0)
+  status              ChangeOrderStatus @default(DRAFT)
+  approvedById        String?
+  approvedAt          DateTime?
+  rejectedAt          DateTime?
+  documentId          String?
+  scheduleActivityId  String?
+  metadata            Json?
+
+  projectId           String
+  project             Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@unique([projectId, number])
+  @@index([projectId])
+  @@index([status])
+  @@map("change_orders")
 }

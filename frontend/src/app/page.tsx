@@ -24,6 +24,10 @@ import {
   Shield,
   Zap,
   Network,
+  AlertOctagon,
+  ClipboardList,
+  GitPullRequest,
+  CheckCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -49,6 +53,11 @@ const navigation = [
   { name: 'Procurement', href: '/procurement', icon: Package },
   { name: 'Simulations', href: '/simulations', icon: Activity },
   { name: 'RFIs', href: '/rfis', icon: HelpCircle },
+  { name: 'NCRs', href: '/ncrs', icon: AlertOctagon },
+  { name: 'Inspections', href: '/inspections', icon: ClipboardList },
+  { name: 'Commissioning', href: '/commissioning', icon: Zap },
+  { name: 'Change Orders', href: '/change-orders', icon: GitPullRequest },
+  { name: 'Quality', href: '/quality', icon: CheckCircle },
   { name: 'Agents', href: '/agents', icon: Bot },
   { name: 'Knowledge Graph', href: '/graph', icon: Network },
   { name: 'Reports', href: '/reports', icon: BarChart3 },

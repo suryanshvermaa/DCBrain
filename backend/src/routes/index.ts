@@ -17,6 +17,11 @@ import { simulationRoutes } from '@/modules/simulations';
 import { notificationsRouter } from '@/modules/notifications';
 import { adminRouter } from '@/modules/audit/routes';
 import { auditMiddleware } from '@/modules/audit/middleware';
+import { ncrRouter } from '@/modules/ncr';
+import { inspectionsRouter } from '@/modules/inspections';
+import { commissioningRouter } from '@/modules/commissioning';
+import { changeOrdersRouter } from '@/modules/change-orders';
+import { qualityRouter } from '@/modules/quality';
 
 export const routes = Router();
 
@@ -38,6 +43,11 @@ routes.get('/', (_req, res) => {
       reports: '/api/v1/projects/{id}/reports',
       simulation: '/api/v1/projects/{id}/simulations',
       knowledgeGraph: '/api/v1/projects/{id}/graph',
+      ncrs: '/api/v1/projects/{id}/ncrs',
+      inspections: '/api/v1/projects/{id}/inspections',
+      commissioning: '/api/v1/projects/{id}/commissioning',
+      changeOrders: '/api/v1/projects/{id}/change-orders',
+      quality: '/api/v1/projects/{id}/quality',
     },
   });
 });
@@ -64,3 +74,8 @@ routes.use('/v1/projects/:id/reports', reportsRouter);
 routes.use('/v1/projects/:id/simulations', simulationRoutes);
 routes.use('/v1/notifications', notificationsRouter);
 routes.use('/v1/admin', adminRouter);
+routes.use('/v1/projects/:id/ncrs', ncrRouter);
+routes.use('/v1/projects/:id/inspections', inspectionsRouter);
+routes.use('/v1/projects/:id/commissioning', commissioningRouter);
+routes.use('/v1/projects/:id/change-orders', changeOrdersRouter);
+routes.use('/v1/projects/:id/quality', qualityRouter);

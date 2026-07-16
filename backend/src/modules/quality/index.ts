@@ -1,0 +1,1 @@
+export { qualityRouter } from './routes';

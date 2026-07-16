@@ -135,9 +135,17 @@
       "completed_at": "2026-07-16T05:00:00Z",
       "hours_spent": 3,
       "hours_estimated": 6
+    },
+    {
+      "id": "018",
+      "name": "Advanced EPC Intelligence",
+      "sprint": 5,
+      "completed_at": "2026-07-16T07:23:00Z",
+      "hours_spent": 8,
+      "hours_estimated": 12
     }
   ],
-  "total_completed": 17,
-  "total_hours_spent": 99,
-  "last_completed_at": "2026-07-16T05:00:00Z"
+  "total_completed": 18,
+  "total_hours_spent": 107,
+  "last_completed_at": "2026-07-16T07:23:00Z"
 }
