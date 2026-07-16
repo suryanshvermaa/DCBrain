@@ -107,12 +107,17 @@ export async function register(input: RegisterInput, context: AuthContext = {}):
 
   const passwordHash = await hashPassword(input.password);
   const userCount = await countUsers();
+  
+  if (userCount > 0) {
+    throw new (await import('@/core/errors')).ForbiddenError('Public registration is disabled. Please contact your system administrator to get an account.');
+  }
+
   const user = await createUser({
     email: input.email,
     passwordHash,
     firstName: input.firstName,
     lastName: input.lastName,
-    role: userCount === 0 ? 'PROJECT_MANAGER' : undefined,
+    role: 'ADMIN',
   });
   const response = buildAuthResponse(user);
 

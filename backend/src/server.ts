@@ -6,6 +6,7 @@ import { disconnectPrisma } from '@/lib/prisma';
 import { disconnectRedis } from '@/lib/redis';
 import { closeNeo4j } from '@/lib/neo4j';
 import { initWebSocketServer } from '@/modules/notifications';
+import { seedInitialAdmin } from '@/scripts/seedAdmin';
 
 const app = createApp();
 
@@ -28,6 +29,9 @@ async function startServer(): Promise<void> {
     } else {
       logger.warn('Neo4j not available');
     }
+
+    // Seed initial admin if needed
+    await seedInitialAdmin();
 
     const server = app.listen(config.APP_PORT, config.APP_HOST, () => {
       logger.info(`Server started`, {

@@ -21,7 +21,7 @@ const ASSIGNABLE_ROLES: { value: string; label: string }[] = [
   { value: 'VIEWER', label: 'Viewer' },
 ];
 
-const GLOBAL_ROLES = ['ADMIN', 'PROJECT_MANAGER', 'ENGINEER', 'PROCUREMENT', 'QA_INSPECTOR', 'VIEWER'];
+const GLOBAL_ROLES = ['ADMIN', 'PROJECT_MANAGER', 'ENGINEER', 'PROCUREMENT', 'QA_QC', 'VIEWER'];
 
 const ROLE_BADGE: Record<string, string> = {
   OWNER: 'bg-[var(--color-primary)]/15 text-[var(--color-primary)] border border-[var(--color-primary)]/30',
@@ -147,7 +147,7 @@ function CreateUserModal({ onClose, onSuccess }: CreateUserModalProps) {
       const result = await authApi.adminCreateUser(form);
       onSuccess(result);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create user');
+      alert(err instanceof Error ? err.message : 'Failed to create user');
     } finally {
       setSubmitting(false);
     }
@@ -270,7 +270,7 @@ function InviteModal({ projectId, onClose, onSuccess }: InviteModalProps) {
       const res = await projectsApi.inviteProjectMember(projectId, { email: email.trim(), role });
       onSuccess(res.member);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to invite member');
+      alert(err instanceof Error ? err.message : 'Failed to invite member');
     } finally {
       setSubmitting(false);
     }
@@ -378,6 +378,19 @@ function MembersPageContent() {
 
   const myMembership = members.find((m) => m.id === currentUser?.id) ?? null;
   const canManage = canManageMembers(currentUser, myMembership);
+
+  
+  const handleGlobalRoleChange = async (memberId: string, newRole: string) => {
+    setRoleChanging(memberId);
+    try {
+      await authApi.adminUpdateUser(memberId, { role: newRole });
+      await loadMembers();
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Failed to update platform role');
+    } finally {
+      setRoleChanging(null);
+    }
+  };
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     if (!projectId) return;
@@ -533,7 +546,25 @@ function MembersPageContent() {
                         {isMe && <span className="rounded-full bg-[var(--color-primary)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-primary)]">You</span>}
                         {isOwner && <span title="Project Owner"><Crown className="h-3.5 w-3.5 text-amber-400" /></span>}
                       </div>
-                      <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">{member.email}</p>
+                      
+                      <div className="mt-1 flex items-center gap-2">
+                        <p className="text-xs text-[var(--color-text-secondary)]">{member.email}</p>
+                        <div className="h-3 w-px bg-[var(--color-divider)]"></div>
+                        {currentUser?.role === 'ADMIN' && !isMe ? (
+                          <div className="relative">
+                            <select value={member.globalRole} onChange={(e) => void handleGlobalRoleChange(member.id, e.target.value)} disabled={isActioning}
+                              className="appearance-none bg-transparent text-[10px] font-semibold uppercase tracking-wide text-[var(--color-primary)] outline-none cursor-pointer hover:underline pr-4">
+                              {GLOBAL_ROLES.map((r) => <option key={r} value={r}>PLATFORM: {r.replace('_', ' ')}</option>)}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--color-primary)]" />
+                          </div>
+                        ) : (
+                          <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-tertiary)]">
+                            Platform: {member.globalRole.replace('_', ' ')}
+                          </span>
+                        )}
+                      </div>
+
                     </div>
                     <div className="flex items-center gap-3">
                       {canManage && !isOwner ? (

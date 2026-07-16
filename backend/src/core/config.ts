@@ -29,6 +29,12 @@ const envSchema = z.object({
     .transform((val) => parseInt(val, 10))
     .default('7'),
 
+  // Initial Admin Bootstrap
+  INITIAL_ADMIN_EMAIL: z.string().email().optional(),
+  INITIAL_ADMIN_PASSWORD: z.string().min(8).optional(),
+  INITIAL_ADMIN_FIRST_NAME: z.string().optional().default('Admin'),
+  INITIAL_ADMIN_LAST_NAME: z.string().optional().default('User'),
+
   // Database
   DATABASE_URL: z.string().url().startsWith('postgresql://'),
   DATABASE_POOL_SIZE: z

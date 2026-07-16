@@ -104,7 +104,7 @@ function SettingsPageContent() {
                 </p>
                 <p className="text-sm text-[var(--color-text-secondary)]">{user?.email}</p>
                 <span className="mt-1 inline-block rounded-full bg-[var(--color-primary)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-primary)]">
-                  {user?.role?.replace('_', ' ')}
+                  Platform: {user?.role?.replace('_', ' ')}
                 </span>
               </div>
             </div>
