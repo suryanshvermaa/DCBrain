@@ -77,6 +77,9 @@ services:
 
   backend:
     image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-backend:${IMAGE_TAG:-latest}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dcbrain-backend-test
     env_file:
       - ./.env.app.test
@@ -101,6 +104,9 @@ services:
 
   worker:
     image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-backend:${IMAGE_TAG:-latest}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dcbrain-worker-test
     command: [ "node", "dist/worker.js" ]
     env_file:
@@ -124,6 +130,12 @@ services:
 
   frontend:
     image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-frontend:${IMAGE_TAG:-latest}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8020}
+        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-DCBrain Test}
     container_name: dcbrain-frontend-test
     env_file:
       - ./.env.app.test

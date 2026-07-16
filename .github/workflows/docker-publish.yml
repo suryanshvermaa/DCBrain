@@ -46,6 +46,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-backend.outputs.tags }}
           labels: ${{ steps.meta-backend.outputs.labels }}
+          network: host
 
       # Build & Push Frontend
       - name: Extract metadata (tags, labels) for Frontend
@@ -65,3 +66,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-frontend.outputs.tags }}
           labels: ${{ steps.meta-frontend.outputs.labels }}
+          network: host
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://dcbrain-api.nebula-hack.tech
+            NEXT_PUBLIC_APP_NAME=DCBrain

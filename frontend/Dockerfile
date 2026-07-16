@@ -18,6 +18,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# curl is needed so next/font/google can fetch font metadata from Google APIs
+RUN apk add --no-cache libc6-compat curl
+
 ARG NEXT_PUBLIC_API_URL=http://localhost:8000
 ARG NEXT_PUBLIC_APP_NAME=DCBrain
 ARG BUILD_SHA=dev
@@ -60,6 +63,6 @@ USER nextjs
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget -qO- http://localhost:3000/ > /dev/null || exit 1
+  CMD node -e "require('http').get('http://127.0.0.1:3000/', (r) => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"
 
 CMD ["node", "server.js"]
