@@ -1,22 +1,24 @@
-# Next Chat Session: Task 018 — Advanced EPC Intelligence
+# Next Chat Session: All Phase 2 Tasks Complete
 
 ## 1. Current Project Status
 
-- **Phase:** Phase 2 — Intelligence & Deployment (in progress)
-- **Sprints Completed:** 1–5 (tasks 001–017)
-- **Tasks Completed:** 17 / 18
-- **Repository Health:** Checked type safety and compiled cleanly for newly created notifications, audit, and frontend components.
+- **Phase:** Phase 2 — Intelligence & Deployment (COMPLETE)
+- **Sprints Completed:** 1–5 (tasks 001–019)
+- **Tasks Completed:** 19 / 19
+- **Repository Health:** Backend and frontend type-check clean.
 
-## 2. Just Completed — Task 017 (Notifications & Audit)
+## 2. Just Completed — Task 019 (Workspace Member Management)
 
-- Defined Prisma models for `NotificationPreference` and upgraded `Notification` with `link` column (applied migration `20260716044606_add_notification_preferences_and_link`).
-- Integrated a native WebSocket server inside `websocket.ts` with a multi-tab user connection registry.
-- Implemented `auditMiddleware` mapping routes automatically to log actions (logins/logouts, document uploads/deletes, searches, compliance checks, agent runs, schedule/procurement imports) to the `audit_log` table.
-- Added administrative REST endpoint `GET /api/v1/admin/audit-log` (restricted to ADMIN role) and project-scoped activity query `GET /api/v1/projects/:id/activity`.
-- Developed glassmorphic `NotificationBell` frontend component with WebSocket sync, visual indicator badge, and custom chime audio.
-- Developed `/settings` page for user profiles and notification preference checkboxes.
-- Developed `/activity` vertical timeline page to browse project activity feeds.
-- Developed secure `/admin/audit-log` dashboard page with queries, filters, pagination, and JSON details modal.
+- Added `POST /api/v1/projects/:id/members` — invite by email; creates provisional account with random temp password if user doesn't exist; upserts membership if user already exists.
+- Added `PATCH /api/v1/projects/:id/members/:userId` — update a member's ProjectRole.
+- Added `DELETE /api/v1/projects/:id/members/:userId` — remove a member from the project.
+- Double-layer RBAC: global `manage_project_members` permission check + project-level OWNER/MANAGER verification inside handler.
+- OWNER rows fully protected: cannot assign OWNER via invite, cannot change OWNER's role, cannot remove OWNER.
+- Added `inviteMemberSchema`, `updateMemberRoleSchema`, `memberUserIdParamSchema` to backend schemas.
+- Extended frontend `ProjectMember` interface with `globalRole`, `joinedAt`, `isNewUser`.
+- Added `inviteProjectMember`, `updateProjectMemberRole`, `removeProjectMember` to `api/projects.ts`.
+- Created `frontend/src/app/members/page.tsx` — project selector, members table with avatar + role badge, inline role-change select (dropdown), remove button with confirm, glassmorphic `InviteModal`.
+- Added "Members" nav item to `AppShell.tsx` sidebar.
 
 ## 3. Architecture Summary
 
@@ -27,35 +29,32 @@
 
 ## 4. Active Task
 
-- **None** — Task 017 just completed.
+- **None** — Task 019 just completed. All Phase 2 tasks done.
 
-## 5. Recommended Next Task
+## 5. Remaining Work
 
-- **Task 018 — Advanced EPC Intelligence** (`tasks/018-advanced-epc-intelligence/`)
-- **Goal:** Implement remaining tracking for Non-Conformance Reports (NCRs), Inspections, Commissioning checklists, and Change Orders to complete the project features.
-- **Dependencies:** Task 017 (completed)
-- **Priority:** P1 — Sprint 5
+No planned tasks remain. Possible next steps:
+- Phase 3: Production hardening, real email invite flow, pagination for large member lists
+- Audit log entries for member management actions
+- Graph UI auto-layout (ElkJS/Dagre) — deferred from earlier sprints
 
-## 6. Remaining Work (Sprint 5+)
+## 6. Warnings & Known Issues
 
-| Task | Name | Status |
-|------|------|--------|
-| 018 | Advanced EPC Intelligence | Not Started |
-
-## 7. Warnings & Known Issues
-
-- Run `npx prisma migrate deploy` to deploy all migrations (including the notifications preferences database upgrades)
+- Run `npx prisma migrate deploy` to deploy all migrations (no new migration for Task 019)
 - Ensure `GEMINI_API_KEY` is set in `.env`
 - Graph integration tests fail without Neo4j running locally (environmental, not code defect)
+- `@xyflow/react` type declarations missing in type-check environment (runtime OK)
 
-## 8. Files to Read First
+## 7. Files to Read First
 
 1. `.ai/NEXT_CHAT.md` (this file)
 2. `.ai/CURRENT_STATE.md`
-3. `.ai/tasks/018-advanced-epc-intelligence/task.md`
+3. `.ai/tasks/019-workspace-member-management/task.md`
 
-## 9. Deferred Items (non-blocking)
+## 8. Deferred Items (non-blocking)
 
 - Graph UI auto-layout (ElkJS/Dagre) not implemented
 - Procurement alternative vendor suggestions remain mocked
 - Full LangGraph unification of Chat and Agent orchestration deferred
+- Real email invite flow for new users (currently provisional accounts with random passwords)
+- Audit log entries for member management operations

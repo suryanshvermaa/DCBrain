@@ -1,5 +1,7 @@
 # Task 019: Workspace Member Management
 
+## Status: COMPLETED
+
 ## Objective
 Enable Project Managers and Admins to invite, manage, and assign roles to subusers (Engineers, Viewers, Procurement, QA/QC) within a specific project workspace.
 
@@ -20,13 +22,13 @@ Enable Project Managers and Admins to invite, manage, and assign roles to subuse
 ## Implementation Steps
 
 ### Backend
-- [ ] Add `POST /api/v1/projects/:id/members` endpoint to invite a user by email.
-- [ ] Add `PATCH /api/v1/projects/:id/members/:userId` to update a member's role.
-- [ ] Add `DELETE /api/v1/projects/:id/members/:userId` to remove a member.
-- [ ] Enforce project-level RBAC middleware on these new endpoints.
+- [x] Add `POST /api/v1/projects/:id/members` endpoint to invite a user by email.
+- [x] Add `PATCH /api/v1/projects/:id/members/:userId` to update a member's role.
+- [x] Add `DELETE /api/v1/projects/:id/members/:userId` to remove a member.
+- [x] Enforce project-level RBAC middleware on these new endpoints.
 
 ### Frontend
-- [ ] Create a `ProjectMembersList` component to display the users.
-- [ ] Create an `InviteMemberModal` component with a form (Email, Role dropdown).
-- [ ] Integrate these components into the project dashboard/settings layout.
-- [ ] Handle UI states for successful invitations, errors, and loading.
+- [x] Create a `ProjectMembersList` component (implemented inline in members/page.tsx).
+- [x] Create an `InviteMemberModal` component with a form (Email, Role dropdown).
+- [x] Integrate these components into the project dashboard/settings layout (/members page + sidebar nav).
+- [x] Handle UI states for successful invitations, errors, and loading.

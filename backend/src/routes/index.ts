@@ -48,6 +48,7 @@ routes.get('/', (_req, res) => {
       commissioning: '/api/v1/projects/{id}/commissioning',
       changeOrders: '/api/v1/projects/{id}/change-orders',
       quality: '/api/v1/projects/{id}/quality',
+      members: '/api/v1/projects/{id}/members',
     },
   });
 });

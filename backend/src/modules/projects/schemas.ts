@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ProjectRole } from '@prisma/client';
 
 export const projectIdParamSchema = z.object({
   id: z.string().min(1),
@@ -12,3 +13,20 @@ export const createProjectSchema = z.object({
 });
 
 export type CreateProjectPayload = z.infer<typeof createProjectSchema>;
+
+// Member management schemas
+const projectRoleEnum = z.nativeEnum(ProjectRole);
+
+export const inviteMemberSchema = z.object({
+  email: z.string().trim().email(),
+  role: projectRoleEnum.default(ProjectRole.MEMBER),
+});
+
+export const updateMemberRoleSchema = z.object({
+  role: projectRoleEnum,
+});
+
+export const memberUserIdParamSchema = z.object({
+  id: z.string().min(1),
+  userId: z.string().min(1),
+});

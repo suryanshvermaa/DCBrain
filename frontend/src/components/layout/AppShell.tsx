@@ -21,6 +21,7 @@ import {
   Network,
   BarChart3,
   Settings,
+  Users,
   Lock,
   ChevronRight,
 } from 'lucide-react';
@@ -51,6 +52,7 @@ const navigation = [
   { name: 'Agents',         href: '/agents',        icon: Bot },
   { name: 'Knowledge Graph',href: '/graph',         icon: Network },
   { name: 'Reports',        href: '/reports',       icon: BarChart3 },
+  { name: 'Members',        href: '/members',       icon: Users },
   { name: 'Settings',       href: '/settings',      icon: Settings },
 ];
 

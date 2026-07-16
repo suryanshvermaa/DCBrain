@@ -33,11 +33,33 @@ export interface ProjectMember {
   id: string;
   name: string;
   email: string;
+  globalRole: string;
   role: string;
+  joinedAt: string;
+  isNewUser?: boolean;
 }
 
 export async function getProjectMembers(projectId: string): Promise<{ members: ProjectMember[] }> {
   return api.get<{ members: ProjectMember[] }>(`/api/v1/projects/${projectId}/members`);
+}
+
+export async function inviteProjectMember(
+  projectId: string,
+  payload: { email: string; role: string }
+): Promise<{ member: ProjectMember }> {
+  return api.post<{ member: ProjectMember }>(`/api/v1/projects/${projectId}/members`, payload);
+}
+
+export async function updateProjectMemberRole(
+  projectId: string,
+  userId: string,
+  role: string
+): Promise<{ member: ProjectMember }> {
+  return api.patch<{ member: ProjectMember }>(`/api/v1/projects/${projectId}/members/${userId}`, { role });
+}
+
+export async function removeProjectMember(projectId: string, userId: string): Promise<void> {
+  return api.delete<void>(`/api/v1/projects/${projectId}/members/${userId}`);
 }
 
 // --- Chat APIs ---

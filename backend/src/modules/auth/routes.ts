@@ -1,27 +1,23 @@
 // @ts-nocheck
 import { Router, type Request, type Response } from 'express';
+import { z } from 'zod';
 import { asyncHandler } from '@/core/middleware/errorHandler';
 import { authResponseSchema, loginRequestSchema, registerRequestSchema } from './schemas';
 import { assertAuthRateLimit, resetAuthRateLimit } from './rateLimit';
 import { requireAuth, requirePermission, type AuthenticatedRequest } from './middleware';
 import { login, refresh, register, getCurrentUser } from './service';
-import { buildRefreshCookieOptions, REFRESH_COOKIE_NAME } from './security';
-import { createAuditLog } from './repository';
+import { buildRefreshCookieOptions, REFRESH_COOKIE_NAME, comparePassword, hashPassword } from './security';
+import { createAuditLog, findUserById } from './repository';
+import { UnauthorizedError } from '@/core/errors';
+import prisma from '@/lib/prisma';
 
 export const authRouter = Router();
 
 function extractRefreshTokenFromCookie(cookieHeader: string | undefined): string {
-  if (!cookieHeader) {
-    throw new Error('Missing refresh token');
-  }
-
+  if (!cookieHeader) throw new Error('Missing refresh token');
   const cookies = cookieHeader.split(';').map((part) => part.trim());
   const match = cookies.find((cookie) => cookie.startsWith(`${REFRESH_COOKIE_NAME}=`));
-
-  if (!match) {
-    throw new Error('Missing refresh token');
-  }
-
+  if (!match) throw new Error('Missing refresh token');
   return decodeURIComponent(match.slice(REFRESH_COOKIE_NAME.length + 1));
 }
 
@@ -46,43 +42,21 @@ authRouter.post(
   '/register',
   asyncHandler(async (req: Request, res: Response) => {
     const ipAddress = getRequestIp(req);
-
     try {
       await assertAuthRateLimit('register', ipAddress);
     } catch (error) {
       if (isRateLimitError(error)) {
-        res.status(429).json({
-          success: false,
-          error: {
-            code: 'RATE_LIMIT_EXCEEDED',
-            message: error.message,
-          },
-        });
+        res.status(429).json({ success: false, error: { code: 'RATE_LIMIT_EXCEEDED', message: error.message } });
         return;
       }
-
       throw error;
     }
-
     const input = registerRequestSchema.parse(req.body);
-    const result = await register(input, {
-      ipAddress,
-      userAgent: req.headers['user-agent'],
-    });
-    const responseBody = authResponseSchema.parse({
-      user: result.user,
-      token: {
-        accessToken: result.token.accessToken,
-        tokenType: result.token.tokenType,
-        expiresInSeconds: result.token.expiresInSeconds,
-      },
-    });
+    const result = await register(input, { ipAddress, userAgent: req.headers['user-agent'] });
+    const responseBody = authResponseSchema.parse({ user: result.user, token: { accessToken: result.token.accessToken, tokenType: result.token.tokenType, expiresInSeconds: result.token.expiresInSeconds } });
     setRefreshCookie(res, result.token.refreshToken, result.token.refreshTokenExpiresInSeconds);
     await resetAuthRateLimit('register', ipAddress);
-    res.status(201).json({
-      user: responseBody.user,
-      token: responseBody.token,
-    });
+    res.status(201).json({ user: responseBody.user, token: responseBody.token });
   })
 );
 
@@ -90,43 +64,21 @@ authRouter.post(
   '/login',
   asyncHandler(async (req: Request, res: Response) => {
     const ipAddress = getRequestIp(req);
-
     try {
       await assertAuthRateLimit('login', ipAddress);
     } catch (error) {
       if (isRateLimitError(error)) {
-        res.status(429).json({
-          success: false,
-          error: {
-            code: 'RATE_LIMIT_EXCEEDED',
-            message: error.message,
-          },
-        });
+        res.status(429).json({ success: false, error: { code: 'RATE_LIMIT_EXCEEDED', message: error.message } });
         return;
       }
-
       throw error;
     }
-
     const input = loginRequestSchema.parse(req.body);
-    const result = await login(input, {
-      ipAddress,
-      userAgent: req.headers['user-agent'],
-    });
-    const responseBody = authResponseSchema.parse({
-      user: result.user,
-      token: {
-        accessToken: result.token.accessToken,
-        tokenType: result.token.tokenType,
-        expiresInSeconds: result.token.expiresInSeconds,
-      },
-    });
+    const result = await login(input, { ipAddress, userAgent: req.headers['user-agent'] });
+    const responseBody = authResponseSchema.parse({ user: result.user, token: { accessToken: result.token.accessToken, tokenType: result.token.tokenType, expiresInSeconds: result.token.expiresInSeconds } });
     setRefreshCookie(res, result.token.refreshToken, result.token.refreshTokenExpiresInSeconds);
     await resetAuthRateLimit('login', ipAddress);
-    res.status(200).json({
-      user: responseBody.user,
-      token: responseBody.token,
-    });
+    res.status(200).json({ user: responseBody.user, token: responseBody.token });
   })
 );
 
@@ -134,43 +86,21 @@ authRouter.post(
   '/refresh',
   asyncHandler(async (req: Request, res: Response) => {
     const ipAddress = getRequestIp(req);
-
     try {
       await assertAuthRateLimit('refresh', ipAddress);
     } catch (error) {
       if (isRateLimitError(error)) {
-        res.status(429).json({
-          success: false,
-          error: {
-            code: 'RATE_LIMIT_EXCEEDED',
-            message: error.message,
-          },
-        });
+        res.status(429).json({ success: false, error: { code: 'RATE_LIMIT_EXCEEDED', message: error.message } });
         return;
       }
-
       throw error;
     }
-
     const refreshToken = extractRefreshTokenFromCookie(req.headers.cookie);
-    const result = await refresh(refreshToken, {
-      ipAddress,
-      userAgent: req.headers['user-agent'],
-    });
-    const responseBody = authResponseSchema.parse({
-      user: result.user,
-      token: {
-        accessToken: result.token.accessToken,
-        tokenType: result.token.tokenType,
-        expiresInSeconds: result.token.expiresInSeconds,
-      },
-    });
+    const result = await refresh(refreshToken, { ipAddress, userAgent: req.headers['user-agent'] });
+    const responseBody = authResponseSchema.parse({ user: result.user, token: { accessToken: result.token.accessToken, tokenType: result.token.tokenType, expiresInSeconds: result.token.expiresInSeconds } });
     setRefreshCookie(res, result.token.refreshToken, result.token.refreshTokenExpiresInSeconds);
     await resetAuthRateLimit('refresh', ipAddress);
-    res.status(200).json({
-      user: responseBody.user,
-      token: responseBody.token,
-    });
+    res.status(200).json({ user: responseBody.user, token: responseBody.token });
   })
 );
 
@@ -178,11 +108,7 @@ authRouter.get(
   '/me',
   requireAuth,
   asyncHandler(async (req: Request, res: Response) => {
-    const request = req as Request & {
-      auth?: {
-        user: { id: string };
-      };
-    };
+    const request = req as Request & { auth?: { user: { id: string } } };
     const user = await getCurrentUser(request.auth?.user.id ?? '');
     res.status(200).json({ user });
   })
@@ -204,20 +130,56 @@ authRouter.post(
     const request = req as AuthenticatedRequest;
     const userId = request.auth?.user.id;
     const ipAddress = getRequestIp(req);
-
     res.clearCookie(REFRESH_COOKIE_NAME, buildRefreshCookieOptions(0));
-
     if (userId) {
-      await createAuditLog({
-        userId,
-        action: 'auth.logout',
-        resourceType: 'user',
-        resourceId: userId,
-        ipAddress,
-        userAgent: req.headers['user-agent'],
-      });
+      await createAuditLog({ userId, action: 'auth.logout', resourceType: 'user', resourceId: userId, ipAddress, userAgent: req.headers['user-agent'] });
+    }
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
+  })
+);
+
+// ──────────────────────────────────────────────────────────────────────────────
+// POST /auth/change-password
+// Any authenticated user can change their own password.
+// Requires current password verification before setting a new one.
+// ──────────────────────────────────────────────────────────────────────────────
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+});
+
+authRouter.post(
+  '/change-password',
+  requireAuth,
+  asyncHandler(async (req: Request, res: Response) => {
+    const request = req as AuthenticatedRequest;
+    const userId = request.auth?.user.id ?? '';
+    const ipAddress = getRequestIp(req);
+
+    const body = changePasswordSchema.parse(req.body);
+
+    const user = await findUserById(userId);
+    if (!user || !user.isActive) {
+      throw new UnauthorizedError('User not found');
     }
 
-    res.status(200).json({ success: true, message: 'Logged out successfully' });
+    const matches = await comparePassword(body.currentPassword, user.passwordHash);
+    if (!matches) {
+      throw new UnauthorizedError('Current password is incorrect');
+    }
+
+    const newHash = await hashPassword(body.newPassword);
+    await prisma.user.update({ where: { id: userId }, data: { passwordHash: newHash } });
+
+    await createAuditLog({
+      userId,
+      action: 'auth.change_password',
+      resourceType: 'user',
+      resourceId: userId,
+      ipAddress,
+      userAgent: req.headers['user-agent'],
+    });
+
+    res.status(200).json({ success: true, message: 'Password changed successfully' });
   })
 );
