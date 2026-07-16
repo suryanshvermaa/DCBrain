@@ -25,6 +25,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { AppShell } from '@/components/layout/AppShell';
 import * as projectsApi from '@/lib/api/projects';
 import * as scheduleApi from '@/lib/api/schedule';
 import { ApiError } from '@/lib/api';
@@ -53,9 +54,9 @@ function formatDate(iso: string | null): string {
 }
 
 function spiColor(spi: number): string {
-  if (spi >= 0.95) return 'text-green-600';
-  if (spi >= 0.8) return 'text-amber-600';
-  return 'text-red-600';
+  if (spi >= 0.95) return 'text-[var(--color-success-text)]';
+  if (spi >= 0.8) return 'text-[var(--color-warning-text)]';
+  return 'text-[var(--color-danger-text)]';
 }
 
 function riskBadge(level: scheduleApi.RiskLevel) {
@@ -80,16 +81,16 @@ interface HealthCardProps {
   color?: string;
 }
 
-function HealthCard({ label, value, sub, icon, color = 'text-gray-900' }: HealthCardProps) {
+function HealthCard({ label, value, sub, icon, color = 'text-[var(--color-text-primary)]' }: HealthCardProps) {
   return (
-    <div className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+    <div className="card-level-1 flex items-start gap-4 p-5 transition-theme">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-primary-100)] text-[var(--color-primary)]">
         {icon}
       </div>
       <div>
-        <p className="text-sm text-gray-500">{label}</p>
+        <p className="text-sm text-[var(--color-text-secondary)]">{label}</p>
         <p className={`text-2xl font-bold ${color}`}>{value}</p>
-        {sub ? <p className="mt-0.5 text-xs text-gray-400">{sub}</p> : null}
+        {sub ? <p className="mt-0.5 text-xs text-[var(--color-text-tertiary)]">{sub}</p> : null}
       </div>
     </div>
   );
@@ -105,41 +106,41 @@ function ActivityRow({ activity }: ActivityRowProps) {
   return (
     <>
       <tr
-        className="cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50"
+        className="cursor-pointer border-b border-[var(--color-divider)] transition-colors hover:bg-[var(--color-surface-hover)]"
         onClick={() => setExpanded((v) => !v)}
       >
         <td className="py-3 pl-4 pr-2">
           {expanded ? (
-            <ChevronDown className="h-4 w-4 text-gray-400" />
+            <ChevronDown className="h-4 w-4 text-[var(--color-text-tertiary)]" />
           ) : (
-            <ChevronRight className="h-4 w-4 text-gray-400" />
+            <ChevronRight className="h-4 w-4 text-[var(--color-text-tertiary)]" />
           )}
         </td>
-        <td className="max-w-xs py-3 pr-4 text-sm font-medium text-gray-900">
+        <td className="max-w-xs py-3 pr-4 text-sm font-medium text-[var(--color-text-primary)]">
           <span className="block truncate" title={activity.name}>
             {activity.name}
           </span>
-          <span className="text-xs text-gray-400">{activity.activityId}</span>
+          <span className="text-xs text-[var(--color-text-tertiary)]">{activity.activityId}</span>
         </td>
-        <td className="py-3 pr-4 text-sm text-gray-600">{activity.wbsCode ?? '—'}</td>
-        <td className="py-3 pr-4 text-sm text-gray-600">{formatDate(activity.plannedStart)}</td>
-        <td className="py-3 pr-4 text-sm text-gray-600">{formatDate(activity.plannedFinish)}</td>
-        <td className="py-3 pr-4 text-sm text-gray-600">{activity.durationDays.toFixed(1)}d</td>
-        <td className="py-3 pr-4 text-sm text-gray-600">{activity.totalFloat.toFixed(1)}d</td>
+        <td className="py-3 pr-4 text-sm text-[var(--color-text-secondary)]">{activity.wbsCode ?? '—'}</td>
+        <td className="py-3 pr-4 text-sm text-[var(--color-text-secondary)]">{formatDate(activity.plannedStart)}</td>
+        <td className="py-3 pr-4 text-sm text-[var(--color-text-secondary)]">{formatDate(activity.plannedFinish)}</td>
+        <td className="py-3 pr-4 text-sm text-[var(--color-text-secondary)]">{activity.durationDays.toFixed(1)}d</td>
+        <td className="py-3 pr-4 text-sm text-[var(--color-text-secondary)]">{activity.totalFloat.toFixed(1)}d</td>
         <td className="py-3 pr-4">
           {activity.isCritical ? (
-            <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+            <span className="status-danger inline-block rounded-full border px-2 py-0.5 text-xs font-semibold">
               Critical
             </span>
           ) : (
-            <span className="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+            <span className="inline-block rounded-full bg-[var(--color-badge-default-bg)] px-2 py-0.5 text-xs text-[var(--color-badge-default-text)]">
               —
             </span>
           )}
         </td>
         <td className="py-3 pr-4">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-16 overflow-hidden rounded-full bg-gray-200">
+            <div className="h-2 w-16 overflow-hidden rounded-full bg-[var(--color-surface-raised)]">
               <div
                 className="h-full rounded-full"
                 style={{
@@ -148,34 +149,34 @@ function ActivityRow({ activity }: ActivityRowProps) {
                 }}
               />
             </div>
-            <span className="text-xs font-medium text-gray-700">{activity.riskScore}</span>
+            <span className="text-xs font-medium text-[var(--color-text-primary)]">{activity.riskScore}</span>
           </div>
         </td>
         <td className="py-3 pr-4">{riskBadge(activity.riskLevel)}</td>
       </tr>
       {expanded && (
-        <tr className="bg-blue-50/40">
+        <tr className="bg-[var(--color-sidebar-active)]">
           <td colSpan={10} className="px-8 py-4">
             <div className="space-y-3">
               {activity.mitigationActions.length > 0 ? (
                 <>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-tertiary)]">
                     Recommended Mitigations
                   </p>
                   <ul className="space-y-1.5">
                     {activity.mitigationActions.map((action, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500" />
+                      <li key={idx} className="flex items-start gap-2 text-sm text-[var(--color-text-primary)]">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--color-primary)]" />
                         {action}
                       </li>
                     ))}
                   </ul>
                 </>
               ) : (
-                <p className="text-sm text-gray-500">No mitigation actions recorded.</p>
+                <p className="text-sm text-[var(--color-text-secondary)]">No mitigation actions recorded.</p>
               )}
               {activity.predecessors.length > 0 && (
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-[var(--color-text-tertiary)]">
                   Predecessors: {activity.predecessors.join(', ')}
                 </p>
               )}
@@ -203,14 +204,14 @@ function RiskTooltip({ active, payload }: { active?: boolean; payload?: { payloa
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg text-sm">
-      <p className="font-semibold text-gray-900 max-w-xs truncate">{d.name}</p>
-      <p className="text-gray-500 text-xs">{d.activityId}</p>
-      <p className="mt-1">
-        Risk score: <span className="font-medium">{d.y}</span>
+    <div className="card-level-2 px-3 py-2 text-sm">
+      <p className="max-w-xs truncate font-semibold text-[var(--color-text-primary)]">{d.name}</p>
+      <p className="text-xs text-[var(--color-text-tertiary)]">{d.activityId}</p>
+      <p className="mt-1 text-[var(--color-text-secondary)]">
+        Risk score: <span className="font-medium text-[var(--color-text-primary)]">{d.y}</span>
       </p>
       <span
-        className={`inline-block mt-1 rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${RISK_BG[d.riskLevel]}`}
+        className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${RISK_BG[d.riskLevel]}`}
       >
         {d.riskLevel}
       </span>
@@ -334,84 +335,66 @@ function SchedulePageContent() {
 
   // ---------- Render ----------
 
+  const headerActions = (
+    <div className="flex items-center gap-2">
+      <select
+        className="h-9 min-w-44 rounded-lg border border-[var(--color-input)] bg-[var(--color-input-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none transition-colors focus:border-[var(--color-ring)] focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+        value={projectId ?? ''}
+        onChange={(e) => setProjectId(e.target.value || null)}
+      >
+        {projects.length === 0 ? <option value="">No projects</option> : null}
+        {projects.map((p) => (
+          <option key={p.id} value={p.id}>{p.name}</option>
+        ))}
+      </select>
+      <button
+        type="button"
+        className="inline-flex h-9 items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={importing || !projectId}
+      >
+        {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+        {importing ? 'Importing…' : 'Import XML'}
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".xml,application/xml,text/xml"
+        className="hidden"
+        onChange={onFileChange}
+      />
+    </div>
+  );
+
   return (
-      <main className="min-h-screen bg-gray-50 p-6">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6">
-
-          {/* Header */}
-          <header className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
-                  <TrendingUp className="h-5 w-5" />
-                </span>
-                <div>
-                  <h1 className="text-2xl font-semibold text-gray-900">Schedule Risk</h1>
-                  <p className="text-sm text-gray-500">
-                    Import P6 XML schedules and analyse delay risks per activity.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <select
-                  className="h-10 min-w-56 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none"
-                  value={projectId ?? ''}
-                  onChange={(e) => setProjectId(e.target.value || null)}
-                >
-                  {projects.length === 0 ? <option value="">No projects</option> : null}
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  className="inline-flex h-10 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={importing || !projectId}
-                >
-                  {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                  {importing ? 'Importing…' : 'Import XML'}
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".xml,application/xml,text/xml"
-                  className="hidden"
-                  onChange={onFileChange}
-                />
-              </div>
-            </div>
-            {selectedProject ? (
-              <p className="mt-3 text-sm text-gray-400">
-                {selectedProject.name} · {selectedProject.code}
-              </p>
-            ) : null}
-          </header>
-
+    <AppShell
+      title="Schedule Risk"
+      subtitle={selectedProject ? `${selectedProject.name} · ${selectedProject.code}` : 'Import P6 XML schedules and analyse delay risks per activity'}
+      headerActions={headerActions}
+    >
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 p-6">
           {/* Alerts */}
           {error ? (
-            <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="flex items-center gap-2 rounded-lg border border-[var(--color-danger-border)] bg-[var(--color-danger-bg)] px-4 py-3 text-sm text-[var(--color-danger-text)]">
               <XCircle className="h-4 w-4 flex-shrink-0" />
               {error}
             </div>
           ) : null}
           {importError ? (
-            <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="flex items-center gap-2 rounded-lg border border-[var(--color-danger-border)] bg-[var(--color-danger-bg)] px-4 py-3 text-sm text-[var(--color-danger-text)]">
               <XCircle className="h-4 w-4 flex-shrink-0" />
               {importError}
             </div>
           ) : null}
           {importSuccess ? (
-            <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div className="flex items-center gap-2 rounded-lg border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-4 py-3 text-sm text-[var(--color-success-text)]">
               <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
               {importSuccess}
             </div>
           ) : null}
 
           {loading ? (
-            <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-300 text-sm text-gray-500">
+            <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-[var(--color-border)] text-sm text-[var(--color-text-secondary)]">
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               Loading schedule data…
             </div>
@@ -455,8 +438,8 @@ function SchedulePageContent() {
               {/* Risk Distribution + Heat Map */}
               <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
                 {/* Distribution */}
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-4 text-lg font-semibold text-gray-900">Risk Distribution</h2>
+                <div className="card-level-1 p-6 transition-theme">
+                  <h2 className="mb-4 text-lg font-semibold text-[var(--color-text-primary)]">Risk Distribution</h2>
                   <div className="space-y-3">
                     {(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as scheduleApi.RiskLevel[]).map(
                       (level) => {
@@ -468,12 +451,12 @@ function SchedulePageContent() {
                         return (
                           <div key={level}>
                             <div className="mb-1 flex justify-between text-sm">
-                              <span className="font-medium text-gray-700">{level}</span>
-                              <span className="text-gray-500">
+                              <span className="font-medium text-[var(--color-text-primary)]">{level}</span>
+                              <span className="text-[var(--color-text-secondary)]">
                                 {count} ({pct}%)
                               </span>
                             </div>
-                            <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+                            <div className="h-2 overflow-hidden rounded-full bg-[var(--color-surface-raised)]">
                               <div
                                 className="h-full rounded-full transition-all"
                                 style={{
@@ -488,7 +471,7 @@ function SchedulePageContent() {
                     )}
                   </div>
                   <div className="mt-6">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-tertiary)]">
                       Overall Risk Score
                     </p>
                     <p
@@ -496,15 +479,15 @@ function SchedulePageContent() {
                       style={{ color: RISK_COLORS[health.overallRiskScore >= 75 ? 'CRITICAL' : health.overallRiskScore >= 50 ? 'HIGH' : health.overallRiskScore >= 25 ? 'MEDIUM' : 'LOW'] }}
                     >
                       {health.overallRiskScore}
-                      <span className="ml-1 text-base font-normal text-gray-400">/ 100</span>
+                      <span className="ml-1 text-base font-normal text-[var(--color-text-tertiary)]">/ 100</span>
                     </p>
                   </div>
                 </div>
 
                 {/* Heat Map */}
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-4 text-lg font-semibold text-gray-900">Risk Heat Map</h2>
-                  <p className="mb-4 text-xs text-gray-400">
+                <div className="card-level-1 p-6 transition-theme">
+                  <h2 className="mb-4 text-lg font-semibold text-[var(--color-text-primary)]">Risk Heat Map</h2>
+                  <p className="mb-4 text-xs text-[var(--color-text-tertiary)]">
                     X-axis: planned start date · Y-axis: risk score · Colour: risk level
                   </p>
                   <ResponsiveContainer width="100%" height={280}>
@@ -545,17 +528,17 @@ function SchedulePageContent() {
               </section>
 
               {/* Activities Table */}
-              <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
-                <div className="flex flex-col gap-3 border-b border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">
+              <section className="card-level-1 overflow-hidden transition-theme">
+                <div className="flex flex-col gap-3 border-b border-[var(--color-divider)] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
                     Activities
-                    <span className="ml-2 text-sm font-normal text-gray-400">
+                    <span className="ml-2 text-sm font-normal text-[var(--color-text-tertiary)]">
                       ({filteredActivities.length} of {activities.length})
                     </span>
                   </h2>
                   <div className="flex flex-wrap items-center gap-3">
                     <select
-                      className="h-8 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none"
+                      className="h-8 rounded-lg border border-[var(--color-input)] bg-[var(--color-input-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none"
                       value={filterLevel}
                       onChange={(e) => setFilterLevel(e.target.value as FilterLevel)}
                     >
@@ -565,10 +548,10 @@ function SchedulePageContent() {
                       <option value="MEDIUM">Medium</option>
                       <option value="LOW">Low</option>
                     </select>
-                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+                    <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                       <input
                         type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300"
+                        className="h-4 w-4 rounded border-[var(--color-border)]"
                         checked={showCriticalOnly}
                         onChange={(e) => setShowCriticalOnly(e.target.checked)}
                       />
@@ -579,7 +562,7 @@ function SchedulePageContent() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="border-b border-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      <tr className="border-b border-[var(--color-divider)] bg-[var(--color-surface-raised)] text-xs font-semibold uppercase tracking-wide text-[var(--color-text-tertiary)]">
                         <th className="py-3 pl-4 pr-2 w-8" />
                         <th className="py-3 pr-4">Activity</th>
                         <th className="py-3 pr-4">WBS</th>
@@ -595,7 +578,7 @@ function SchedulePageContent() {
                     <tbody>
                       {filteredActivities.length === 0 ? (
                         <tr>
-                          <td colSpan={10} className="py-12 text-center text-sm text-gray-400">
+                          <td colSpan={10} className="py-12 text-center text-sm text-[var(--color-text-tertiary)]">
                             No activities match the current filters.
                           </td>
                         </tr>
@@ -611,30 +594,30 @@ function SchedulePageContent() {
 
               {/* Import History */}
               {imports.length > 0 && (
-                <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-4 text-lg font-semibold text-gray-900">Import History</h2>
+                <section className="card-level-1 p-6 transition-theme">
+                  <h2 className="mb-4 text-lg font-semibold text-[var(--color-text-primary)]">Import History</h2>
                   <div className="space-y-2">
                     {imports.map((imp) => (
                       <div
                         key={imp.id}
-                        className="flex items-center justify-between rounded-lg border border-gray-100 px-4 py-3 text-sm"
+                        className="flex items-center justify-between rounded-lg border border-[var(--color-border)] px-4 py-3 text-sm"
                       >
                         <div className="flex items-center gap-3">
-                          <Download className="h-4 w-4 text-gray-400" />
+                          <Download className="h-4 w-4 text-[var(--color-text-tertiary)]" />
                           <div>
-                            <p className="font-medium text-gray-900">{imp.filename}</p>
-                            <p className="text-xs text-gray-400">{formatDate(imp.importedAt)}</p>
+                            <p className="font-medium text-[var(--color-text-primary)]">{imp.filename}</p>
+                            <p className="text-xs text-[var(--color-text-tertiary)]">{formatDate(imp.importedAt)}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-gray-500">{imp.activityCount} activities</span>
+                          <span className="text-[var(--color-text-secondary)]">{imp.activityCount} activities</span>
                           <span
                             className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
                               imp.status === 'SUCCESS'
-                                ? 'bg-green-100 text-green-700'
+                                ? 'status-success border'
                                 : imp.status === 'PARTIAL'
-                                ? 'bg-amber-100 text-amber-700'
-                                : 'bg-red-100 text-red-700'
+                                ? 'status-warning border'
+                                : 'status-danger border'
                             }`}
                           >
                             {imp.status}
@@ -650,7 +633,7 @@ function SchedulePageContent() {
             /* Empty state — drop zone */
             <div
               className={`flex flex-col items-center justify-center rounded-xl border-2 border-dashed py-20 transition-colors ${
-                isDragging ? 'border-blue-400 bg-blue-50' : 'border-gray-300 bg-white'
+                isDragging ? 'border-[var(--color-primary)] bg-[var(--color-sidebar-active)]' : 'border-[var(--color-border)] bg-[var(--color-surface)]'
               }`}
               onDragOver={(e) => {
                 e.preventDefault();
@@ -659,14 +642,14 @@ function SchedulePageContent() {
               onDragLeave={() => setIsDragging(false)}
               onDrop={onDrop}
             >
-              <Upload className="mb-4 h-12 w-12 text-gray-300" />
-              <p className="text-lg font-semibold text-gray-700">No schedule imported yet</p>
-              <p className="mt-1 text-sm text-gray-400">
+              <Upload className="mb-4 h-12 w-12 text-[var(--color-text-disabled)]" />
+              <p className="text-lg font-semibold text-[var(--color-text-primary)]">No schedule imported yet</p>
+              <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                 Drag &amp; drop a Primavera P6 XML file here, or click the button above.
               </p>
               <button
                 type="button"
-                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-hover)] disabled:opacity-60"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={importing}
               >
@@ -676,7 +659,7 @@ function SchedulePageContent() {
             </div>
           ) : null}
         </div>
-      </main>
+    </AppShell>
   );
 }
 

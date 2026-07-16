@@ -20,19 +20,19 @@ function formatSize(size: number): string {
 export function DocumentList({ documents, selectedDocumentId, onSelect, onDownload, onDelete }: DocumentListProps) {
   if (documents.length === 0) {
     return (
-      <div className="flex min-h-64 flex-col items-center justify-center rounded-lg border border-gray-200 bg-white px-6 text-center">
-        <FileText className="mb-3 h-9 w-9 text-gray-400" />
-        <p className="text-sm font-semibold text-gray-900">No documents found</p>
-        <p className="mt-1 text-sm text-gray-500">Upload project files to start the document pipeline.</p>
+      <div className="flex min-h-64 flex-col items-center justify-center card-level-1 transition-theme px-6 text-center">
+        <FileText className="mb-3 h-9 w-9 text-[var(--color-text-tertiary)]" />
+        <p className="text-sm font-semibold text-[var(--color-text-primary)]">No documents found</p>
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">Upload project files to start the document pipeline.</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+    <div className="overflow-hidden card-level-1 transition-theme">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <table className="min-w-full divide-y divide-[var(--color-divider)] text-sm">
+          <thead className="bg-[var(--color-surface-raised)] text-left text-xs font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]">
             <tr>
               <th className="px-4 py-3">Document</th>
               <th className="px-4 py-3">Category</th>
@@ -42,28 +42,28 @@ export function DocumentList({ documents, selectedDocumentId, onSelect, onDownlo
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-[var(--color-divider)]">
             {documents.map((document) => (
               <tr
                 key={document.id}
-                className={`cursor-pointer hover:bg-gray-50 ${selectedDocumentId === document.id ? 'bg-primary-50' : ''}`}
+                className={`cursor-pointer transition-colors hover:bg-[var(--color-surface-hover)] ${selectedDocumentId === document.id ? 'bg-[var(--color-surface-hover)]' : ''}`}
                 onClick={() => onSelect(document)}
               >
                 <td className="max-w-xs px-4 py-3">
-                  <p className="truncate font-medium text-gray-900">{document.originalName}</p>
-                  <p className="truncate text-xs text-gray-500">{document.mimeType}</p>
+                  <p className="truncate font-medium text-[var(--color-text-primary)]">{document.originalName}</p>
+                  <p className="truncate text-xs text-[var(--color-text-secondary)]">{document.mimeType}</p>
                 </td>
-                <td className="px-4 py-3 text-gray-700">{document.category}</td>
+                <td className="px-4 py-3 text-[var(--color-text-secondary)]">{document.category}</td>
                 <td className="px-4 py-3">
                   <ProcessingStatusBadge status={document.status} />
                 </td>
-                <td className="px-4 py-3 text-gray-700">{formatSize(document.size)}</td>
-                <td className="px-4 py-3 text-gray-700">{new Date(document.uploadedAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-[var(--color-text-secondary)]">{formatSize(document.size)}</td>
+                <td className="px-4 py-3 text-[var(--color-text-secondary)]">{new Date(document.uploadedAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-1">
                     <button
                       type="button"
-                      className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                      className="rounded-md p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]"
                       aria-label={`Download ${document.originalName}`}
                       onClick={(event) => {
                         event.stopPropagation();
@@ -74,7 +74,7 @@ export function DocumentList({ documents, selectedDocumentId, onSelect, onDownlo
                     </button>
                     <button
                       type="button"
-                      className="rounded-md p-2 text-red-500 hover:bg-red-50 hover:text-red-700"
+                      className="rounded-md p-2 text-[var(--color-danger-text)] hover:bg-[var(--color-danger-bg)]"
                       aria-label={`Delete ${document.originalName}`}
                       onClick={(event) => {
                         event.stopPropagation();

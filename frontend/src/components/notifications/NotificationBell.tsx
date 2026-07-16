@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Bell, Info, AlertTriangle, Shield, CheckCircle, Clock, Settings, Check } from 'lucide-react';
+import {
+  Bell,
+  Info,
+  AlertTriangle,
+  Shield,
+  CheckCircle,
+  Clock,
+  Settings,
+  Check,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useAppSelector } from '@/lib/hooks';
 import { selectAccessToken } from '@/features/auth/authSlice';
@@ -43,7 +52,6 @@ export function NotificationBell() {
 
     const baseApiUrl = baseApiClient.getBaseUrl();
     const wsProto = baseApiUrl.startsWith('https') ? 'wss' : 'ws';
-    // Remove protocol and build socket URL
     const hostPort = baseApiUrl.replace(/^https?:\/\//, '');
     const wsUrl = `${wsProto}://${hostPort}/ws?token=${encodeURIComponent(accessToken)}`;
 
@@ -58,23 +66,21 @@ export function NotificationBell() {
       try {
         const payload = JSON.parse(event.data);
         if (payload.event === 'notification') {
-          // Prepend new notification to state
           setNotifications((prev) => [payload.data, ...prev]);
 
-          // Play subtle notification chime (standard Web Audio API synth to avoid loading file assets)
           try {
             const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
             gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
             osc.start();
             osc.stop(audioCtx.currentTime + 0.3);
           } catch {
-            // Audio context blocked/unsupported, ignore
+            // Audio context blocked/unsupported — ignore
           }
         }
       } catch (err) {
@@ -92,7 +98,7 @@ export function NotificationBell() {
     };
   }, [accessToken]);
 
-  // Close dropdown on click outside
+  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -110,7 +116,9 @@ export function NotificationBell() {
     try {
       await api.markAsRead(id);
       setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true, readAt: new Date().toISOString() } : n))
+        prev.map((n) =>
+          n.id === id ? { ...n, read: true, readAt: new Date().toISOString() } : n,
+        ),
       );
     } catch (err) {
       console.error('Failed to mark notification as read', err);
@@ -120,7 +128,9 @@ export function NotificationBell() {
   const handleMarkAllAsRead = async () => {
     try {
       await api.markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true, readAt: new Date().toISOString() })));
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, read: true, readAt: new Date().toISOString() })),
+      );
     } catch (err) {
       console.error('Failed to mark all notifications as read', err);
     }
@@ -130,16 +140,16 @@ export function NotificationBell() {
     switch (type) {
       case 'SUCCESS':
       case 'DOCUMENT_READY':
-        return <CheckCircle className="h-5 w-5 text-emerald-400 shrink-0" />;
+        return <CheckCircle className="h-5 w-5 shrink-0 text-[var(--color-success)]" />;
       case 'WARNING':
       case 'COMPLIANCE_ISSUE':
-        return <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />;
+        return <AlertTriangle className="h-5 w-5 shrink-0 text-[var(--color-warning)]" />;
       case 'ERROR':
-        return <AlertTriangle className="h-5 w-5 text-rose-500 shrink-0" />;
+        return <AlertTriangle className="h-5 w-5 shrink-0 text-[var(--color-danger)]" />;
       case 'TASK_ASSIGNED':
-        return <Clock className="h-5 w-5 text-purple-400 shrink-0" />;
+        return <Clock className="h-5 w-5 shrink-0 text-purple-500" />;
       default:
-        return <Info className="h-5 w-5 text-sky-400 shrink-0" />;
+        return <Info className="h-5 w-5 shrink-0 text-[var(--color-primary)]" />;
     }
   };
 
@@ -157,26 +167,33 @@ export function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-all"
+        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] transition-all duration-[var(--duration-base)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]"
         aria-label="View notifications"
+        aria-expanded={open}
+        aria-haspopup="true"
       >
-        <Bell className={`h-5 w-5 ${unreadCount > 0 ? 'animate-swing' : ''}`} />
+        <Bell className={`h-4 w-4 ${unreadCount > 0 ? 'animate-swing' : ''}`} />
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white ring-2 ring-slate-900 animate-pulse">
+          <span className="absolute right-1.5 top-1.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-[var(--color-danger)] text-[10px] font-bold text-white ring-2 ring-[var(--color-surface)]">
             {unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-slate-700/60 bg-slate-900/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden text-slate-100 flex flex-col max-h-[500px]">
-          <div className="p-4 border-b border-slate-700/60 flex items-center justify-between">
-            <span className="font-semibold text-sm">Notifications ({unreadCount} unread)</span>
+        <div
+          className="absolute right-0 z-50 mt-2 flex max-h-[500px] w-80 flex-col overflow-hidden rounded-2xl border border-[var(--color-popover-border)] bg-[var(--color-popover)] shadow-[var(--shadow-xl)] animate-scale-in sm:w-96"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[var(--color-divider)] p-4">
+            <span className="text-sm font-semibold text-[var(--color-text-primary)]">
+              Notifications ({unreadCount} unread)
+            </span>
             <div className="flex items-center gap-3">
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-xs text-sky-400 hover:text-sky-300 font-medium transition-colors"
+                  className="text-xs font-medium text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
                 >
                   Mark all read
                 </button>
@@ -184,7 +201,7 @@ export function NotificationBell() {
               <Link
                 href="/settings"
                 onClick={() => setOpen(false)}
-                className="text-slate-400 hover:text-slate-200 transition-colors"
+                className="text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-primary)]"
                 title="Notification settings"
               >
                 <Settings className="h-4 w-4" />
@@ -192,30 +209,39 @@ export function NotificationBell() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto divide-y divide-slate-800/60">
+          {/* Notification list */}
+          <div className="scrollbar-thin flex-1 divide-y divide-[var(--color-divider)] overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-8 text-center text-sm text-slate-500">No notifications yet.</div>
+              <div className="p-8 text-center text-sm text-[var(--color-text-tertiary)]">
+                No notifications yet.
+              </div>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 flex gap-3 hover:bg-slate-800/40 transition-colors relative group ${
-                    !notification.read ? 'bg-sky-500/5' : ''
+                  className={`group relative flex gap-3 p-4 transition-colors hover:bg-[var(--color-surface-hover)] ${
+                    !notification.read
+                      ? 'bg-[hsla(221,83%,53%,0.05)]'
+                      : ''
                   }`}
                 >
                   {getNotificationIcon(notification.type)}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-slate-200 truncate">{notification.title}</p>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{notification.message}</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-[10px] text-slate-500">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-semibold text-[var(--color-text-primary)]">
+                      {notification.title}
+                    </p>
+                    <p className="mt-0.5 line-clamp-2 text-xs text-[var(--color-text-secondary)]">
+                      {notification.message}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-[10px] text-[var(--color-text-tertiary)]">
                         {formatRelativeTime(notification.createdAt)}
                       </span>
                       {notification.link && (
                         <Link
                           href={notification.link}
                           onClick={() => setOpen(false)}
-                          className="text-[10px] font-semibold text-sky-400 hover:text-sky-300 transition-colors"
+                          className="text-[10px] font-semibold text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
                         >
                           View Action
                         </Link>
@@ -225,10 +251,10 @@ export function NotificationBell() {
                   {!notification.read && (
                     <button
                       onClick={(e) => handleMarkAsRead(notification.id, e)}
-                      className="opacity-0 group-hover:opacity-100 absolute top-4 right-4 p-1 hover:bg-slate-700 rounded transition-all text-slate-400 hover:text-emerald-400"
+                      className="absolute right-4 top-4 rounded p-1 opacity-0 transition-all hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-success)] group-hover:opacity-100"
                       title="Mark as read"
                     >
-                      <Check className="h-3 w-3" />
+                      <Check className="h-3 w-3 text-[var(--color-text-tertiary)]" />
                     </button>
                   )}
                 </div>

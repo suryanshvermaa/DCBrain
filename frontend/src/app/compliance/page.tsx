@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Loader2, RefreshCw, ShieldCheck } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { AppShell } from '@/components/layout/AppShell';
 import * as projectsApi from '@/lib/api/projects';
 import * as complianceApi from '@/lib/api/compliance';
 import { ApiError } from '@/lib/api';
@@ -22,18 +23,17 @@ function CompliancePageContent() {
         setProjects(result.projects);
         setProjectId((current) => current ?? result.projects[0]?.id ?? null);
       } catch (requestError) {
-        setError(requestError instanceof ApiError ? requestError.message : 'Unable to load projects');
+        setError(
+          requestError instanceof ApiError ? requestError.message : 'Unable to load projects',
+        );
       }
     }
-
     void loadProjects();
   }, []);
 
   useEffect(() => {
     if (!projectId) return;
-
     const activeProjectId = projectId;
-
     async function loadSummary() {
       setLoading(true);
       setError(null);
@@ -41,16 +41,22 @@ function CompliancePageContent() {
         const result = await complianceApi.getComplianceSummary(activeProjectId);
         setSummary(result);
       } catch (requestError) {
-        setError(requestError instanceof ApiError ? requestError.message : 'Unable to load compliance summary');
+        setError(
+          requestError instanceof ApiError
+            ? requestError.message
+            : 'Unable to load compliance summary',
+        );
       } finally {
         setLoading(false);
       }
     }
-
     void loadSummary();
   }, [projectId]);
 
-  const selectedProject = useMemo(() => projects.find((project) => project.id === projectId) ?? null, [projectId, projects]);
+  const selectedProject = useMemo(
+    () => projects.find((project) => project.id === projectId) ?? null,
+    [projectId, projects],
+  );
 
   async function handleRunCheck() {
     if (!projectId) return;
@@ -78,117 +84,139 @@ function CompliancePageContent() {
         },
       });
     } catch (requestError) {
-      setError(requestError instanceof ApiError ? requestError.message : 'Unable to run compliance check');
+      setError(
+        requestError instanceof ApiError
+          ? requestError.message
+          : 'Unable to run compliance check',
+      );
     } finally {
       setRunning(false);
     }
   }
 
+  const headerActions = (
+    <div className="flex items-center gap-2">
+      <select
+        className="h-9 min-w-44 rounded-lg border border-[var(--color-input)] bg-[var(--color-input-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none transition-colors focus:border-[var(--color-ring)] focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+        value={projectId ?? ''}
+        onChange={(event) => setProjectId(event.target.value || null)}
+      >
+        {projects.length === 0 ? <option value="">No projects</option> : null}
+        {projects.map((project) => (
+          <option key={project.id} value={project.id}>
+            {project.name}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        className="inline-flex h-9 items-center gap-2 rounded-lg bg-[var(--color-warning)] px-4 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        onClick={() => void handleRunCheck()}
+        disabled={running || !projectId}
+      >
+        {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+        {running ? 'Checking…' : 'Run check'}
+      </button>
+    </div>
+  );
+
   return (
-      <main className="min-h-screen bg-gray-50 p-6">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6">
-          <header className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-600 text-white">
-                    <ShieldCheck className="h-5 w-5" />
-                  </span>
-                  <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Compliance</h1>
-                    <p className="text-sm text-gray-500">Run standards-based compliance reviews and review findings per project.</p>
+    <AppShell
+      title="Compliance"
+      subtitle={
+        selectedProject
+          ? `${selectedProject.name} (${selectedProject.code})`
+          : 'Run standards-based compliance reviews and review findings per project'
+      }
+      headerActions={headerActions}
+    >
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 p-6">
+        {error && (
+          <div className="rounded-lg border border-[var(--color-danger-border)] bg-[var(--color-danger-bg)] px-4 py-3 text-sm text-[var(--color-danger-text)]">
+            {error}
+          </div>
+        )}
+
+        <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          {/* Compliance Summary */}
+          <div className="card-level-1 p-6 transition-theme">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+                Compliance Summary
+              </h2>
+              <span className="rounded-full border border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] px-3 py-1 text-sm font-medium text-[var(--color-warning-text)]">
+                {summary?.latestCheck ? 'Latest review' : 'No review yet'}
+              </span>
+            </div>
+
+            {loading ? (
+              <div className="mt-6 flex min-h-48 items-center justify-center rounded-lg border border-dashed border-[var(--color-border)] text-sm text-[var(--color-text-secondary)]">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading compliance data
+              </div>
+            ) : summary ? (
+              <div className="mt-6 space-y-4">
+                {/* Score row */}
+                <div className="rounded-lg border border-[var(--color-border)] p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-[var(--color-text-secondary)]">
+                        Overall compliance score
+                      </p>
+                      <p className="text-3xl font-semibold text-[var(--color-text-primary)]">
+                        {summary.summary.complianceScore}%
+                      </p>
+                    </div>
+                    <div className="rounded-full bg-[var(--color-success-bg)] p-3 text-[var(--color-success)]">
+                      <CheckCircle2 className="h-6 w-6" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <select
-                  className="h-10 min-w-56 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none"
-                  value={projectId ?? ''}
-                  onChange={(event) => setProjectId(event.target.value || null)}
-                >
-                  {projects.length === 0 ? <option value="">No projects</option> : null}
-                  {projects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
+
+                {/* Stat grid */}
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    { label: 'Total findings', value: summary.summary.totalFindings, colorClass: '' },
+                    { label: 'Warnings', value: summary.summary.warningFindings, colorClass: 'text-[var(--color-warning-text)]' },
+                    { label: 'Failures', value: summary.summary.failedFindings, colorClass: 'text-[var(--color-danger-text)]' },
+                  ].map(({ label, value, colorClass }) => (
+                    <div key={label} className="rounded-lg border border-[var(--color-border)] p-4">
+                      <p className="text-sm text-[var(--color-text-secondary)]">{label}</p>
+                      <p className={`text-xl font-semibold text-[var(--color-text-primary)] ${colorClass}`}>
+                        {value}
+                      </p>
+                    </div>
                   ))}
-                </select>
-                <button
-                  type="button"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 text-sm font-semibold text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => void handleRunCheck()}
-                  disabled={running || !projectId}
-                >
-                  {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                  {running ? 'Checking…' : 'Run check'}
-                </button>
-              </div>
-            </div>
-            {selectedProject ? <p className="mt-4 text-sm text-gray-500">Selected project: {selectedProject.name} ({selectedProject.code})</p> : null}
-          </header>
-
-          {error ? <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
-
-          <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Compliance summary</h2>
-                <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700">{summary?.latestCheck ? 'Latest review' : 'No review yet'}</span>
-              </div>
-              {loading ? (
-                <div className="mt-6 flex min-h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 text-sm text-gray-500">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading compliance data
                 </div>
-              ) : summary ? (
-                <div className="mt-6 space-y-4">
-                  <div className="rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-500">Overall compliance score</p>
-                        <p className="text-3xl font-semibold text-gray-900">{summary.summary.complianceScore}%</p>
-                      </div>
-                      <div className="rounded-full bg-green-100 p-3 text-green-700">
-                        <CheckCircle2 className="h-6 w-6" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-lg border border-gray-200 p-4">
-                      <p className="text-sm text-gray-500">Total findings</p>
-                      <p className="text-xl font-semibold text-gray-900">{summary.summary.totalFindings}</p>
-                    </div>
-                    <div className="rounded-lg border border-gray-200 p-4">
-                      <p className="text-sm text-gray-500">Warnings</p>
-                      <p className="text-xl font-semibold text-amber-700">{summary.summary.warningFindings}</p>
-                    </div>
-                    <div className="rounded-lg border border-gray-200 p-4">
-                      <p className="text-sm text-gray-500">Failures</p>
-                      <p className="text-xl font-semibold text-red-700">{summary.summary.failedFindings}</p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-6 rounded-lg border border-dashed border-gray-300 p-6 text-sm text-gray-500">
-                  Select a project and run a compliance check to begin.
-                </div>
-              )}
-            </div>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-amber-600" />
-                <h2 className="text-lg font-semibold text-gray-900">How it works</h2>
               </div>
-              <ul className="mt-4 space-y-3 text-sm text-gray-600">
-                <li>• Upload specification documents for the selected project.</li>
-                <li>• Run the compliance review against standards such as ASHRAE, NFPA, and TIA-942.</li>
-                <li>• Review findings with evidence and recommended remediation steps.</li>
-              </ul>
+            ) : (
+              <div className="mt-6 rounded-lg border border-dashed border-[var(--color-border)] p-6 text-sm text-[var(--color-text-secondary)]">
+                Select a project and run a compliance check to begin.
+              </div>
+            )}
+          </div>
+
+          {/* How it works */}
+          <div className="card-level-1 p-6 transition-theme">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-[var(--color-warning)]" />
+              <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+                How it works
+              </h2>
             </div>
-          </section>
-        </div>
-      </main>
+            <ul className="mt-4 space-y-3 text-sm text-[var(--color-text-secondary)]">
+              <li>• Upload specification documents for the selected project.</li>
+              <li>
+                • Run the compliance review against standards such as ASHRAE, NFPA, and TIA-942.
+              </li>
+              <li>
+                • Review findings with evidence and recommended remediation steps.
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </AppShell>
   );
 }
 

@@ -14,6 +14,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { graphApi, GraphNode, GraphEdge } from '@/lib/api/graph';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { AppShell } from '@/components/layout/AppShell';
 import * as projectsApi from '@/lib/api/projects';
 import { Network, AlertTriangle, Layers, Maximize, Loader2, ChevronDown, ChevronRight, Info } from 'lucide-react';
 
@@ -197,7 +198,8 @@ function GraphPageContent() {
   };
 
   return (
-    <div className="flex h-screen flex-col md:flex-row">
+    <AppShell title="Knowledge Graph" subtitle="Explore entity dependencies and simulate failure propagation">
+      <div className="flex flex-col md:flex-row" style={{ height: 'calc(100vh - 73px)' }}>
       <div className="flex-1 relative bg-slate-950">
         <ReactFlow
           nodes={nodes}
@@ -214,7 +216,7 @@ function GraphPageContent() {
           <Background color="#334155" gap={20} size={1} />
           <Controls className="!bg-slate-800 !border-slate-700 !shadow-lg [&>button]:!bg-slate-700 [&>button]:!border-slate-600 [&>button]:!text-white [&>button:hover]:!bg-slate-600" />
           <MiniMap
-            nodeColor={(n) => n.style?.background as string || '#64748b'}
+            nodeColor={(n: any) => n.style?.background as string || '#64748b'}
             maskColor="rgba(15, 23, 42, 0.7)"
             style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
           />
@@ -344,15 +346,15 @@ function GraphPageContent() {
       </div>
 
       {/* ── Node Inspector Sidebar ── */}
-      <div className="w-full md:w-72 p-5 overflow-y-auto bg-slate-900 border-l border-slate-800">
-        <h3 className="font-semibold text-sm mb-4 flex items-center gap-2 text-slate-300 uppercase tracking-wider">
-          <Maximize className="w-4 h-4 text-slate-500" />
+      <div className="w-full md:w-72 p-5 overflow-y-auto bg-[var(--color-surface)] border-l border-[var(--color-divider)]">
+        <h3 className="font-semibold text-sm mb-4 flex items-center gap-2 text-[var(--color-text-secondary)] uppercase tracking-wider">
+          <Maximize className="w-4 h-4 text-[var(--color-text-tertiary)]" />
           Node Inspector
         </h3>
         {selectedNode ? (
-          <div className="rounded-xl border border-slate-700 bg-slate-800/80 shadow-lg overflow-hidden">
-            <div className="p-4 border-b border-slate-700/50" style={{ borderTop: `3px solid ${nodeColors[selectedNode.labels[0]] || '#64748b'}` }}>
-              <h4 className="text-sm font-bold text-white">
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-lg overflow-hidden">
+            <div className="p-4 border-b border-[var(--color-divider)]" style={{ borderTop: `3px solid ${nodeColors[selectedNode.labels[0]] || '#64748b'}` }}>
+              <h4 className="text-sm font-bold text-[var(--color-text-primary)]">
                 {selectedNode.properties.name || 'Unnamed Node'}
               </h4>
               <div className="mt-2 flex flex-wrap gap-1">
@@ -373,8 +375,8 @@ function GraphPageContent() {
                   if (key === 'name' || key === 'projectId') return null;
                   return (
                     <div key={key} className="flex justify-between text-xs">
-                      <span className="font-medium text-slate-400 capitalize">{key}</span>
-                      <span className="text-slate-200 text-right ml-2">{String(value)}</span>
+                      <span className="font-medium text-[var(--color-text-secondary)] capitalize">{key}</span>
+                      <span className="text-[var(--color-text-primary)] text-right ml-2 break-words">{String(value)}</span>
                     </div>
                   );
                 })}
@@ -382,12 +384,13 @@ function GraphPageContent() {
             </div>
           </div>
         ) : (
-          <div className="text-xs text-slate-500 p-4 border border-dashed border-slate-700 rounded-xl text-center">
+          <div className="text-xs text-[var(--color-text-secondary)] p-4 border border-dashed border-[var(--color-border)] rounded-xl text-center">
             Click on a node in the graph to inspect its properties.
           </div>
         )}
       </div>
     </div>
+    </AppShell>
   );
 }
 

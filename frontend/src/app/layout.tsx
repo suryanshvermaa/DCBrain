@@ -17,14 +17,34 @@ export const metadata: Metadata = {
   keywords: ['EPC', 'Data Centre', 'AI', 'RAG', 'Knowledge Graph', 'Compliance', 'Schedule Risk'],
 };
 
+// Inline script that runs before React hydrates to prevent theme flash.
+// Reads localStorage and applies 'dark' class synchronously.
+const themeScript = `
+(function(){
+  try{
+    var t=localStorage.getItem('dcbrain-theme');
+    var d=document.documentElement;
+    if(t==='dark'||(t==='system'||!t)&&window.matchMedia('(prefers-color-scheme: dark)').matches){
+      d.classList.add('dark');
+    }else{
+      d.classList.remove('dark');
+    }
+  }catch(e){}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">
+    <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        {/* Flash prevention: must run before any paint */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="min-h-full flex flex-col font-sans bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-[200ms]">
         <Providers>{children}</Providers>
       </body>
     </html>

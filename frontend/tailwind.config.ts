@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,8 +10,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // ── Brand scale ────────────────────────────────────────────
+        brand: {
+          50:  '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
+        },
         primary: {
-          50: '#eff6ff',
+          50:  '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
           300: '#93c5fd',
@@ -23,7 +38,7 @@ const config: Config = {
           950: '#172554',
         },
         success: {
-          50: '#f0fdf4',
+          50:  '#f0fdf4',
           100: '#dcfce7',
           200: '#bbf7d0',
           300: '#86efac',
@@ -35,7 +50,7 @@ const config: Config = {
           900: '#14532d',
         },
         danger: {
-          50: '#fef2f2',
+          50:  '#fef2f2',
           100: '#fee2e2',
           200: '#fecaca',
           300: '#fca5a5',
@@ -47,7 +62,7 @@ const config: Config = {
           900: '#7f1d1d',
         },
         warning: {
-          50: '#fffbeb',
+          50:  '#fffbeb',
           100: '#fef3c7',
           200: '#fde68a',
           300: '#fcd34d',
@@ -61,25 +76,76 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      },
+      borderRadius: {
+        xs:   '0.25rem',
+        sm:   '0.375rem',
+        DEFAULT: '0.5rem',
+        md:   '0.625rem',
+        lg:   '0.75rem',
+        xl:   '1rem',
+        '2xl': '1.25rem',
+        '3xl': '1.5rem',
+      },
+      boxShadow: {
+        xs:    '0 1px 2px 0 rgba(0,0,0,0.04)',
+        sm:    '0 1px 3px 0 rgba(0,0,0,0.07), 0 1px 2px -1px rgba(0,0,0,0.05)',
+        md:    '0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05)',
+        lg:    '0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.04)',
+        xl:    '0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04)',
+        '2xl': '0 25px 50px -12px rgba(0,0,0,0.12)',
+        hover: '0 8px 25px -5px rgba(0,0,0,0.10)',
+        modal: '0 25px 60px -10px rgba(0,0,0,0.20)',
+      },
+      transitionDuration: {
+        instant: '75ms',
+        fast:    '150ms',
+        base:    '200ms',
+        slow:    '300ms',
+        slower:  '500ms',
       },
       animation: {
-        'fade-in': 'fadeIn 0.3s ease-in-out',
-        'slide-in': 'slideIn 0.3s ease-out',
-        'pulse-soft': 'pulseSoft 2s infinite',
+        'fade-in':   'fadeIn 0.3s ease-in-out',
+        'slide-in':  'slideIn 0.3s ease-out',
+        'slide-up':  'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        'slide-down':'slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        'scale-in':  'scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+        'pulse-soft':'pulseSoft 2s infinite',
+        'spin-slow': 'spin 1.5s linear infinite',
+        'swing':     'swingBell 0.6s ease-in-out',
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0' },
+          '0%':   { opacity: '0' },
           '100%': { opacity: '1' },
         },
         slideIn: {
-          '0%': { transform: 'translateX(-10px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
+          '0%':   { transform: 'translateX(-10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)',      opacity: '1' },
+        },
+        slideUp: {
+          '0%':   { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)',    opacity: '1' },
+        },
+        slideDown: {
+          '0%':   { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%':   { transform: 'scale(0.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)',    opacity: '1' },
         },
         pulseSoft: {
           '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.7' },
+          '50%':      { opacity: '0.7' },
+        },
+        swingBell: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '20%':      { transform: 'rotate(12deg)' },
+          '40%':      { transform: 'rotate(-10deg)' },
+          '60%':      { transform: 'rotate(6deg)' },
+          '80%':      { transform: 'rotate(-4deg)' },
         },
       },
     },

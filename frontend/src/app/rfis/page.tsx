@@ -30,46 +30,11 @@ import { Activity,
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { AppShell } from '@/components/layout/AppShell';
 import * as projectsApi from '@/lib/api/projects';
 import * as documentsApi from '@/lib/api/documents';
 import * as rfisApi from '@/lib/api/rfis';
 
-const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Documents', href: '/documents', icon: FileText },
-  { name: 'Search', href: '/search', icon: Search },
-  { name: 'Chat', href: '/chat', icon: Bot },
-  { name: 'Compliance', href: '/compliance', icon: Shield },
-  { name: 'Schedule', href: '/schedule', icon: Calendar },
-  { name: 'Procurement', href: '/procurement', icon: PackageIcon },
-  { name: 'Simulations', href: '/simulations', icon: Activity },
-  { name: 'RFIs', href: '/rfis', icon: HelpCircle },
-  { name: 'Agents', href: '/agents', icon: Bot },
-  { name: 'Knowledge Graph', href: '/graph', icon: Network },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
-  { name: 'Settings', href: '/settings', icon: Settings },
-];
-
-function PackageIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-      <line x1="12" y1="22.08" x2="12" y2="12" />
-    </svg>
-  );
-}
 
 function RfisPageContent() {
   const pathname = usePathname();
@@ -329,79 +294,36 @@ function RfisPageContent() {
     );
   };
 
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      <select
+        className="h-9 min-w-48 rounded-lg border border-[var(--color-input)] bg-[var(--color-input-bg)] px-3 text-sm outline-none text-[var(--color-text-primary)] transition-colors focus:border-[var(--color-ring)] focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+        value={projectId ?? ''}
+        onChange={(e) => setProjectId(e.target.value || null)}
+      >
+        {projects.length === 0 ? <option value="">No projects</option> : null}
+        {projects.map((p) => (
+          <option key={p.id} value={p.id}>{p.name}</option>
+        ))}
+      </select>
+
+      <button
+        onClick={() => setCreateModalOpen(true)}
+        className="inline-flex h-9 items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+      >
+        <Plus className="h-4 w-4" />
+        New RFI
+      </button>
+    </div>
+  );
+
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col shrink-0">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <span className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <LayoutDashboard className="w-5 h-5 text-white" />
-              </span>
-              DCBrain
-            </h1>
-          </div>
-
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
-              const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    active
-                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </nav>
-        </aside>
-
-        {/* Main Workspace */}
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          {/* Header */}
-          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-8 py-4 shrink-0">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">RFI Intelligence</h2>
-                {selectedProject && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {selectedProject.name} ({selectedProject.code})
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                <select
-                  className="h-9 min-w-48 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
-                  value={projectId ?? ''}
-                  onChange={(e) => setProjectId(e.target.value || null)}
-                >
-                  {projects.length === 0 ? <option value="">No projects</option> : null}
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
-
-                <button
-                  onClick={() => setCreateModalOpen(true)}
-                  className="inline-flex h-9 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700"
-                >
-                  <Plus className="h-4 w-4" />
-                  New RFI
-                </button>
-              </div>
-            </div>
-          </header>
-
-          {/* Page Body: Analytics and Splitted View */}
-          <div className="flex-1 flex flex-col overflow-hidden p-8 space-y-6">
+    <AppShell
+      title="RFI Intelligence"
+      subtitle={selectedProject ? `${selectedProject.name} (${selectedProject.code})` : 'Track and resolve requests for information'}
+      headerActions={headerActions}
+    >
+        <div className="flex-1 flex flex-col overflow-hidden min-h-[calc(100vh-4rem)] p-8 space-y-6">
             {error && (
               <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shrink-0">
                 {error}
@@ -769,8 +691,6 @@ function RfisPageContent() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
 
       {/* New RFI Dialog Modal */}
       {createModalOpen && (
@@ -917,7 +837,7 @@ function RfisPageContent() {
           </div>
         </div>
       )}
-    </>
+    </AppShell>
   );
 }
 

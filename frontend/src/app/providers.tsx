@@ -3,7 +3,7 @@
 import { Provider } from 'react-redux';
 import { store } from '@/lib/store';
 import { ReactNode } from 'react';
-
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { api } from '@/lib/api';
 import { selectAccessToken } from '@/features/auth/authSlice';
 import { useAppSelector } from '@/lib/hooks';
@@ -21,8 +21,10 @@ function AuthClientBridge() {
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <Provider store={store}>
-      <AuthClientBridge />
-      {children}
+      <ThemeProvider>
+        <AuthClientBridge />
+        {children}
+      </ThemeProvider>
     </Provider>
   );
 }

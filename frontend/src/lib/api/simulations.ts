@@ -43,5 +43,5 @@ export async function runDelaySimulation(
 }
 
 export async function generateMitigationPlan(projectId: string, simId: string): Promise<{ content: string }> {
-  return api.post<{ content: string }>(`/api/v1/projects/${projectId}/simulations/${simId}/mitigate`);
+  return api.post<{ content: string }>(`/api/v1/projects/${projectId}/simulations/${simId}/mitigate`, {});
 }

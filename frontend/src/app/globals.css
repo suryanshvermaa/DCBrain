@@ -1,14 +1,144 @@
 @import "tailwindcss";
-@import "./search.css";
+
+/* ==========================================================================
+   DCBrain Design System — Centralized Token Layer
+   All colors, shadows, radii, and timing live here.
+   Components must reference tokens; never define raw hex values.
+   ========================================================================== */
 
 @theme {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222.2 84% 4.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 84% 4.9%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222.2 84% 4.9%);
-  --color-primary-50: #eff6ff;
+  /* ── Brand Palette ─────────────────────────────────────────────── */
+  --color-brand-50:  #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+  --color-brand-950: #172554;
+
+  /* ── Semantic — Light Mode (default) ──────────────────────────── */
+  --color-bg:             hsl(220 20% 97%);
+  --color-surface:        hsl(0 0% 100%);
+  --color-surface-raised: hsl(220 14% 98%);
+  --color-surface-hover:  hsl(220 14% 95%);
+
+  --color-sidebar-bg:     hsl(0 0% 100%);
+  --color-sidebar-border: hsl(220 13% 91%);
+  --color-sidebar-hover:  hsl(220 14% 95%);
+  --color-sidebar-active: hsl(214 100% 97%);
+  --color-sidebar-active-text: hsl(221 83% 53%);
+
+  --color-header-bg:      hsl(0 0% 100%);
+  --color-header-border:  hsl(220 13% 91%);
+
+  --color-card:           hsl(0 0% 100%);
+  --color-card-border:    hsl(220 13% 91%);
+  --color-card-hover:     hsl(220 14% 99%);
+
+  --color-border:         hsl(220 13% 91%);
+  --color-divider:        hsl(220 13% 91%);
+  --color-input:          hsl(220 13% 91%);
+  --color-input-bg:       hsl(220 20% 97%);
+
+  /* Text */
+  --color-text-primary:   hsl(222 47% 11%);
+  --color-text-secondary: hsl(215 16% 47%);
+  --color-text-tertiary:  hsl(215 16% 60%);
+  --color-text-disabled:  hsl(215 16% 72%);
+  --color-text-inverse:   hsl(0 0% 100%);
+
+  /* Links */
+  --color-link:           hsl(221 83% 53%);
+  --color-link-hover:     hsl(221 83% 45%);
+
+  /* Status */
+  --color-primary:              hsl(221 83% 53%);
+  --color-primary-foreground:   hsl(210 40% 98%);
+  --color-primary-hover:        hsl(221 83% 45%);
+
+  --color-success:              hsl(142 71% 45%);
+  --color-success-bg:           hsl(141 80% 96%);
+  --color-success-border:       hsl(141 60% 85%);
+  --color-success-text:         hsl(142 72% 29%);
+
+  --color-warning:              hsl(38 92% 50%);
+  --color-warning-bg:           hsl(48 100% 95%);
+  --color-warning-border:       hsl(45 97% 82%);
+  --color-warning-text:         hsl(32 95% 28%);
+
+  --color-danger:               hsl(0 84% 60%);
+  --color-danger-bg:            hsl(0 86% 97%);
+  --color-danger-border:        hsl(0 91% 88%);
+  --color-danger-text:          hsl(0 74% 42%);
+
+  --color-info:                 hsl(199 89% 48%);
+  --color-info-bg:              hsl(204 100% 95%);
+  --color-info-border:          hsl(201 90% 84%);
+  --color-info-text:            hsl(205 82% 28%);
+
+  --color-muted:                hsl(210 40% 96%);
+  --color-muted-foreground:     hsl(215 16% 47%);
+
+  --color-accent:               hsl(210 40% 96%);
+  --color-accent-foreground:    hsl(222 47% 11%);
+
+  --color-destructive:          hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+
+  --color-ring:                 hsl(221 83% 53%);
+  --color-focus-ring:           hsla(221, 83%, 53%, 0.25);
+
+  /* Popover / Dropdown */
+  --color-popover:              hsl(0 0% 100%);
+  --color-popover-foreground:   hsl(222 84% 5%);
+  --color-popover-border:       hsl(220 13% 91%);
+
+  /* Tooltip */
+  --color-tooltip-bg:           hsl(222 47% 11%);
+  --color-tooltip-text:         hsl(210 40% 98%);
+
+  /* Badge / Chip */
+  --color-badge-default-bg:     hsl(220 14% 94%);
+  --color-badge-default-text:   hsl(215 16% 47%);
+
+  /* ── Shadows ────────────────────────────────────────────────────── */
+  --shadow-xs:    0 1px 2px 0 rgba(0,0,0,0.04);
+  --shadow-sm:    0 1px 3px 0 rgba(0,0,0,0.07), 0 1px 2px -1px rgba(0,0,0,0.05);
+  --shadow-md:    0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg:    0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.04);
+  --shadow-xl:    0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+  --shadow-2xl:   0 25px 50px -12px rgba(0,0,0,0.12);
+  --shadow-hover: 0 8px 25px -5px rgba(0,0,0,0.10);
+  --shadow-modal: 0 25px 60px -10px rgba(0,0,0,0.20);
+
+  /* ── Border Radius ──────────────────────────────────────────────── */
+  --radius-xs:   0.25rem;  /* 4px  */
+  --radius-sm:   0.375rem; /* 6px  */
+  --radius:      0.5rem;   /* 8px  */
+  --radius-md:   0.625rem; /* 10px */
+  --radius-lg:   0.75rem;  /* 12px */
+  --radius-xl:   1rem;     /* 16px */
+  --radius-2xl:  1.25rem;  /* 20px */
+  --radius-3xl:  1.5rem;   /* 24px */
+  --radius-full: 9999px;
+
+  /* ── Animation Durations ────────────────────────────────────────── */
+  --duration-instant: 75ms;
+  --duration-fast:    150ms;
+  --duration-base:    200ms;
+  --duration-slow:    300ms;
+  --duration-slower:  500ms;
+
+  /* ── Typography ─────────────────────────────────────────────────── */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ── Primary Color Scale (for tailwind compat) ─────────────────── */
+  --color-primary-50:  #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
   --color-primary-300: #93c5fd;
@@ -19,31 +149,160 @@
   --color-primary-800: #1e40af;
   --color-primary-900: #1e3a8a;
   --color-primary-950: #172554;
-  --color-primary: hsl(221.2 83.2% 53.3%);
-  --color-primary-foreground: hsl(210 40% 98%);
-  --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-muted: hsl(210 40% 96.1%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
-  --color-accent: hsl(210 40% 96.1%);
-  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(221.2 83.2% 53.3%);
-  --radius: 0.5rem;
+
+  /* ── Success/Warning/Danger Scale ──────────────────────────────── */
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-danger-500:  #ef4444;
+  --color-danger-600:  #dc2626;
+
+  /* ── Animations ─────────────────────────────────────────────────── */
+  --animate-fade-in:        fadeIn 0.3s ease-in-out;
+  --animate-slide-in:       slideIn 0.3s ease-out;
+  --animate-slide-up:       slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-down:     slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-scale-in:       scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-pulse-soft:     pulseSoft 2s infinite;
+  --animate-spin:           spin 0.8s linear infinite;
 }
 
-* {
+/* ==========================================================================
+   Dark Theme Token Overrides
+   Applied when <html class="dark">
+   ========================================================================== */
+.dark {
+  --color-bg:             hsl(222 28% 9%);
+  --color-surface:        hsl(222 24% 12%);
+  --color-surface-raised: hsl(222 22% 15%);
+  --color-surface-hover:  hsl(222 22% 18%);
+
+  --color-sidebar-bg:     hsl(222 24% 11%);
+  --color-sidebar-border: hsl(222 18% 20%);
+  --color-sidebar-hover:  hsl(222 22% 18%);
+  --color-sidebar-active: hsla(221, 83%, 53%, 0.12);
+  --color-sidebar-active-text: hsl(213 97% 72%);
+
+  --color-header-bg:      hsl(222 24% 11%);
+  --color-header-border:  hsl(222 18% 20%);
+
+  --color-card:           hsl(222 24% 12%);
+  --color-card-border:    hsl(222 18% 20%);
+  --color-card-hover:     hsl(222 22% 14%);
+
+  --color-border:         hsl(222 18% 20%);
+  --color-divider:        hsl(222 18% 20%);
+  --color-input:          hsl(222 18% 22%);
+  --color-input-bg:       hsl(222 24% 14%);
+
+  --color-text-primary:   hsl(210 40% 96%);
+  --color-text-secondary: hsl(215 20% 65%);
+  --color-text-tertiary:  hsl(215 16% 50%);
+  --color-text-disabled:  hsl(215 16% 38%);
+  --color-text-inverse:   hsl(222 47% 11%);
+
+  --color-link:           hsl(213 97% 72%);
+  --color-link-hover:     hsl(213 97% 80%);
+
+  --color-primary:              hsl(213 97% 65%);
+  --color-primary-foreground:   hsl(222 47% 11%);
+  --color-primary-hover:        hsl(213 97% 72%);
+  --color-primary-50:           hsla(213, 97%, 65%, 0.08);
+  --color-primary-100:          hsla(213, 97%, 65%, 0.15);
+  --color-primary-200:          hsla(213, 97%, 65%, 0.25);
+
+  --color-success:              hsl(142 69% 58%);
+  --color-success-bg:           hsla(142, 71%, 45%, 0.12);
+  --color-success-border:       hsla(142, 71%, 45%, 0.25);
+  --color-success-text:         hsl(142 69% 68%);
+
+  --color-warning:              hsl(38 92% 60%);
+  --color-warning-bg:           hsla(38, 92%, 50%, 0.12);
+  --color-warning-border:       hsla(38, 92%, 50%, 0.25);
+  --color-warning-text:         hsl(38 92% 70%);
+
+  --color-danger:               hsl(0 84% 68%);
+  --color-danger-bg:            hsla(0, 84%, 60%, 0.12);
+  --color-danger-border:        hsla(0, 84%, 60%, 0.25);
+  --color-danger-text:          hsl(0 84% 75%);
+
+  --color-info:                 hsl(199 89% 60%);
+  --color-info-bg:              hsla(199, 89%, 48%, 0.12);
+  --color-info-border:          hsla(199, 89%, 48%, 0.25);
+  --color-info-text:            hsl(199 89% 70%);
+
+  --color-muted:                hsl(222 22% 18%);
+  --color-muted-foreground:     hsl(215 20% 55%);
+
+  --color-accent:               hsl(222 22% 18%);
+  --color-accent-foreground:    hsl(210 40% 96%);
+
+  --color-ring:                 hsl(213 97% 65%);
+  --color-focus-ring:           hsla(213, 97%, 65%, 0.25);
+
+  --color-popover:              hsl(222 24% 13%);
+  --color-popover-foreground:   hsl(210 40% 96%);
+  --color-popover-border:       hsl(222 18% 22%);
+
+  --color-tooltip-bg:           hsl(222 22% 18%);
+  --color-tooltip-text:         hsl(210 40% 96%);
+
+  --color-badge-default-bg:     hsl(222 22% 20%);
+  --color-badge-default-text:   hsl(215 20% 65%);
+
+  /* Shadows (more subtle on dark backgrounds) */
+  --shadow-xs:    0 1px 2px 0 rgba(0,0,0,0.2);
+  --shadow-sm:    0 1px 3px 0 rgba(0,0,0,0.25), 0 1px 2px -1px rgba(0,0,0,0.2);
+  --shadow-md:    0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.2);
+  --shadow-lg:    0 10px 15px -3px rgba(0,0,0,0.35), 0 4px 6px -4px rgba(0,0,0,0.2);
+  --shadow-xl:    0 20px 25px -5px rgba(0,0,0,0.4), 0 8px 10px -6px rgba(0,0,0,0.2);
+  --shadow-2xl:   0 25px 50px -12px rgba(0,0,0,0.5);
+  --shadow-hover: 0 8px 25px -5px rgba(0,0,0,0.4);
+  --shadow-modal: 0 25px 60px -10px rgba(0,0,0,0.6);
+}
+
+/* ==========================================================================
+   Global Base Styles
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
   border-color: var(--color-border);
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
   font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ==========================================================================
+   Focus Ring — Consistent keyboard navigation indicator
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   Scrollbars
+   ========================================================================== */
 
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -52,4 +311,117 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* ==========================================================================
+   Animation Keyframes
+   ========================================================================== */
+
+@keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideIn {
+  0%   { transform: translateX(-10px); opacity: 0; }
+  100% { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes slideUp {
+  0%   { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes slideDown {
+  0%   { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  0%   { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes swingBell {
+  0%, 100% { transform: rotate(0deg); }
+  20%       { transform: rotate(12deg); }
+  40%       { transform: rotate(-10deg); }
+  60%       { transform: rotate(6deg); }
+  80%       { transform: rotate(-4deg); }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.animate-swing {
+  animation: swingBell 0.6s ease-in-out;
+}
+
+/* Card elevation levels */
+.card-level-1 {
+  background: var(--color-card);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+}
+
+.card-level-2 {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-xl);
+}
+
+.card-level-3 {
+  background: var(--color-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-xl);
+}
+
+/* Status color utilities */
+.status-success { color: var(--color-success-text); background: var(--color-success-bg); border-color: var(--color-success-border); }
+.status-warning { color: var(--color-warning-text); background: var(--color-warning-bg); border-color: var(--color-warning-border); }
+.status-danger  { color: var(--color-danger-text);  background: var(--color-danger-bg);  border-color: var(--color-danger-border); }
+.status-info    { color: var(--color-info-text);    background: var(--color-info-bg);    border-color: var(--color-info-border); }
+
+/* Transition utilities */
+.transition-theme {
+  transition: background-color var(--duration-base) ease,
+              border-color var(--duration-base) ease,
+              color var(--duration-base) ease,
+              box-shadow var(--duration-base) ease;
 }

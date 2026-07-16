@@ -11,6 +11,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { AppShell } from '@/components/layout/AppShell';
 import * as projectsApi from '@/lib/api/projects';
 import * as ncrApi from '@/lib/api/ncr';
 
@@ -36,17 +37,17 @@ const navigation = [
 ];
 
 const SEVERITY_COLORS: Record<string, string> = {
-  MINOR: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-  MAJOR: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-  CRITICAL: 'bg-red-500/20 text-red-300 border-red-500/30',
+  MINOR: 'status-info border',
+  MAJOR: 'status-warning border',
+  CRITICAL: 'status-danger border',
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  OPEN: 'bg-red-500/20 text-red-300 border-red-500/30',
-  UNDER_REVIEW: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-  RESOLVED: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  CLOSED: 'bg-green-500/20 text-green-300 border-green-500/30',
-  VOID: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+  OPEN: 'status-danger border',
+  UNDER_REVIEW: 'status-warning border',
+  RESOLVED: 'status-info border',
+  CLOSED: 'status-success border',
+  VOID: 'bg-[var(--color-badge-default-bg)] text-[var(--color-badge-default-text)] border border-[var(--color-border)]',
 };
 
 function NcrsPageContent() {
@@ -142,100 +143,57 @@ function NcrsPageContent() {
     }
   }
 
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      {projects.length > 0 && (
+        <select
+          value={projectId ?? ''}
+          onChange={(e) => setProjectId(e.target.value)}
+          className="h-9 min-w-44 rounded-lg border border-[var(--color-input)] bg-[var(--color-input-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none transition-colors focus:border-[var(--color-ring)] focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+        >
+          {projects.map((p) => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
+        </select>
+      )}
+      <button
+        onClick={() => void fetchData()}
+        className="inline-flex h-9 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]"
+      >
+        <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+      </button>
+      <button
+        onClick={() => setShowModal(true)}
+        className="inline-flex h-9 items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-hover)] shadow-sm"
+      >
+        <Plus size={16} /> New NCR
+      </button>
+    </div>
+  );
+
   return (
-    <div className="flex h-screen bg-[#0a0a0f] text-white overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 bg-[#111118] border-r border-white/5 flex flex-col">
-        <div className="p-6 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">DC</span>
-            </div>
-            <div>
-              <h1 className="font-bold text-sm text-white">DCBrain</h1>
-              <p className="text-xs text-white/40">EPC Intelligence</p>
-            </div>
-          </div>
-        </div>
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navigation.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                  active
-                    ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                    : 'text-white/50 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                <item.icon size={16} />
-                {item.name}
-              </Link>
-            );
-          })}
-        </nav>
-        {projects.length > 1 && (
-          <div className="p-4 border-t border-white/5">
-            <label className="text-xs text-white/40 mb-2 block">Project</label>
-            <select
-              value={projectId ?? ''}
-              onChange={(e) => setProjectId(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-            >
-              {projects.map((p) => (
-                <option key={p.id} value={p.id} className="bg-[#111118]">{p.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
-      </aside>
-
-      {/* Main */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="border-b border-white/5 bg-[#111118]/50 backdrop-blur-xl px-8 py-5 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-white flex items-center gap-2">
-              <AlertOctagon size={22} className="text-orange-400" />
-              Non-Conformance Reports
-            </h1>
-            <p className="text-sm text-white/40 mt-0.5">Track quality defects and non-conformances</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => void fetchData()}
-              className="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-            >
-              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-500 hover:to-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg shadow-violet-500/20"
-            >
-              <Plus size={16} /> New NCR
-            </button>
-          </div>
-        </header>
-
-        <div className="flex-1 flex overflow-hidden">
+    <AppShell
+      title="Non-Conformance Reports"
+      subtitle="Track quality defects and non-conformances"
+      headerActions={headerActions}
+    >
+        <div className="flex-1 flex overflow-hidden min-h-[calc(100vh-4rem)]">
           {/* List pane */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {/* Analytics cards */}
             {analytics && (
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { label: 'Total NCRs', value: analytics.total, color: 'from-violet-600 to-violet-800' },
-                  { label: 'Open', value: analytics.open, color: 'from-red-600 to-red-800' },
-                  { label: 'Critical', value: analytics.bySeverity.CRITICAL, color: 'from-orange-600 to-orange-800' },
-                  { label: 'Resolved', value: analytics.resolved, color: 'from-green-600 to-green-800' },
+                  { label: 'Total NCRs', value: analytics.total, color: 'text-[var(--color-primary)]' },
+                  { label: 'Open', value: analytics.open, color: 'text-[var(--color-danger)]' },
+                  { label: 'Critical', value: analytics.bySeverity.CRITICAL, color: 'text-[var(--color-warning)]' },
+                  { label: 'Resolved', value: analytics.resolved, color: 'text-[var(--color-success)]' },
                 ].map((card) => (
-                  <div key={card.label} className="bg-[#111118] border border-white/5 rounded-xl p-4">
-                    <div className={`text-3xl font-bold bg-gradient-to-r ${card.color} bg-clip-text text-transparent`}>
+                  <div key={card.label} className="card-level-1 p-4 transition-theme">
+                    <div className={`text-3xl font-bold ${card.color}`}>
                       {card.value}
                     </div>
-                    <div className="text-xs text-white/40 mt-1">{card.label}</div>
+                    <div className="text-xs text-[var(--color-text-secondary)] mt-1">{card.label}</div>
                   </div>
                 ))}
               </div>
@@ -243,28 +201,28 @@ function NcrsPageContent() {
 
             {/* Filters */}
             <div className="flex items-center gap-3">
-              <Filter size={14} className="text-white/40" />
+              <Filter size={14} className="text-[var(--color-text-tertiary)]" />
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as ncrApi.NcrStatus | '')}
-                className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white/70"
+                className="h-8 rounded-lg border border-[var(--color-input)] bg-[var(--color-input-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none"
               >
-                <option value="" className="bg-[#111118]">All Statuses</option>
+                <option value="">All Statuses</option>
                 {['OPEN','UNDER_REVIEW','RESOLVED','CLOSED','VOID'].map(s => (
-                  <option key={s} value={s} className="bg-[#111118]">{s.replace('_', ' ')}</option>
+                  <option key={s} value={s}>{s.replace('_', ' ')}</option>
                 ))}
               </select>
               <select
                 value={filterSeverity}
                 onChange={(e) => setFilterSeverity(e.target.value as ncrApi.NcrSeverity | '')}
-                className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white/70"
+                className="h-8 rounded-lg border border-[var(--color-input)] bg-[var(--color-input-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none"
               >
-                <option value="" className="bg-[#111118]">All Severities</option>
+                <option value="">All Severities</option>
                 {['MINOR','MAJOR','CRITICAL'].map(s => (
-                  <option key={s} value={s} className="bg-[#111118]">{s}</option>
+                  <option key={s} value={s}>{s}</option>
                 ))}
               </select>
-              <span className="text-xs text-white/30 ml-auto">{total} results</span>
+              <span className="text-xs text-[var(--color-text-tertiary)] ml-auto">{total} results</span>
             </div>
 
             {/* NCR list */}
@@ -389,87 +347,98 @@ function NcrsPageContent() {
             </div>
           )}
         </div>
-      </main>
 
       {/* Create Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#111118] border border-white/10 rounded-2xl p-6 w-full max-w-lg">
-            <h2 className="text-lg font-semibold text-white mb-5">Create NCR</h2>
-            <div className="space-y-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="card-level-3 w-full max-w-lg rounded-2xl border border-[var(--color-divider)] overflow-hidden transition-theme">
+            <div className="p-6 border-b border-[var(--color-divider)] flex justify-between items-center bg-[var(--color-surface-raised)]">
+              <h2 className="text-xl font-bold text-[var(--color-text-primary)]">Raise New NCR</h2>
+              <button onClick={() => setShowModal(false)} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors">
+                <XCircle size={20} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              {formError && (
+                <div className="p-3 bg-[var(--color-danger-bg)] border border-[var(--color-danger-border)] text-[var(--color-danger-text)] text-sm rounded-lg flex items-center gap-2">
+                  <AlertTriangle size={16} /> {formError}
+                </div>
+              )}
               <div>
-                <label className="text-xs text-white/50 mb-1.5 block">Title *</label>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Title</label>
                 <input
+                  type="text"
                   value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
-                  placeholder="Non-conformance summary"
+                  onChange={e => setForm({ ...form, title: e.target.value })}
+                  placeholder="E.g., Concrete pouring defect in Sector 4"
+                  className="w-full bg-[var(--color-input-bg)] border border-[var(--color-input)] rounded-lg px-4 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-ring)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all"
                 />
               </div>
               <div>
-                <label className="text-xs text-white/50 mb-1.5 block">Description *</label>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Description</label>
                 <textarea
                   value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  rows={3}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 resize-none"
+                  onChange={e => setForm({ ...form, description: e.target.value })}
                   placeholder="Detailed description of the non-conformance..."
+                  rows={4}
+                  className="w-full bg-[var(--color-input-bg)] border border-[var(--color-input)] rounded-lg px-4 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-ring)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-white/50 mb-1.5 block">Severity</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Severity</label>
                   <select
                     value={form.severity}
-                    onChange={(e) => setForm({ ...form, severity: e.target.value as ncrApi.NcrSeverity })}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
+                    onChange={e => setForm({ ...form, severity: e.target.value as ncrApi.NcrSeverity })}
+                    className="w-full bg-[var(--color-input-bg)] border border-[var(--color-input)] rounded-lg px-4 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-ring)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all"
                   >
-                    {['MINOR','MAJOR','CRITICAL'].map(s => (
-                      <option key={s} value={s} className="bg-[#111118]">{s}</option>
-                    ))}
+                    <option value="MINOR">Minor</option>
+                    <option value="MAJOR">Major</option>
+                    <option value="CRITICAL">Critical</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1.5 block">Discipline</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Discipline (Optional)</label>
                   <input
+                    type="text"
                     value={form.discipline}
-                    onChange={(e) => setForm({ ...form, discipline: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
-                    placeholder="e.g. Mechanical"
+                    onChange={e => setForm({ ...form, discipline: e.target.value })}
+                    placeholder="E.g., Civil, Mechanical"
+                    className="w-full bg-[var(--color-input-bg)] border border-[var(--color-input)] rounded-lg px-4 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-ring)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-white/50 mb-1.5 block">Root Cause</label>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Root Cause (Optional)</label>
                 <input
+                  type="text"
                   value={form.rootCause}
-                  onChange={(e) => setForm({ ...form, rootCause: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
-                  placeholder="Initial root cause assessment"
+                  onChange={e => setForm({ ...form, rootCause: e.target.value })}
+                  placeholder="Initial assessment of root cause"
+                  className="w-full bg-[var(--color-input-bg)] border border-[var(--color-input)] rounded-lg px-4 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-ring)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all"
                 />
               </div>
-              {formError && <p className="text-sm text-red-400">{formError}</p>}
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => { setShowModal(false); setFormError(''); }}
-                className="px-4 py-2 text-sm text-white/50 hover:text-white rounded-lg border border-white/10 hover:border-white/20 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => void handleCreate()}
-                disabled={creating}
-                className="px-5 py-2 bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-500 hover:to-violet-600 text-white rounded-lg text-sm font-medium transition-all disabled:opacity-50 flex items-center gap-2"
-              >
-                {creating && <Loader2 size={14} className="animate-spin" />}
-                Create NCR
-              </button>
+              <div className="flex justify-end gap-3 pt-4 border-t border-[var(--color-divider)]">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)] transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => void handleCreate()}
+                  disabled={creating}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                >
+                  {creating && <Loader2 size={16} className="animate-spin" />}
+                  Submit NCR
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </AppShell>
   );
 }
 

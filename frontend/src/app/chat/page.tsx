@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { AppShell } from '@/components/layout/AppShell';
 import * as projectsApi from '@/lib/api/projects';
 import { Bot, Send, User, FileText, Download, BookOpen, Hash } from 'lucide-react';
 import { useAppSelector } from '@/lib/hooks';
 import { selectAccessToken } from '@/features/auth/authSlice';
-import './chat.css';
 
 // Parse raw source string into structured data
 // Format: "[Source N] Document: name.pdf, Page: X\nContent: ..."
@@ -30,40 +30,44 @@ function SourcesPanel({ sources }: { sources: Array<{ content: string }> }) {
   const active = activeIdx !== null ? parsed[activeIdx] : null;
 
   return (
-    <div className="chat-sources">
-      <div className="chat-sources-header">
-        <FileText />
+    <div className="mt-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl overflow-hidden flex flex-col shadow-sm max-w-full">
+      <div className="flex items-center gap-2 bg-[var(--color-surface-raised)] border-b border-[var(--color-divider)] px-4 py-3 text-sm font-semibold text-[var(--color-text-primary)]">
+        <FileText size={16} />
         Sources
       </div>
-      <div className="chat-source-pills">
+      <div className="flex gap-2 p-3 overflow-x-auto scrollbar-thin border-b border-[var(--color-divider)]">
         {parsed.map((src, i) => (
           <button
             key={i}
-            className={`chat-source-pill ${activeIdx === i ? 'active' : ''}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap border transition-all ${
+              activeIdx === i 
+                ? 'bg-[var(--color-primary-100)] text-[var(--color-primary)] border-[var(--color-primary)]' 
+                : 'bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-input)] hover:text-[var(--color-text-primary)]'
+            }`}
             onClick={() => setActiveIdx(activeIdx === i ? null : i)}
             title={src.document}
           >
-            <BookOpen />
+            <BookOpen size={13} />
             {src.document.length > 28 ? src.document.slice(0, 26) + '…' : src.document}
-            {src.page && <span style={{ opacity: 0.75 }}>·p{src.page}</span>}
+            {src.page && <span className="opacity-75">·p{src.page}</span>}
           </button>
         ))}
       </div>
       {active && (
-        <div className="chat-source-detail">
-          <div className="chat-source-detail-meta">
-            <span className="chat-source-badge doc">
-              <FileText style={{ width: 10, height: 10 }} />
+        <div className="p-4 bg-[var(--color-surface-raised)] text-sm leading-relaxed text-[var(--color-text-secondary)]">
+          <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[var(--color-divider)]">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--color-primary-100)] text-[var(--color-primary)] font-medium text-xs">
+              <FileText size={12} />
               {active.document}
             </span>
             {active.page && (
-              <span className="chat-source-badge page">
-                <Hash style={{ width: 10, height: 10 }} />
+              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] border border-[var(--color-border)] font-medium text-xs">
+                <Hash size={12} />
                 Page {active.page}
               </span>
             )}
           </div>
-          <div>{active.content}</div>
+          <div className="whitespace-pre-wrap">{active.content}</div>
         </div>
       )}
     </div>
@@ -191,165 +195,164 @@ function ChatPageContent() {
     }
   }
 
-  return (
-      <div className="chat-page">
-        {/* ── Header ── */}
-        <header className="chat-header">
-          <div className="chat-header-left">
-            <div className="chat-header-icon">
-              <Bot size={16} />
-            </div>
-            <h1>Project Chat</h1>
-          </div>
-          <div className="chat-header-right">
-            {activeSessionId && (
-              <button
-                onClick={handleExportPDF}
-                disabled={isExporting}
-                className="chat-export-btn"
-                title="Export Chat to PDF"
-              >
-                <Download size={13} />
-                {isExporting ? 'Exporting…' : 'Export PDF'}
-              </button>
-            )}
-            {projects.length > 0 && (
-              <select
-                className="chat-project-select"
-                value={projectId ?? ''}
-                onChange={(e) => {
-                  setProjectId(e.target.value);
-                  setActiveSessionId(null);
-                  setMessages([]);
-                }}
-              >
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
-            )}
-          </div>
-        </header>
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      {activeSessionId && (
+        <button
+          onClick={handleExportPDF}
+          disabled={isExporting}
+          className="inline-flex h-9 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-hover)] disabled:opacity-50 gap-2"
+          title="Export Chat to PDF"
+        >
+          <Download size={13} />
+          {isExporting ? 'Exporting…' : 'Export PDF'}
+        </button>
+      )}
+      {projects.length > 0 && (
+        <select
+          className="h-9 min-w-44 rounded-lg border border-[var(--color-input)] bg-[var(--color-input-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none transition-colors focus:border-[var(--color-ring)] focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+          value={projectId ?? ''}
+          onChange={(e) => {
+            setProjectId(e.target.value);
+            setActiveSessionId(null);
+            setMessages([]);
+          }}
+        >
+          {projects.map((p) => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
+        </select>
+      )}
+    </div>
+  );
 
-        <div className="chat-layout">
-          {/* ── Sidebar ── */}
-          <aside className="chat-sidebar">
-            <div className="chat-sidebar-header">
-              <button
-                onClick={handleCreateSession}
-                disabled={!projectId}
-                className="chat-new-btn"
+  return (
+    <AppShell title="Project Chat" subtitle="Chat with DCBrain grounded in your project documents" headerActions={headerActions}>
+      <div className="flex h-full max-h-full">
+        {/* ── Sidebar ── */}
+        <aside className="w-64 flex flex-col border-r border-[var(--color-divider)] bg-[var(--color-surface)]">
+          <div className="p-4 border-b border-[var(--color-divider)]">
+            <button
+              onClick={handleCreateSession}
+              disabled={!projectId}
+              className="w-full inline-flex h-10 items-center justify-center rounded-lg bg-[var(--color-primary)] px-4 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:bg-[var(--color-border)]"
+            >
+              + New Chat
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-2 space-y-1">
+            {sessions.map((s) => (
+              <div
+                key={s.id}
+                className={`flex flex-col gap-1 p-3 rounded-lg cursor-pointer transition-colors ${activeSessionId === s.id ? 'bg-[var(--color-primary-100)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]'}`}
+                onClick={() => setActiveSessionId(s.id)}
               >
-                + New Chat
-              </button>
-            </div>
-            <div className="chat-session-list">
-              {sessions.map((s) => (
+                <div className="font-semibold text-sm truncate">{s.title}</div>
+                <div className="text-xs opacity-75">
+                  {new Date(s.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </aside>
+
+        {/* ── Main Chat ── */}
+        <main className="flex-1 flex flex-col min-w-0 bg-[var(--color-bg)] relative">
+          <div className="flex-1 overflow-y-auto p-6 md:p-10 scrollbar-thin">
+            <div className="flex flex-col gap-8 max-w-4xl w-full mx-auto pb-10">
+              {messages.length === 0 && !isSending && (
+                <div className="flex flex-col items-center justify-center h-64 opacity-50">
+                  <div className="w-16 h-16 bg-[var(--color-surface-hover)] rounded-full flex items-center justify-center text-[var(--color-text-secondary)] mb-4">
+                    <Bot size={32} />
+                  </div>
+                  <p className="text-[var(--color-text-secondary)] font-medium text-lg">
+                    {projectId
+                      ? 'Ask anything about your project documents.'
+                      : 'Create a project first to start chatting.'}
+                  </p>
+                </div>
+              )}
+
+              {messages.map((msg) => (
                 <div
-                  key={s.id}
-                  className={`chat-session-item ${activeSessionId === s.id ? 'active' : ''}`}
-                  onClick={() => setActiveSessionId(s.id)}
+                  key={msg.id}
+                  className={`flex ${msg.role === 'USER' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className="chat-session-title">{s.title}</div>
-                  <div className="chat-session-date">
-                    {new Date(s.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  <div className={`max-w-[85%] rounded-2xl flex flex-col ${msg.role === 'USER' ? 'bg-[var(--color-primary)] text-white shadow-md rounded-br-none' : 'bg-transparent text-[var(--color-text-primary)] w-full'}`}>
+                    {msg.role === 'USER' ? (
+                      <div className="p-4 px-5">
+                        <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-wider text-white/80">
+                          <User size={14} />
+                          You
+                        </div>
+                        <div className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
+                          <Bot size={14} />
+                          DCBrain
+                        </div>
+                        <div className="text-[16px] leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                        {msg.sources && Array.isArray(msg.sources) && msg.sources.length > 0 && (
+                          <SourcesPanel sources={msg.sources as Array<{ content: string }>} />
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
-            </div>
-          </aside>
 
-          {/* ── Main Chat ── */}
-          <main className="chat-main">
-            <div className="chat-messages">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 820, width: '100%', margin: '0 auto', minHeight: '100%' }}>
-                {messages.length === 0 && !isSending && (
-                  <div className="chat-empty">
-                    <div className="chat-empty-icon">
-                      <Bot size={26} />
+              {/* Typing indicator */}
+              {isSending && (
+                <div className="flex justify-start">
+                  <div className="bg-transparent flex flex-col w-full">
+                    <div className="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
+                      <Bot size={14} />
+                      DCBrain
                     </div>
-                    <p>
-                      {projectId
-                        ? 'Ask anything about your project documents.'
-                        : 'Create a project first to start chatting.'}
-                    </p>
-                  </div>
-                )}
-
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`chat-message ${msg.role === 'USER' ? 'user' : 'assistant'}`}
-                  >
-                    <div className="chat-bubble">
-                      {msg.role === 'USER' ? (
-                        <div style={{ padding: '12px 16px' }}>
-                          <div className="chat-bubble-meta">
-                            <User size={13} />
-                            You
-                          </div>
-                          <div className="chat-bubble-content">{msg.content}</div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="chat-bubble-body">
-                            <div className="chat-bubble-meta">
-                              <Bot size={13} />
-                              DCBrain
-                            </div>
-                            <div className="chat-bubble-content">{msg.content}</div>
-                          </div>
-                          {msg.sources && Array.isArray(msg.sources) && msg.sources.length > 0 && (
-                            <SourcesPanel sources={msg.sources as Array<{ content: string }>} />
-                          )}
-                        </>
-                      )}
+                    <div className="flex items-center gap-1.5 h-6">
+                      <span className="w-2 h-2 rounded-full bg-[var(--color-text-tertiary)] animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 rounded-full bg-[var(--color-text-tertiary)] animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 rounded-full bg-[var(--color-text-tertiary)] animate-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
                   </div>
-                ))}
+                </div>
+              )}
 
-                {/* Typing indicator */}
-                {isSending && (
-                  <div className="chat-message assistant">
-                    <div className="chat-typing">
-                      <span /><span /><span />
-                    </div>
-                  </div>
-                )}
-
-                <div ref={messagesEndRef} />
-              </div>
+              <div ref={messagesEndRef} />
             </div>
+          </div>
 
-            {/* ── Input ── */}
-            <div className="chat-input-area">
-              <form onSubmit={handleSendMessage} className="chat-input-form">
-                <input
-                  type="text"
-                  className="chat-input"
-                  placeholder={
-                    !projectId
-                      ? 'Create a project to ask questions…'
-                      : !activeSessionId
-                      ? "Click '+ New Chat' to start a conversation…"
-                      : 'Ask a question about your project…'
-                  }
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  disabled={!activeSessionId || isSending || !projectId}
-                />
-                <button
-                  type="submit"
-                  className="chat-send-btn"
-                  disabled={!activeSessionId || !inputValue.trim() || isSending}
-                >
-                  <Send size={17} />
-                </button>
-              </form>
-            </div>
-          </main>
-        </div>
+          {/* ── Input ── */}
+          <div className="p-4 md:p-6 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)] to-transparent shrink-0">
+            <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto relative flex items-center shadow-lg rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] p-2 focus-within:ring-2 focus-within:ring-[var(--color-focus-ring)] focus-within:border-[var(--color-primary)] transition-all">
+              <input
+                type="text"
+                className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-[15px] text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] disabled:opacity-50"
+                placeholder={
+                  !projectId
+                    ? 'Create a project to ask questions…'
+                    : !activeSessionId
+                    ? "Click '+ New Chat' to start a conversation…"
+                    : 'Ask a question about your project…'
+                }
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={!activeSessionId || isSending || !projectId}
+              />
+              <button
+                type="submit"
+                className="flex items-center justify-center w-11 h-11 rounded-xl bg-[var(--color-primary)] text-white transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
+                disabled={!activeSessionId || !inputValue.trim() || isSending}
+              >
+                <Send size={18} />
+              </button>
+            </form>
+          </div>
+        </main>
       </div>
+    </AppShell>
   );
 }
 
