@@ -1,4 +1,4 @@
-import { Prisma, NcrStatus, NcrSeverity, ActivityType, type Role } from '@prisma/client';
+import { Prisma, NcrStatus, NcrSeverity, ActivityType, type Role, type Ncr } from '@prisma/client';
 import { assertProjectAccess } from '@/modules/projects';
 import { BadRequestError, NotFoundError } from '@/core/errors';
 import { logger } from '@/lib/logger';
@@ -68,7 +68,7 @@ export interface NcrAnalyticsResponse {
 // Helpers
 // --------------------------------------------------------------------------
 
-function toNcrResponse(ncr: Prisma.NcrGetPayload<object>): NcrResponse {
+function toNcrResponse(ncr: Ncr): NcrResponse {
   return {
     id: ncr.id,
     number: ncr.number,

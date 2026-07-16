@@ -1,4 +1,4 @@
-import { Prisma, ChangeOrderStatus, type Role } from '@prisma/client';
+import { Prisma, ChangeOrderStatus, type Role, type ChangeOrder } from '@prisma/client';
 import { assertProjectAccess } from '@/modules/projects';
 import { BadRequestError, NotFoundError } from '@/core/errors';
 import { logger } from '@/lib/logger';
@@ -38,7 +38,7 @@ export interface CoSummaryResponse {
   pendingCount: number;
 }
 
-function toCoResponse(co: Prisma.ChangeOrderGetPayload<object>): CoResponse {
+function toCoResponse(co: ChangeOrder): CoResponse {
   return {
     id: co.id,
     number: co.number,

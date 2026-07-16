@@ -1,4 +1,4 @@
-import { Prisma, CommissioningStatus, type Role } from '@prisma/client';
+import { Prisma, CommissioningStatus, type Role, type CommissioningRecord } from '@prisma/client';
 import { assertProjectAccess } from '@/modules/projects';
 import { NotFoundError } from '@/core/errors';
 import { logger } from '@/lib/logger';
@@ -34,7 +34,7 @@ export interface CxSummaryResponse {
   byDiscipline: Record<string, number>;
 }
 
-function toCxResponse(cx: Prisma.CommissioningRecordGetPayload<object>): CxResponse {
+function toCxResponse(cx: CommissioningRecord): CxResponse {
   return {
     id: cx.id,
     testRef: cx.testRef,

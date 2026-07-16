@@ -1,4 +1,4 @@
-import { Prisma, InspectionStatus, ActivityType, type Role } from '@prisma/client';
+import { Prisma, InspectionStatus, ActivityType, type Role, type Inspection } from '@prisma/client';
 import { assertProjectAccess } from '@/modules/projects';
 import { NotFoundError } from '@/core/errors';
 import { logger } from '@/lib/logger';
@@ -45,7 +45,7 @@ function isInspectionOverdue(insp: { scheduledDate: Date | null; status: Inspect
 }
 
 function toInspectionResponse(
-  insp: Prisma.InspectionGetPayload<object>,
+  insp: Inspection,
   now: Date = new Date()
 ): InspectionResponse {
   return {
