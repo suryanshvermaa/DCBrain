@@ -76,10 +76,10 @@ services:
     restart: unless-stopped
 
   backend:
-    image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-backend:${IMAGE_TAG:-latest}
     build:
       context: ./backend
       dockerfile: Dockerfile
+      network: host
     container_name: dcbrain-backend-test
     env_file:
       - ./.env.app.test
@@ -103,16 +103,18 @@ services:
     restart: unless-stopped
 
   worker:
-    image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-backend:${IMAGE_TAG:-latest}
     build:
       context: ./backend
       dockerfile: Dockerfile
+      network: host
     container_name: dcbrain-worker-test
     command: [ "node", "dist/worker.js" ]
     env_file:
       - ./.env.app.test
       - ./.env.db.test
       - ./.env.minio.test
+    healthcheck:
+      disable: true
     depends_on:
       postgres:
         condition: service_started
@@ -129,14 +131,14 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-frontend:${IMAGE_TAG:-latest}
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8020}
-        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-DCBrain Test}
+      network: host
     container_name: dcbrain-frontend-test
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8020
+      - NEXT_PUBLIC_APP_NAME=DCBrain Test
     env_file:
       - ./.env.app.test
     ports:

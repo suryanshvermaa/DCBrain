@@ -55,12 +55,16 @@ COPY --from=builder /app/node_modules  ./node_modules
 COPY --from=builder /app/prisma        ./prisma
 COPY package.json ./
 
+COPY entrypoint.sh ./
+RUN chmod +x entrypoint.sh
+
 # Run as non-root user (node user ships with node:20-slim)
 USER node
 
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
+  CMD node -e "require('http').get('http://127.0.0.1:8000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
 
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["node", "dist/server.js"]

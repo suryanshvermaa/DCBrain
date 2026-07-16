@@ -107,6 +107,8 @@ services:
       - /home/suryansh/env/dcbrain-site/app.env
       - /home/suryansh/env/dcbrain-site/db.env
       - /home/suryansh/env/dcbrain-site/minio.env
+    healthcheck:
+      disable: true
     depends_on:
       postgres:
         condition: service_started

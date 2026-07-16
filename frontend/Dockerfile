@@ -18,11 +18,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# curl is needed so next/font/google can fetch font metadata from Google APIs
-RUN apk add --no-cache libc6-compat curl
+RUN apk add --no-cache libc6-compat
 
-ARG NEXT_PUBLIC_API_URL=http://localhost:8000
-ARG NEXT_PUBLIC_APP_NAME=DCBrain
+ARG NEXT_PUBLIC_API_URL=__NEXT_PUBLIC_API_URL_PLACEHOLDER__
+ARG NEXT_PUBLIC_APP_NAME=__NEXT_PUBLIC_APP_NAME_PLACEHOLDER__
 ARG BUILD_SHA=dev
 
 ENV NEXT_TELEMETRY_DISABLED=1 \
@@ -58,6 +57,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+COPY --chown=nextjs:nodejs entrypoint.sh ./
+RUN chmod +x entrypoint.sh
+
 USER nextjs
 
 EXPOSE 3000
@@ -65,4 +67,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD node -e "require('http').get('http://127.0.0.1:3000/', (r) => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"
 
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["node", "server.js"]
