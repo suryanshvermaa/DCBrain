@@ -83,4 +83,7 @@ temp/
 *_data_test/
 *_logs_test/
 *_import_test/
-*_plugins_test/
+*_plugins_test/
+
+# Generated project data
+project-data/
