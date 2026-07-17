@@ -5,8 +5,8 @@ Update this file before generating a task to prevent duplicate work.
 
 | Task ID | Task Name | Assignee | Status |
 |---------|-----------|----------|--------|
-| DATA-TASK-01 | Project Management & Engineering | Unassigned | Not Started |
-| DATA-TASK-02 | Electrical Infrastructure | Unassigned | Not Started |
+| DATA-TASK-01 | Project Management & Engineering | Local Generator | Completed |
+| DATA-TASK-02 | Electrical Infrastructure | Local Generator | Completed |
 | DATA-TASK-03 | Mechanical, HVAC & Cooling | Unassigned | Not Started |
 | DATA-TASK-04 | Fire, BMS, Security & Networking | Unassigned | Not Started |
 | DATA-TASK-05 | Procurement & Commercial | Unassigned | Not Started |
