@@ -1,3 +1,4 @@
+import os from 'os';
 import { Job } from 'bullmq';
 import { DocumentStatus } from '@prisma/client';
 import { logger } from '@/lib/logger';
@@ -36,7 +37,7 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
 
     // 1. Download & Extract
     await updateDocumentProcessingStatus(documentId, DocumentStatus.PROCESSING, 'extraction.started');
-    tempFilePath = `${process.cwd()}/tmp-${documentId}-${Date.now()}`;
+    tempFilePath = `${os.tmpdir()}/tmp-${documentId}-${Date.now()}`;
     await downloadFile(document.path, tempFilePath);
     const fileBuffer = await import('fs/promises').then((fs) => fs.readFile(tempFilePath as string));
 
