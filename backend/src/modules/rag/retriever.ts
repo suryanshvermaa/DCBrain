@@ -7,7 +7,7 @@ import type { SearchFilters, SemanticResult, KeywordResult } from './types';
 const DEFAULT_TOP_K = 10;
 
 /**
- * Embed the user query using the same BAAI/bge-m3 model used during document ingestion.
+ * Embed the user query using the same OpenAI text-embedding-3-small model used during document ingestion.
  */
 export async function embedQuery(query: string): Promise<number[]> {
   const [embedding] = await generateEmbeddings([query]);

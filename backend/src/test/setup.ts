@@ -12,13 +12,18 @@ afterAll(() => {
   // Cleanup if needed
 });
 
-jest.mock('@xenova/transformers', () => {
+jest.mock('openai', () => {
   return {
-    pipeline: jest.fn().mockResolvedValue(async () => {
-      return { tolist: () => [[0.1, 0.2, 0.3]] };
-    }),
-    env: {
-      allowLocalModels: false,
-    },
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({
+      embeddings: {
+        create: jest.fn(async ({ input }: { input: string | string[] }) => {
+          const items = Array.isArray(input) ? input : [input];
+          return {
+            data: items.map((_, index) => ({ index, embedding: [0.1, 0.2, 0.3] })),
+          };
+        }),
+      },
+    })),
   };
 });

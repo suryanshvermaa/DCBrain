@@ -4,7 +4,7 @@
 - **ADR-002:** Next.js App Router for frontend (RSC, routing).
 - **ADR-003:** PostgreSQL over MongoDB (Relational data, ACID, JSONB, full-text search).
 - **ADR-004:** ChromaDB for Vector Storage (Simple setup for hackathon, migrate to Pinecone later).
-- **ADR-005:** Gemini 2.5 Flash for LLM Reasoning, BAAI/bge-m3 for Vector Embeddings (Cost, speed, embedding quality).
+- **ADR-005:** Gemini 2.5 Flash for LLM Reasoning. Vector Embeddings: OpenAI `text-embedding-3-small` (1536-dim), superseding the earlier BAAI/bge-m3 (1024-dim) choice — moved to a hosted embedding API for consistency and to remove the local Transformers.js model dependency. **Migration note:** the two models produce incompatible vector dimensions, so existing ChromaDB collections must be re-indexed after this change.
 - **ADR-006:** BullMQ + Redis for background tasks (Scalability, decoupled processing).
 - **ADR-007:** Hybrid Search (Semantic + Keyword) over Pure Vector (Better exact match + conceptual match via RRF).
 - **ADR-008:** Redux Toolkit for Frontend State (Predictability, slice-based separation).

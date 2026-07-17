@@ -64,7 +64,8 @@ All configuration is managed through environment variables. No secrets are commi
 |----------|---------|----------|-------------|
 | `GEMINI_API_KEY` | — | **REQUIRED** | Google Gemini API key |
 | `GEMINI_MODEL` | `gemini-2.5-flash` | No | LLM model for reasoning, chat, and structured output |
-| `EMBEDDING_MODEL` | `BAAI/bge-m3` | No | Vector embedding model name (processed via Xenova/Transformers.js) |
+| `OPENAI_API_KEY` | — | **REQUIRED** | OpenAI API key used for document/chunk and query embeddings |
+| `EMBEDDING_MODEL` | `text-embedding-3-small` | No | OpenAI vector embedding model name (1536 dimensions) |
 | `GEMINI_MAX_TOKENS` | `2000` | No | Max tokens per LLM response |
 | `GEMINI_TEMPERATURE` | `0.1` | No | LLM temperature (low for factual answers) |
 
@@ -158,7 +159,9 @@ CHROMA_PORT=8100
 # REQUIRED: Get from Google AI Studio
 GEMINI_API_KEY=your-gemini-api-key-here
 GEMINI_MODEL=gemini-2.5-flash
-EMBEDDING_MODEL=BAAI/bge-m3
+# REQUIRED: OpenAI API key used for document/chunk and query embeddings
+OPENAI_API_KEY=your-openai-api-key-here
+EMBEDDING_MODEL=text-embedding-3-small
 GEMINI_MAX_TOKENS=2000
 GEMINI_TEMPERATURE=0.1
 

@@ -83,7 +83,8 @@ const envSchema = z.object({
   // Gemini & Embeddings
   GEMINI_API_KEY: z.string().min(1, 'GEMINI_API_KEY is required'),
   GEMINI_MODEL: z.string().default('gemini-2.5-flash'),
-  EMBEDDING_MODEL: z.string().default('BAAI/bge-m3'),
+  OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY is required'),
+  EMBEDDING_MODEL: z.string().default('text-embedding-3-small'),
   GEMINI_MAX_TOKENS: z
     .string()
     .transform((val) => parseInt(val, 10))

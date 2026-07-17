@@ -38,7 +38,7 @@ DCBrain uses a **modular monolith** architecture for the hackathon prototype, de
 | LangChain.js / @langchain/core | 0.3+ | LLM framework | Provides RAG pipeline and tool integration abstractions for Node.js. |
 | LangGraph.js | 0.1+ | AI Agent framework | Orchestrates stateful, multi-actor agent configurations. Supports cyclic workflows and human-in-the-loop steps. |
 | Gemini API | 2.5 Flash | LLM provider | Reasoning, chat, document understanding, RAG response generation, and structured outputs. |
-| BAAI/bge-m3 | Latest | Embeddings | Generate vector embeddings for documents and queries for semantic search (never use Gemini for embeddings). |
+| OpenAI text-embedding-3-small | Latest | Embeddings | Generate vector embeddings (1536-dim) for documents and queries for semantic search (never use Gemini for embeddings). |
 | ChromaDB | 0.5+ | Vector database | Lightweight vector DB with an official JavaScript/Node client. Suitable for prototype. |
 | pdf-parse / tesseract.js | Latest | Document parsing | Node.js libraries for extracting text from PDFs and performing OCR on images. |
 
