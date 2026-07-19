@@ -81,4 +81,16 @@ export class SchedulePage {
     const activityCount = m ? Number(m[1]) : 0;
     return { activityCount };
   }
+
+  /**
+   * Checks if a file with the given name is listed in the Import History section.
+   */
+  async hasImportHistory(filename: string): Promise<boolean> {
+    const historySection = this.page.locator('h2:has-text("Import History")').locator('..');
+    if (!(await historySection.count())) return false;
+    
+    // In the UI, the filename is displayed in a paragraph inside the history card.
+    const fileLocator = historySection.locator(`text=${filename}`);
+    return (await fileLocator.count()) > 0;
+  }
 }

@@ -244,6 +244,10 @@ export class Validator {
 
     // Schedule Risk
     await this.sched.goto();
+    const exists = await this.sched.hasImportHistory(file.fileName);
+    if (exists) {
+      return { detail: `already exists in history; skipped upload`, indexed: null };
+    }
     const { activityCount } = await this.sched.importFile(file.absPath);
     if (activityCount <= 0) throw new Error('Schedule import parsed 0 activities');
     return { detail: `parsed ${activityCount} schedule activit(y/ies)`, indexed: null };

@@ -101,8 +101,9 @@ services:
 
   worker:
     image: ${REGISTRY:-ghcr.io}/${IMAGE_PREFIX:-suryanshvermaa}/dcbrain-backend:${IMAGE_TAG:-latest}
-    container_name: dcbrain-worker
     command: [ "node", "dist/worker.js" ]
+    deploy:
+      replicas: 2
     env_file:
       - /home/suryansh/env/dcbrain-site/app.env
       - /home/suryansh/env/dcbrain-site/db.env

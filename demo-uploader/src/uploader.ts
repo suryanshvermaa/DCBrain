@@ -12,6 +12,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import * as readline from 'node:readline/promises';
 import { chromium, firefox, webkit, type Browser, type BrowserContext, type Page } from 'playwright';
 import type { UploadConfig } from './config.js';
 import type { Logger } from './logger.js';
@@ -33,6 +34,7 @@ export interface UploaderDeps {
   progress: ProgressStore;
   artifactsDir: string;
   resume: boolean;
+  interactive?: boolean;
 }
 
 export interface RunOutcome {
@@ -59,7 +61,7 @@ export class Uploader {
   private retriesUsed = 0;
   private readonly validations: ValidationRecord[] = [];
 
-  constructor(private readonly deps: UploaderDeps) {}
+  constructor(private readonly deps: UploaderDeps) { }
 
   async run(files: ClassifiedFile[]): Promise<RunOutcome> {
     const start = Date.now();
@@ -120,7 +122,7 @@ export class Uploader {
         const batch = catFiles.slice(i, i + config.documentsBatchSize);
         const label = `Documents[${category}] batch ${Math.floor(i / config.documentsBatchSize) + 1} (${batch.length} files)`;
         await this.processUnit(label, 'Documents', batch, async () => {
-          
+
           const neededFiles: typeof batch = [];
           for (const f of batch) {
             const existing = await docs.findDocumentStatus(f.fileName);
@@ -130,7 +132,7 @@ export class Uploader {
               log.info(`Skipping ${f.fileName} (already exists: ${existing})`);
             }
           }
-          
+
           if (neededFiles.length === 0) {
             this.validations.push({ unit: label, module: 'Documents', ok: true, detail: 'all files already exist; skipped' });
             return;
@@ -178,6 +180,17 @@ export class Uploader {
           if (importedCount === 0) log.warn(`${label}: imported 0 items (header/schema mismatch — see gap analysis).`);
         } else {
           await sched.goto();
+          const exists = await sched.hasImportHistory(f.fileName);
+          if (exists) {
+            log.info(`Skipping ${f.fileName} (already imported in Schedule Risk)`);
+            this.validations.push({
+              unit: label,
+              module: moduleName,
+              ok: true,
+              detail: `already exists in history; skipped`,
+            });
+            return;
+          }
           const { activityCount } = await sched.importFile(f.absPath);
           this.validations.push({
             unit: label,
@@ -201,7 +214,28 @@ export class Uploader {
     files: ClassifiedFile[],
     action: () => Promise<void>,
   ): Promise<void> {
-    const { config, log, progress } = this.deps;
+    const { config, log, progress, interactive } = this.deps;
+
+    if (interactive) {
+      const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+      try {
+        const answer = await rl.question(`\n[Interactive] Ready to process: ${label}\nProceed? [Y/n/q(uit)]: `);
+        const choice = answer.trim().toLowerCase();
+        if (choice === 'q' || choice === 'quit') {
+          log.info('Run aborted by user.');
+          process.exit(0);
+        }
+        if (choice === 'n' || choice === 'no') {
+          log.warn(`Skipped by user: ${label}`);
+          for (const f of files) {
+            progress.update(f.relPath, { status: 'skipped', lastError: 'Skipped by user (interactive mode)' });
+          }
+          return;
+        }
+      } finally {
+        rl.close();
+      }
+    }
 
     try {
       await withRetry(
@@ -249,26 +283,9 @@ export class Uploader {
     }
   }
 
-  /** Skip already-uploaded (resume) or duplicate-content files. */
   private shouldSkip(f: ClassifiedFile): boolean {
-    const { progress, resume, log } = this.deps;
-    if (resume && progress.isUploaded(f.relPath)) {
-      log.debug(`Skip (already uploaded): ${f.relPath}`);
-      progress.update(f.relPath, { status: 'uploaded' });
-      return true;
-    }
-    // Duplicate content detection.
-    try {
-      const sum = checksum(f.absPath);
-      const dupOf = progress.duplicateOf(sum, f.relPath);
-      if (dupOf) {
-        log.warn(`Skip (duplicate of ${dupOf}): ${f.relPath}`);
-        progress.update(f.relPath, { status: 'skipped', checksum: sum, lastError: `duplicate of ${dupOf}` });
-        return true;
-      }
-    } catch {
-      /* checksum best-effort */
-    }
+    // All local state checks (including checksums) have been removed.
+    // The uploader will strictly use server-side UI checks to see if the file exists.
     return false;
   }
 

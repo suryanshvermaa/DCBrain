@@ -31,7 +31,7 @@ export class ProcurementService {
 
     let importedCount = 0;
     for (const row of rawData) {
-      const material = row['Material'] || row['material'] || row['Material Description'] || row['Material Code'];
+      const material = row['Material'] || row['material'] || row['Material Description'] || row['Material Code'] || row['description'] || row['equipment_id'];
       if (!material) continue; // Skip empty rows
 
       const vendorName = (row['Vendor'] || row['vendor'] || 'Unknown Vendor').toString().trim();
@@ -74,10 +74,10 @@ export class ProcurementService {
         data: {
           projectId,
           vendorId,
-          poNumber: row['PO Number']?.toString() || row['po_number']?.toString() || null,
-          lineItem: row['Line Item']?.toString() || row['line_item']?.toString() || null,
+          poNumber: row['PO Number']?.toString() || row['po_number']?.toString() || row['po_ref']?.toString() || row['po_no']?.toString() || null,
+          lineItem: row['Line Item']?.toString() || row['line_item']?.toString() || row['item_no']?.toString() || null,
           material: material.toString(),
-          quantity: parseFloat(row['Quantity']?.toString() || row['quantity']?.toString() || '0'),
+          quantity: parseFloat(row['Quantity']?.toString() || row['quantity']?.toString() || row['qty']?.toString() || '0'),
           unit: row['Unit']?.toString() || row['unit']?.toString() || null,
           status: status as any,
           orderDate: parseExcelDate(row['Order Date'] || row['order_date'] || row['PO Date']),

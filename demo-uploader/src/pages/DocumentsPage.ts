@@ -143,8 +143,8 @@ export class DocumentsPage {
     const search = this.page.locator('input[placeholder="Search documents"]');
     if (await search.count()) {
       await search.first().fill(originalName);
-      // Page debounces reloads at ~250ms.
-      await this.page.waitForTimeout(500);
+      // Wait up to 2 seconds for the network request to finish and UI to update
+      await this.page.waitForTimeout(2000);
     }
 
     // The row shows the original name; the badge is the status cell in that row.

@@ -32,6 +32,7 @@ interface ParsedArgs {
   testFile?: string;
   /** Batch Mode: upload only this many files, then stop. */
   batchSize?: number;
+  interactive?: boolean;
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
@@ -39,6 +40,7 @@ function parseArgs(argv: string[]): ParsedArgs {
   const modules: ModuleName[] = [];
   let dryRun = false;
   let resume = false;
+  let interactive = false;
   let help = false;
   let testFile: string | undefined;
   let batchSize: number | undefined;
@@ -54,6 +56,7 @@ function parseArgs(argv: string[]): ParsedArgs {
     switch (arg) {
       case '--dry-run': dryRun = true; break;
       case '--resume': resume = true; break;
+      case '--interactive': interactive = true; break;
       case '--test': testFile = next(); break;
       case '--batch-size': batchSize = Number(next()); break;
       case '--delay-ms': overrides.uploadDelayMs = Number(next()); break;
@@ -78,7 +81,7 @@ function parseArgs(argv: string[]): ParsedArgs {
     }
   }
   if (modules.length) overrides.modules = modules;
-  return { overrides, dryRun, resume, help, testFile, batchSize };
+  return { overrides, dryRun, resume, interactive, help, testFile, batchSize };
 }
 
 function printHelp(): void {
@@ -95,6 +98,7 @@ Validation / safety modes:
 Full run:
   --dry-run              Do not open a browser; print the per-module upload plan and exit.
   --resume               Skip files already marked 'uploaded' in the progress store.
+  --interactive          Prompt for confirmation before uploading each batch.
   --headless / --headed  Run without / with a visible browser window.
   --project "<name>"     Target project name (created if missing).
   --module "<name>"      Restrict to one module (repeatable): Documents | Procurement | "Schedule Risk".
@@ -281,7 +285,7 @@ async function main(): Promise<void> {
   try {
     // Lazy import so --dry-run never needs Playwright installed.
     const { Uploader } = await import('./uploader.js');
-    const uploader = new Uploader({ config, log, progress, artifactsDir, resume: parsed.resume });
+    const uploader = new Uploader({ config, log, progress, artifactsDir, resume: parsed.resume, interactive: parsed.interactive });
     outcome = await uploader.run(uploadable);
   } catch (err) {
     log.error(`Fatal: ${err instanceof Error ? err.message : String(err)}`);
