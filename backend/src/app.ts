@@ -38,8 +38,8 @@ export function createApp(): Application {
     })
   );
 
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.json({ limit: '1gb' }));
+  app.use(express.urlencoded({ extended: true, limit: '1gb' }));
 
   app.use((req: Request, _res: Response, next: NextFunction) => {
     logger.debug('Incoming request', {
