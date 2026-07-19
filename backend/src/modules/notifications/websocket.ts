@@ -3,6 +3,7 @@ import type { IncomingMessage } from 'http';
 import type { Server } from 'http';
 import { WebSocket, WebSocketServer } from 'ws';
 import { verifyAccessToken } from '@/modules/auth/security';
+import config from '@/core/config';
 import { logger } from '@/lib/logger';
 
 // Store multiple connections per userId (for multi-tab support)
@@ -14,6 +15,22 @@ export function initWebSocketServer(server: Server): WebSocketServer {
   server.on('upgrade', (req: IncomingMessage, socket: any, head: Buffer) => {
     try {
       const url = new URL(req.url ?? '', `http://${req.headers.host ?? 'localhost'}`);
+      
+      if (url.pathname !== '/ws') {
+        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+        socket.destroy();
+        return;
+      }
+
+      // Basic Origin Validation
+      const origin = req.headers.origin;
+      if (origin && config.FRONTEND_URL && !origin.startsWith(config.FRONTEND_URL)) {
+        logger.warn('WebSocket upgrade rejected: Invalid Origin', { origin, expected: config.FRONTEND_URL });
+        socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+        socket.destroy();
+        return;
+      }
+
       const token = url.searchParams.get('token');
 
       if (!token) {

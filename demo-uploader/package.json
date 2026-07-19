@@ -15,6 +15,13 @@
     "batch-upload": "tsx src/cli.ts --batch-size",
     "dry-run": "tsx src/cli.ts --dry-run",
     "plan": "tsx src/generatePlan.ts",
+    "seed:rfis": "tsx src/seedCli.ts --module rfis",
+    "seed:ncrs": "tsx src/seedCli.ts --module ncrs",
+    "seed:inspections": "tsx src/seedCli.ts --module inspections",
+    "seed:simulations": "tsx src/seedCli.ts --module simulations",
+    "seed:commissioning": "tsx src/seedCli.ts --module commissioning",
+    "seed:change-orders": "tsx src/seedCli.ts --module change-orders",
+    "seed:reports": "tsx src/seedCli.ts --module reports",
     "type-check": "tsc --noEmit",
     "postinstall": "playwright install chromium"
   },

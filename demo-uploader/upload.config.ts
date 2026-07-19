@@ -80,7 +80,7 @@ export interface UploadConfig {
 }
 
 const config: UploadConfig = {
-  baseUrl: 'http://localhost:3000',
+  baseUrl: 'https://dcbrain.nebula-hack.tech/',
   credentials: {
     email: 'suryansh@gmail.com',
     password: 'testadminpassword',

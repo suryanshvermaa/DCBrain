@@ -23,7 +23,7 @@ export function createApp(): Application {
           styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
           imgSrc: ["'self'", 'data:', 'https:'],
           fontSrc: ["'self'", 'data:', 'https:'],
-          connectSrc: ["'self'"],
+          connectSrc: ["'self'", 'https://dcbrain-api.nebula-hack.tech', 'wss://dcbrain-api.nebula-hack.tech'],
         },
       },
     })

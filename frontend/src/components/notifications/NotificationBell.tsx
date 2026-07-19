@@ -42,59 +42,87 @@ export function NotificationBell() {
 
   // Connect to WebSocket
   useEffect(() => {
-    if (!accessToken) {
+    let reconnectTimer: ReturnType<typeof setTimeout>;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT_DELAY = 30000;
+
+    const connect = () => {
+      if (!accessToken) {
+        if (socketRef.current) {
+          socketRef.current.close();
+          socketRef.current = null;
+        }
+        return;
+      }
+
+      const baseApiUrl = baseApiClient.getBaseUrl();
+      const wsProto = baseApiUrl.startsWith('https') ? 'wss' : 'ws';
+      const hostPort = baseApiUrl.replace(/^https?:\/\//, '');
+      const wsUrl = `${wsProto}://${hostPort}/ws?token=${encodeURIComponent(accessToken)}`;
+
+      const socket = new WebSocket(wsUrl);
+      socketRef.current = socket;
+
+      socket.onopen = () => {
+        console.log('WebSocket connected for notifications');
+        reconnectAttempts = 0; // Reset attempts on successful connection
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.event === 'notification') {
+            setNotifications((prev) => [payload.data, ...prev]);
+
+            try {
+              const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+              const osc = audioCtx.createOscillator();
+              const gainNode = audioCtx.createGain();
+              osc.connect(gainNode);
+              gainNode.connect(audioCtx.destination);
+              osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+              gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+              gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+              osc.start();
+              osc.stop(audioCtx.currentTime + 0.3);
+            } catch {
+              // Audio context blocked/unsupported — ignore
+            }
+          }
+        } catch (err) {
+          console.error('Error handling websocket message', err);
+        }
+      };
+
+      socket.onclose = () => {
+        console.log('WebSocket disconnected');
+        socketRef.current = null;
+        if (accessToken) {
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), MAX_RECONNECT_DELAY);
+          console.log(`Reconnecting WebSocket in ${delay}ms...`);
+          reconnectTimer = setTimeout(() => {
+            reconnectAttempts++;
+            connect();
+          }, delay);
+        }
+      };
+      
+      socket.onerror = (err) => {
+        console.error('WebSocket connection error:', err);
+        // onclose will be triggered automatically after onerror
+      };
+    };
+
+    connect();
+
+    return () => {
+      clearTimeout(reconnectTimer);
       if (socketRef.current) {
+        // Prevent onclose reconnect logic from triggering during unmount
+        socketRef.current.onclose = null;
         socketRef.current.close();
         socketRef.current = null;
       }
-      return;
-    }
-
-    const baseApiUrl = baseApiClient.getBaseUrl();
-    const wsProto = baseApiUrl.startsWith('https') ? 'wss' : 'ws';
-    const hostPort = baseApiUrl.replace(/^https?:\/\//, '');
-    const wsUrl = `${wsProto}://${hostPort}/ws?token=${encodeURIComponent(accessToken)}`;
-
-    const socket = new WebSocket(wsUrl);
-    socketRef.current = socket;
-
-    socket.onopen = () => {
-      console.log('WebSocket connected for notifications');
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data);
-        if (payload.event === 'notification') {
-          setNotifications((prev) => [payload.data, ...prev]);
-
-          try {
-            const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
-          } catch {
-            // Audio context blocked/unsupported — ignore
-          }
-        }
-      } catch (err) {
-        console.error('Error handling websocket message', err);
-      }
-    };
-
-    socket.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
-
-    return () => {
-      socket.close();
-      socketRef.current = null;
     };
   }, [accessToken]);
 
