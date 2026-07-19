@@ -18,10 +18,13 @@ import {
   Activity,
   Package,
   BarChart3,
+  FolderPlus,
+  Plus,
 } from 'lucide-react';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
+import { CreateProjectModal } from '@/components/documents/CreateProjectModal';
 import * as projectsApi from '@/lib/api/projects';
 import * as dashboardApi from '@/lib/api/dashboard';
 import { ApiError } from '@/lib/api';
@@ -293,6 +296,8 @@ function DashboardContent() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createProjectOpen, setCreateProjectOpen] = useState(false);
+  const [creatingProject, setCreatingProject] = useState(false);
 
   // Load projects on mount
   useEffect(() => {
@@ -324,6 +329,26 @@ function DashboardContent() {
     },
     [],
   );
+
+  async function handleCreateProject(payload: projectsApi.CreateProjectPayload): Promise<void> {
+    setCreatingProject(true);
+    setError(null);
+    try {
+      const result = await projectsApi.createProject(payload);
+      setProjects((current) => [
+        result.project,
+        ...current.filter((p) => p.id !== result.project.id),
+      ]);
+      setProjectId(result.project.id);
+      setCreateProjectOpen(false);
+    } catch (requestError) {
+      setError(
+        requestError instanceof ApiError ? requestError.message : 'Unable to create project',
+      );
+    } finally {
+      setCreatingProject(false);
+    }
+  }
 
   useEffect(() => {
     if (projectId) void loadSummary(projectId);
@@ -359,6 +384,15 @@ function DashboardContent() {
           </option>
         ))}
       </select>
+
+      <button
+        type="button"
+        className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-hover)]"
+        onClick={() => setCreateProjectOpen(true)}
+      >
+        <FolderPlus className="h-4 w-4" />
+        New project
+      </button>
 
       <button
         type="button"
@@ -399,7 +433,24 @@ function DashboardContent() {
         )}
 
         {/* Empty state — no project */}
-        {!loading && !summary && !error && (
+        {!loading && !summary && !error && projects.length === 0 && (
+          <div className="rounded-xl border border-dashed border-[var(--color-border)] p-12 text-center flex flex-col items-center justify-center gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <FolderPlus className="h-8 w-8 text-[var(--color-text-tertiary)]" />
+              <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">No projects yet</h3>
+              <p className="max-w-sm text-sm text-[var(--color-text-secondary)]">Create your first project to start managing documents, schedules, procurement, compliance, and AI workflows.</p>
+            </div>
+            <button
+              type="button"
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+              onClick={() => setCreateProjectOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
+              Create Project
+            </button>
+          </div>
+        )}
+        {!loading && !summary && !error && projects.length > 0 && (
           <div className="rounded-xl border border-dashed border-[var(--color-border)] p-12 text-center text-sm text-[var(--color-text-secondary)]">
             Select a project to view its dashboard.
           </div>
@@ -811,6 +862,15 @@ function DashboardContent() {
           </>
         )}
       </div>
+
+      <CreateProjectModal
+        open={createProjectOpen}
+        creating={creatingProject}
+        onClose={() => {
+          if (!creatingProject) setCreateProjectOpen(false);
+        }}
+        onCreate={handleCreateProject}
+      />
     </AppShell>
   );
 }

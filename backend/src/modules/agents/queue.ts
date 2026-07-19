@@ -13,7 +13,7 @@ const queueOptions = {
   connection: bullMqRedis as any,
 };
 
-const isTestEnvironment = process.env['APP_ENV'] === 'test' || process.env['NODE_ENV'] === 'test';
+const isTestEnvironment = process.env['NODE_ENV'] === 'test' || process.env['JEST_WORKER_ID'] !== undefined;
 
 export const agentExecutionQueue = isTestEnvironment
   ? ({ add: async () => ({ id: 'test-agent-job', name: 'test-agent-job', data: {} as AgentJobData }) } as unknown as Pick<Queue<AgentJobData>, 'add'>)

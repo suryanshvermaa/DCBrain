@@ -1,24 +1,17 @@
-# Next Chat Session: All Phase 2 Tasks Complete
+# Next Chat Session: Hotfixes Applied
 
 ## 1. Current Project Status
 
-- **Phase:** Phase 2 — Intelligence & Deployment (COMPLETE)
+- **Phase:** Phase 2 — Intelligence & Deployment (COMPLETE) + Hotfixes
 - **Sprints Completed:** 1–5 (tasks 001–019)
-- **Tasks Completed:** 19 / 19
+- **Tasks Completed:** 19 / 19 + Hotfixes for Document Queues, URLs, & Processing
 - **Repository Health:** Backend and frontend type-check clean.
 
-## 2. Just Completed — Task 019 (Workspace Member Management)
+## 2. Just Completed — Hotfixes: Processing Permissions, Document Queues & MinIO Public URLs
 
-- Added `POST /api/v1/projects/:id/members` — invite by email; creates provisional account with random temp password if user doesn't exist; upserts membership if user already exists.
-- Added `PATCH /api/v1/projects/:id/members/:userId` — update a member's ProjectRole.
-- Added `DELETE /api/v1/projects/:id/members/:userId` — remove a member from the project.
-- Double-layer RBAC: global `manage_project_members` permission check + project-level OWNER/MANAGER verification inside handler.
-- OWNER rows fully protected: cannot assign OWNER via invite, cannot change OWNER's role, cannot remove OWNER.
-- Added `inviteMemberSchema`, `updateMemberRoleSchema`, `memberUserIdParamSchema` to backend schemas.
-- Extended frontend `ProjectMember` interface with `globalRole`, `joinedAt`, `isNewUser`.
-- Added `inviteProjectMember`, `updateProjectMemberRole`, `removeProjectMember` to `api/projects.ts`.
-- Created `frontend/src/app/members/page.tsx` — project selector, members table with avatar + role badge, inline role-change select (dropdown), remove button with confirm, glassmorphic `InviteModal`.
-- Added "Members" nav item to `AppShell.tsx` sidebar.
+- **Permissions Fix:** Identified an `EACCES: permission denied` error occurring when the background worker tried to download files from MinIO for processing into `/app`. Modified `worker.ts` to use `os.tmpdir()` (`/tmp`) for temporary file storage instead of `process.cwd()`.
+- **Queue Env Fix:** Identified an issue where documents would remain in a 'queued' status when running `dcbrain-backend-test` because `APP_ENV=test` triggered test mocks. Fixed by checking `NODE_ENV` or `JEST_WORKER_ID` instead.
+- **Public URL Fix:** Added `MINIO_PUBLIC_URL` to `backend/src/core/config.ts` to allow generating AWS Signature V4 presigned URLs with the correct public-facing domain (e.g. `storage-dcbrain.nebula-hack.tech` in production and `localhost` in development).
 
 ## 3. Architecture Summary
 
@@ -29,7 +22,7 @@
 
 ## 4. Active Task
 
-- **None** — Task 019 just completed. All Phase 2 tasks done.
+- **None** — Hotfixes completed.
 
 ## 5. Remaining Work
 
@@ -40,7 +33,7 @@ No planned tasks remain. Possible next steps:
 
 ## 6. Warnings & Known Issues
 
-- Run `npx prisma migrate deploy` to deploy all migrations (no new migration for Task 019)
+- Run `npx prisma migrate deploy` to deploy all migrations
 - Ensure `GEMINI_API_KEY` is set in `.env`
 - Graph integration tests fail without Neo4j running locally (environmental, not code defect)
 - `@xyflow/react` type declarations missing in type-check environment (runtime OK)
@@ -49,7 +42,7 @@ No planned tasks remain. Possible next steps:
 
 1. `.ai/NEXT_CHAT.md` (this file)
 2. `.ai/CURRENT_STATE.md`
-3. `.ai/tasks/019-workspace-member-management/task.md`
+3. `.ai/state/current_task.json`
 
 ## 8. Deferred Items (non-blocking)
 
