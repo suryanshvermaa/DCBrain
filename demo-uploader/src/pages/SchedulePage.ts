@@ -25,7 +25,7 @@ export class SchedulePage {
 
   async goto(): Promise<void> {
     await this.page.goto(this.url(), { waitUntil: 'domcontentloaded' });
-    await this.page.waitForSelector('button:has-text("Import XML"), button:has-text("Select File")', {
+    await this.page.waitForSelector('button:has-text("Import XML"):not([disabled]), button:has-text("Select File"):not([disabled])', {
       timeout: this.config.timeoutMs,
     });
   }
@@ -61,7 +61,7 @@ export class SchedulePage {
 
     // Wait for success or error banner.
     const success = this.page.locator('text=/Import complete —/');
-    const error = this.page.locator('[class*="danger"]');
+    const error = this.page.locator('div[class*="danger"]');
 
     const outcome = await Promise.race([
       success.first().waitFor({ state: 'visible', timeout: this.config.processingTimeoutMs }).then(() => 'success' as const),
@@ -69,14 +69,14 @@ export class SchedulePage {
     ]).catch(() => 'timeout' as const);
 
     if (outcome === 'error') {
-      const text = (await error.first().innerText()).trim();
+      const text = (await error.first().textContent())?.trim() || '';
       throw new Error(`Schedule import error: ${text}`);
     }
     if (outcome === 'timeout') {
       throw new Error('Schedule import timed out (no success or error banner).');
     }
 
-    const banner = (await success.first().innerText()).trim();
+    const banner = (await success.first().textContent())?.trim() || '';
     const m = banner.match(/(\d+)\s+activities/);
     const activityCount = m ? Number(m[1]) : 0;
     return { activityCount };

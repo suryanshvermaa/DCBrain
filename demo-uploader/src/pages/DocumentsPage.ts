@@ -28,7 +28,7 @@ export class DocumentsPage {
 
   async goto(): Promise<void> {
     await this.page.goto(this.url(), { waitUntil: 'domcontentloaded' });
-    await this.page.waitForSelector('button:has-text("Upload")', { timeout: this.config.timeoutMs });
+    await this.page.waitForSelector('button:has-text("Upload"):not([disabled])', { timeout: this.config.timeoutMs });
   }
 
   /** Reads the "Showing N of M documents" total (M). Returns 0 if not shown. */

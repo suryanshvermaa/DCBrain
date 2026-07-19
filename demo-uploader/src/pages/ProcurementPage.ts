@@ -28,7 +28,7 @@ export class ProcurementPage {
 
   async goto(): Promise<void> {
     await this.page.goto(this.url(), { waitUntil: 'domcontentloaded' });
-    await this.page.waitForSelector('label:has-text("Import CSV/XLSX")', { timeout: this.config.timeoutMs });
+    await this.page.waitForSelector('label:has-text("Import CSV/XLSX") input:not([disabled])', { state: 'attached', timeout: this.config.timeoutMs });
   }
 
   /**
@@ -75,7 +75,7 @@ export class ProcurementPage {
       // Wait for either the success alert to have been handled or an error banner.
       await this.page.waitForFunction(
         () => {
-          const err = document.querySelector('[class*="danger"]');
+          const err = document.querySelector('div[class*="danger"]');
           return Boolean((window as unknown as { __lastDialog?: string }).__lastDialog) || Boolean(err);
         },
         undefined,
@@ -86,9 +86,9 @@ export class ProcurementPage {
       await this.page.waitForTimeout(500);
 
       // Detect an error banner surfaced by the page.
-      const errorBanner = this.page.locator('[class*="danger"]').first();
+      const errorBanner = this.page.locator('div[class*="danger"]').first();
       if (!dialogMessage && (await errorBanner.count())) {
-        const text = (await errorBanner.innerText()).trim();
+        const text = (await errorBanner.textContent())?.trim() || '';
         if (text) throw new Error(`Procurement import error: ${text}`);
       }
 

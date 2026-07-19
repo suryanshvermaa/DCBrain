@@ -61,8 +61,9 @@ export async function generateMitigations(
 ): Promise<Map<string, string[]>> {
   const resultMap = new Map<string, string[]>();
 
-  // Only request LLM mitigations for HIGH / CRITICAL activities (cost guard)
-  const highRisk = activities.filter((a) => a.riskScore >= 50);
+  // Only request LLM mitigations for a limited number of HIGH / CRITICAL activities (cost/timeout guard)
+  // For massive baseline schedules, sending hundreds of activities will exceed token limits and cause API timeouts.
+  const highRisk = activities.filter((a) => a.riskScore >= 50).slice(0, 15);
 
   if (highRisk.length > 0) {
     try {
