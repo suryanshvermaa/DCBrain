@@ -65,6 +65,7 @@ const envSchema = z.object({
     .string()
     .transform((val) => val === 'true')
     .default('false'),
+  MINIO_PUBLIC_URL: z.string().url().optional(),
   MINIO_BUCKET_NAME: z.string().default('dcbrain-documents'),
 
   // Graph Database (Neo4j)

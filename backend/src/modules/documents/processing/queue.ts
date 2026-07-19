@@ -6,7 +6,7 @@ const queueOptions = {
   connection: bullMqRedis as any,
 };
 
-const isTestEnvironment = process.env['APP_ENV'] === 'test' || process.env['NODE_ENV'] === 'test';
+const isTestEnvironment = process.env['NODE_ENV'] === 'test' || process.env['JEST_WORKER_ID'] !== undefined;
 
 export const documentProcessingQueue = isTestEnvironment
   ? ({ add: async () => ({ id: 'test-job', name: 'test-job', data: {} as ProcessDocumentJobData }) } as unknown as Pick<Queue<ProcessDocumentJobData>, 'add'>)
