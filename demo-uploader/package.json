@@ -1,0 +1,30 @@
+{
+  "name": "dcbrain-demo-uploader",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright-based browser automation that uploads the project-data/ demo dataset into DCBrain exactly like a real user (Documents, Procurement, Schedule Risk).",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "upload-demo-data": "tsx src/cli.ts",
+    "upload-demo-data:resume": "tsx src/cli.ts --resume",
+    "upload-demo-data:headless": "tsx src/cli.ts --headless",
+    "test-upload": "tsx src/cli.ts --test",
+    "batch-upload": "tsx src/cli.ts --batch-size",
+    "dry-run": "tsx src/cli.ts --dry-run",
+    "plan": "tsx src/generatePlan.ts",
+    "type-check": "tsc --noEmit",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.49.0",
+    "playwright": "^1.49.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
