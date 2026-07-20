@@ -68,7 +68,7 @@ docker compose exec backend npx prisma migrate dev --name init
 ## 🏗️ Architecture & Tech Stack
 
 DCBrain uses a **neuro-symbolic modular monolith**:
-- **🧠 AI Layer**: Gemini 2.5 Flash for reasoning, BAAI/bge-m3 for embeddings
+- **🧠 AI Layer**: Gemini 2.5 Flash (`gemini-2.5-flash`) for reasoning, Gemini Embedding (`gemini-embedding-001`) / OpenAI (`text-embedding-3-small`) for embeddings
 - **🕸️ Symbolic Layer**: Neo4j for failure propagation graphs, mathematical schedule simulation
 - **🗄️ Data Layer**: PostgreSQL (relational), ChromaDB (vectors), MinIO (objects), Redis (cache/queue)
 - **💻 Frontend**: Next.js 14 App Router, Redux Toolkit, TailwindCSS, shadcn/ui
@@ -91,7 +91,7 @@ graph TD
     %% AI Layer
     subgraph AI ["AI & Neural Layer"]
         Gemini["🧠 Gemini 2.5 Flash"]
-        Embeddings["🧬 BAAI/bge-m3 Embeddings"]
+        Embeddings["🧬 text-embedding-3-small / Gemini Embeddings"]
     end
 
     %% Data Layer
@@ -157,7 +157,7 @@ curl -X POST http://localhost:8000/api/v1/auth/login \
 *Response returns `{ "accessToken": "eyJ...", "refreshToken": "..." }`.*
 
 ### 2. AI Chat & RAG Queries (`/api/v1/projects/:projectId/chat`)
-Engage with **DCBrain** (powered by LangGraph and `gemma-4-31b-it`) to search project documents or retrieve expert Data Centre EPC answers:
+Engage with **DCBrain** (powered by LangGraph and `gemini-2.5-flash`) to search project documents or retrieve expert Data Centre EPC answers:
 ```bash
 # Send a prompt to an active chat session
 curl -X POST http://localhost:8000/api/v1/projects/YOUR_PROJECT_ID/chat/sessions/YOUR_SESSION_ID/messages \

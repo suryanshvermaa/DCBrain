@@ -4,6 +4,24 @@ import { runComplianceCheck, getComplianceSummary } from './service';
 jest.mock('@/lib/prisma', () => ({
   __esModule: true,
   default: {
+    document: {
+      findMany: jest.fn(async () => [
+        {
+          id: 'doc-1',
+          originalName: 'Electrical Spec.pdf',
+          category: 'specification',
+          summary: 'Electrical distribution specification',
+        },
+      ]),
+    },
+    documentChunk: {
+      findMany: jest.fn(async () => [
+        {
+          content: 'The facility conforms to ASHRAE 90.4 and TIA-942 Rated-3 requirements.',
+          document: { originalName: 'Electrical Spec.pdf' },
+        },
+      ]),
+    },
     complianceCheck: {
       create: jest.fn(async (input: any) => ({
         id: 'check-1',

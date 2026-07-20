@@ -130,7 +130,7 @@ services:
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-flash-latest}
-      - EMBEDDING_MODEL=Xenova/bge-small-en-v1.5
+      - EMBEDDING_MODEL=text-embedding-3-small
       - LOG_LEVEL=DEBUG
       - LOG_FORMAT=console
     volumes:
@@ -205,7 +205,7 @@ services:
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-flash-latest}
-      - EMBEDDING_MODEL=Xenova/bge-small-en-v1.5
+      - EMBEDDING_MODEL=text-embedding-3-small
       - BULLMQ_BROKER_URL=redis://redis:6379/1
       - BULLMQ_RESULT_BACKEND=redis://redis:6379/2
       - BULLMQ_WORKER_CONCURRENCY=2

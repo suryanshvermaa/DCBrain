@@ -35,7 +35,7 @@ export async function extractAndStoreEntities(
   let result: z.infer<typeof EntityExtractionSchema>;
   try {
     const model = new ChatGoogleGenerativeAI({
-      modelName: config.GEMINI_MODEL || 'gemma-4-31b-it',
+      modelName: config.GEMINI_MODEL || 'gemini-2.5-flash',
       apiKey: config.GEMINI_API_KEY,
       temperature: 0.1,
     });

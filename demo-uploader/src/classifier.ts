@@ -213,8 +213,8 @@ export function classifyFile({ absPath, relPath, relFromDataset, sizeBytes }: Cl
       category,
       businessPurpose: documentPurpose(top, sub, ext, fileName),
       aiUsage: isImage
-        ? 'OCR (Tesseract) → text extraction → chunk → embed (bge-m3) → ChromaDB → RAG search, compliance & agents'
-        : 'Text extract → chunk → embed (bge-m3) → ChromaDB → RAG search, compliance, RFI suggestions & agents',
+        ? 'OCR (Tesseract) → text extraction → chunk → embed (text-embedding-3-small) → ChromaDB → RAG search, compliance & agents'
+        : 'Text extract → chunk → embed (text-embedding-3-small) → ChromaDB → RAG search, compliance, RFI suggestions & agents',
       metadata: {
         ...commonMeta(),
         category,
