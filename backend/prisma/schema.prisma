@@ -35,6 +35,8 @@ model User {
   agentRuns     AgentRun[]
   reports       Report[]          @relation("ReportGeneratedBy")
   simulationsCreated Simulation[] @relation("SimulationCreatedBy")
+  ncrsRaised    Ncr[]             @relation("NcrRaisedBy")
+  changeOrdersApproved ChangeOrder[] @relation("ChangeOrderApprovedBy")
   notificationPreference NotificationPreference?
 
   @@index([email])
@@ -121,6 +123,10 @@ model Document {
   chunks        DocumentChunk[]
   versions      DocumentVersion[]
   rfiLinks      RfiDocument[]
+  ncrs          Ncr[]
+  inspections   Inspection[]
+  commissioningRecords CommissioningRecord[]
+  changeOrders  ChangeOrder[]
 
   @@index([projectId])
   @@index([status])
@@ -165,6 +171,7 @@ model DocumentChunk {
   documentId  String
   document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
+  @@unique([documentId, chunkIndex])
   @@index([documentId])
   @@map("document_chunks")
 }
@@ -399,6 +406,7 @@ model ScheduleActivity {
   import              ScheduleImport @relation(fields: [importId], references: [id], onDelete: Cascade)
   projectId           String
   project             Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  changeOrders        ChangeOrder[]
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
 
@@ -453,6 +461,8 @@ model Vendor {
   projectId          String
   project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   items              ProcurementItem[]
+  ncrs               Ncr[]
+  inspections        Inspection[]
 
   @@index([projectId])
   @@map("vendors")
@@ -529,6 +539,7 @@ model Rfi {
   answeredById     String?
   answeredBy       User?        @relation("RfiAnsweredBy", fields: [answeredById], references: [id], onDelete: SetNull)
   documents        RfiDocument[]
+  ncrs             Ncr[]
 
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
@@ -721,9 +732,13 @@ model Ncr {
   projectId        String
   project          Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   raisedById       String?
+  raisedBy         User?       @relation("NcrRaisedBy", fields: [raisedById], references: [id], onDelete: SetNull)
   documentId       String?
+  document         Document?   @relation(fields: [documentId], references: [id], onDelete: SetNull)
   rfiId            String?
+  rfi              Rfi?        @relation(fields: [rfiId], references: [id], onDelete: SetNull)
   vendorId         String?
+  vendor           Vendor?     @relation(fields: [vendorId], references: [id], onDelete: SetNull)
 
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
@@ -732,6 +747,10 @@ model Ncr {
   @@index([projectId])
   @@index([severity])
   @@index([status])
+  @@index([raisedById])
+  @@index([documentId])
+  @@index([rfiId])
+  @@index([vendorId])
   @@map("ncrs")
 }
 
@@ -760,7 +779,9 @@ model Inspection {
   status          InspectionStatus @default(SCHEDULED)
   result          String?
   vendorId        String?
+  vendor          Vendor?          @relation(fields: [vendorId], references: [id], onDelete: SetNull)
   documentId      String?
+  document        Document?        @relation(fields: [documentId], references: [id], onDelete: SetNull)
   metadata        Json?
 
   projectId       String
@@ -772,6 +793,8 @@ model Inspection {
   @@index([projectId])
   @@index([status])
   @@index([scheduledDate])
+  @@index([vendorId])
+  @@index([documentId])
   @@map("inspections")
 }
 
@@ -798,6 +821,7 @@ model CommissioningRecord {
   testedBy      String?
   completedDate DateTime?
   documentId    String?
+  document      Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
   metadata      Json?
 
   projectId     String
@@ -808,6 +832,7 @@ model CommissioningRecord {
 
   @@index([projectId])
   @@index([status])
+  @@index([documentId])
   @@map("commissioning_records")
 }
 
@@ -833,10 +858,13 @@ model ChangeOrder {
   scheduleImpactDays  Int               @default(0)
   status              ChangeOrderStatus @default(DRAFT)
   approvedById        String?
+  approvedBy          User?             @relation("ChangeOrderApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
   approvedAt          DateTime?
   rejectedAt          DateTime?
   documentId          String?
+  document            Document?         @relation(fields: [documentId], references: [id], onDelete: SetNull)
   scheduleActivityId  String?
+  scheduleActivity    ScheduleActivity? @relation(fields: [scheduleActivityId], references: [id], onDelete: SetNull)
   metadata            Json?
 
   projectId           String
@@ -848,5 +876,8 @@ model ChangeOrder {
   @@unique([projectId, number])
   @@index([projectId])
   @@index([status])
+  @@index([approvedById])
+  @@index([documentId])
+  @@index([scheduleActivityId])
   @@map("change_orders")
 }

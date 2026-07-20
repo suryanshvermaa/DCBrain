@@ -135,7 +135,7 @@ export async function updateCommissioning(input: {
   });
   if (!existing) throw new NotFoundError('Commissioning record', input.cxId);
 
-  const updateData: Prisma.CommissioningRecordUpdateInput = {};
+  const updateData: Prisma.CommissioningRecordUncheckedUpdateInput = {};
   if (input.data.systemName !== undefined) updateData.systemName = input.data.systemName;
   if (input.data.testRef !== undefined) updateData.testRef = input.data.testRef;
   if (input.data.discipline !== undefined) updateData.discipline = input.data.discipline;

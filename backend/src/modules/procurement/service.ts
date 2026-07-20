@@ -4,12 +4,28 @@ import { logger } from '@/lib/logger';
 import { minio } from '@/lib/minio';
 import config from '@/core/config';
 import crypto from 'crypto';
+import type { Role } from '@prisma/client';
+import { assertProjectAccess } from '@/modules/projects';
+import { NotFoundError } from '@/core/errors';
+
+export interface ProcurementActor {
+  id: string;
+  role: Role;
+}
 
 export class ProcurementService {
   /**
    * Import procurement data from an Excel/CSV file Buffer.
    */
-  static async importData(projectId: string, fileBuffer: Buffer, filename: string, mimeType: string) {
+  static async importData(
+    projectId: string,
+    actor: ProcurementActor,
+    fileBuffer: Buffer,
+    filename: string,
+    mimeType: string
+  ) {
+    await assertProjectAccess(projectId, actor);
+
     // 1. Upload raw file to MinIO for auditing
     const objectName = `procurement/${projectId}/${crypto.randomUUID()}-${filename}`;
     await minio.putObject(
@@ -89,13 +105,22 @@ export class ProcurementService {
       importedCount++;
     }
 
+    // New procurement data can change search results — clear stale cached answers.
+    try {
+      const { invalidateProjectSearchCache } = await import('@/modules/rag/pipeline');
+      await invalidateProjectSearchCache(projectId);
+    } catch (cacheErr) {
+      logger.warn('Failed to invalidate search cache after procurement import', { projectId, error: cacheErr });
+    }
+
     return { importedCount };
   }
 
   /**
    * Get all procurement items for a project
    */
-  static async getItems(projectId: string) {
+  static async getItems(projectId: string, actor: ProcurementActor) {
+    await assertProjectAccess(projectId, actor);
     return prisma.procurementItem.findMany({
       where: { projectId },
       include: { vendor: true },
@@ -104,16 +129,19 @@ export class ProcurementService {
   }
 
   /**
-   * Get all vendors and compute their scorecard
+   * Get all vendors and compute their scorecard.
+   * Read-only: scores are computed for the response, not persisted here
+   * (persistence happens on the import path / a batched job).
    */
-  static async getVendors(projectId: string) {
+  static async getVendors(projectId: string, actor: ProcurementActor) {
+    await assertProjectAccess(projectId, actor);
     const vendors = await prisma.vendor.findMany({
       where: { projectId },
       include: { items: true }
     });
 
     // Recalculate score (onTimeDelivery 40%, quality 30%, compliance 30%)
-    for (const vendor of vendors) {
+    return vendors.map((vendor) => {
       let onTimeCount = 0;
       let deliveredCount = 0;
 
@@ -127,32 +155,42 @@ export class ProcurementService {
       }
 
       const onTimeDeliveryRate = deliveredCount > 0 ? (onTimeCount / deliveredCount) * 100 : vendor.onTimeDeliveryRate;
-
       const overallScore = (onTimeDeliveryRate * 0.4) + (vendor.qualityRate * 0.3) + (vendor.complianceRate * 0.3);
 
-      if (overallScore !== vendor.overallScore || onTimeDeliveryRate !== vendor.onTimeDeliveryRate) {
-        await prisma.vendor.update({
-          where: { id: vendor.id },
-          data: { onTimeDeliveryRate, overallScore }
-        });
-        vendor.onTimeDeliveryRate = onTimeDeliveryRate;
-        vendor.overallScore = overallScore;
-      }
-    }
+      return { ...vendor, onTimeDeliveryRate, overallScore };
+    });
+  }
 
-    return vendors;
+  /**
+   * Update a vendor's scorecard fields (tenant-scoped).
+   */
+  static async updateVendor(
+    projectId: string,
+    actor: ProcurementActor,
+    vendorId: string,
+    data: Record<string, unknown>
+  ) {
+    await assertProjectAccess(projectId, actor);
+    const existing = await prisma.vendor.findFirst({ where: { id: vendorId, projectId } });
+    if (!existing) throw new NotFoundError('Vendor', vendorId);
+
+    return prisma.vendor.update({
+      where: { id: vendorId },
+      data,
+    });
   }
 
   /**
    * Suggest alternatives
    */
-  static async getAlternatives(projectId: string, itemId: string) {
-    const item = await prisma.procurementItem.findUnique({
+  static async getAlternatives(projectId: string, actor: ProcurementActor, itemId: string) {
+    await assertProjectAccess(projectId, actor);
+    const item = await prisma.procurementItem.findFirst({
       where: { id: itemId, projectId },
       include: { vendor: true }
     });
 
-    if (!item) throw new Error("Item not found");
+    if (!item) throw new NotFoundError('Procurement item', itemId);
 
     // In a real app, this would query embeddings and ask Gemini.
     // For now, we simulate this by querying vendors who provide similar materials

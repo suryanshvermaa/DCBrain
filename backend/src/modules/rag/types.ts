@@ -61,6 +61,8 @@ export interface GeneratedAnswer {
   confidence: number; // 0–1
   sources: SourceCitation[];
   noResults: boolean;
+  /** True when the answer is an error placeholder (e.g. LLM outage) and must not be cached. */
+  error?: boolean;
 }
 
 /** Full pipeline response returned by the search endpoint */

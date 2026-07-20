@@ -118,19 +118,21 @@ function RfisPageContent() {
       setAnalytics(analyticsRes);
 
       // Keep selected RFI fresh if it exists
-      if (selectedRfi) {
-        const updated = rfisRes.rfis.find((r) => r.id === selectedRfi.id);
+      setSelectedRfi((prev) => {
+        if (!prev) return null;
+        const updated = rfisRes.rfis.find((r) => r.id === prev.id);
         if (updated) {
-          setSelectedRfi(updated);
           setOfficialResolution(updated.resolution || updated.suggestedAnswer || '');
+          return updated;
         }
-      }
+        return prev;
+      });
     } catch (err: any) {
       setError(err.message || 'Failed to load RFI data');
     } finally {
       setLoading(false);
     }
-  }, [selectedRfi]);
+  }, []);
 
   // Handle Project Change
   useEffect(() => {
@@ -504,11 +506,15 @@ function RfisPageContent() {
                       <div className="grid grid-cols-2 gap-4 text-xs border-t border-[var(--color-border)] pt-3">
                         <div className="space-y-1">
                           <p className="text-[var(--color-text-tertiary)]">Raised By</p>
-                          <p className="font-semibold text-[var(--color-text-primary)]">{selectedRfi.raisedBy?.name || 'Unknown'}</p>
+                          <p className="font-semibold text-[var(--color-text-primary)]">
+                            {typeof selectedRfi.raisedBy === 'object' ? selectedRfi.raisedBy?.name || 'Unknown' : (selectedRfi.raisedBy || 'Unknown')}
+                          </p>
                         </div>
                         <div className="space-y-1">
                           <p className="text-[var(--color-text-tertiary)]">Assigned To</p>
-                          <p className="font-semibold text-[var(--color-text-primary)]">{selectedRfi.assignee?.name || 'Unassigned'}</p>
+                          <p className="font-semibold text-[var(--color-text-primary)]">
+                            {typeof selectedRfi.assignee === 'object' ? selectedRfi.assignee?.name || 'Unassigned' : (selectedRfi.assignee || 'Unassigned')}
+                          </p>
                         </div>
                         <div className="space-y-1">
                           <p className="text-[var(--color-text-tertiary)]">Discipline</p>
@@ -534,29 +540,31 @@ function RfisPageContent() {
                       </div>
 
                       {/* Linked Documents */}
-                      {selectedRfi.documents.length > 0 && (
+                      {Array.isArray(selectedRfi.documents) && selectedRfi.documents.length > 0 && (
                         <div className="space-y-2">
                           <h4 className="text-sm font-bold uppercase tracking-wider text-[var(--color-text-tertiary)]">Linked Reference Documents</h4>
                           <div className="space-y-2">
-                            {selectedRfi.documents.map((doc) => (
+                            {selectedRfi.documents.map((doc, i) => (
                               <div
-                                key={doc.documentId}
+                                key={doc?.documentId || i}
                                 className="flex items-center justify-between border border-[var(--color-border)] rounded-lg p-3 text-xs bg-[var(--color-surface)]"
                               >
                                 <div className="flex items-center gap-2 min-w-0">
                                   <FileText className="h-4 w-4 text-blue-500 shrink-0" />
                                   <span className="font-medium text-[var(--color-text-primary)] truncate">
-                                    {doc.originalName}
+                                    {doc?.originalName || doc?.filename || 'Document'}
                                   </span>
                                 </div>
-                                <a
-                                  href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/projects/${projectId}/documents/${doc.documentId}/download-url`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 hover:underline shrink-0 ml-2"
-                                >
-                                  Download
-                                </a>
+                                {doc?.documentId && (
+                                  <a
+                                    href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/projects/${projectId}/documents/${doc.documentId}/download-url`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline shrink-0 ml-2"
+                                  >
+                                    Download
+                                  </a>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -595,7 +603,7 @@ function RfisPageContent() {
                               {selectedRfi.suggestedAnswer}
                             </div>
 
-                            {selectedRfi.suggestedSources.length > 0 && (
+                            {Array.isArray(selectedRfi.suggestedSources) && selectedRfi.suggestedSources.length > 0 && (
                               <div className="space-y-2">
                                 <p className="font-semibold text-gray-500 uppercase tracking-wider">Citations & RAG Sources</p>
                                 <div className="space-y-2">
@@ -607,14 +615,14 @@ function RfisPageContent() {
                                       <div className="flex items-center justify-between text-[var(--color-text-tertiary)]">
                                         <span className="font-bold flex items-center gap-1">
                                           <Bookmark className="h-3.5 w-3.5 text-amber-500" />
-                                          {source.documentName}
+                                          {source?.documentName || 'Document'}
                                         </span>
                                         <span className="bg-[var(--color-primary-100)] text-[var(--color-primary)] px-1.5 py-0.5 rounded text-[10px] font-bold">
-                                          {(source.relevanceScore * 100).toFixed(0)}% Match
+                                          {((Number(source?.relevanceScore) || 0) * 100).toFixed(0)}% Match
                                         </span>
                                       </div>
                                       <p className="text-[var(--color-text-secondary)] italic whitespace-pre-wrap">
-                                        &ldquo;{source.excerpt}&rdquo;
+                                        &ldquo;{source?.excerpt || ''}&rdquo;
                                       </p>
                                     </div>
                                   ))}

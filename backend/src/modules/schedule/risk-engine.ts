@@ -43,7 +43,7 @@ export function scoreActivities(activities: ParsedActivity[]): ScoredActivity[] 
 
     // Float consumption rate (40 pts)
     if (maxFloat > 0) {
-      const floatRatio = Math.max(0, 1 - activity.totalFloat / maxFloat);
+      const floatRatio = Math.min(1, Math.max(0, 1 - activity.totalFloat / maxFloat));
       score += floatRatio * 40;
     } else if (activity.totalFloat <= 0) {
       // All activities at zero float → all get full float contribution
@@ -110,7 +110,9 @@ export function computeHealthIndicators(activities: ScoredActivity[]): ScheduleH
   ).length;
 
   // SPI approximation based on percentage of activities started on time
-  const started = activities.filter((a) => a.actualStart !== null).length;
+  const started = activities.filter(
+    (a) => a.plannedStart !== null && a.plannedStart <= now && a.actualStart !== null
+  ).length;
   const shouldHaveStarted = activities.filter(
     (a) => a.plannedStart !== null && a.plannedStart <= now
   ).length;

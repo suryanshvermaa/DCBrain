@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from 'express';
+import { Role } from '@prisma/client';
 import { asyncHandler } from '@/core/middleware/errorHandler';
 import { requireAuth, requirePermission, type AuthenticatedRequest } from '@/modules/auth/middleware';
 import {
@@ -20,13 +21,21 @@ export const agentsRouter = Router({ mergeParams: true });
 
 agentsRouter.use(requireAuth);
 
+function getActor(req: Request) {
+  const user = (req as AuthenticatedRequest).auth?.user;
+  return {
+    id: user?.id ?? '',
+    role: user?.role ?? Role.VIEWER,
+  };
+}
+
 // GET /api/v1/projects/:id/agents - List agent configs + latest run states
 agentsRouter.get(
   '/',
   requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     const params = projectAgentParamsSchema.parse(req.params);
-    const agents = await listAgents(params.id);
+    const agents = await listAgents(params.id, getActor(req));
     res.status(200).json(agents);
   })
 );
@@ -38,7 +47,7 @@ agentsRouter.post(
   asyncHandler(async (req: Request, res: Response) => {
     const params = runAgentParamsSchema.parse(req.params);
     const body = runAgentBodySchema.parse(req.body);
-    const userId = (req as AuthenticatedRequest).auth?.user.id;
+    const actor = getActor(req);
 
     const result = await runAgentService({
       projectId: params.id,
@@ -50,7 +59,8 @@ agentsRouter.post(
         standards: body.standards,
         notes: body.notes,
       },
-      userId,
+      actor,
+      userId: actor.id,
       runAsync: body.runAsync,
     });
 
@@ -65,7 +75,7 @@ agentsRouter.get(
   asyncHandler(async (req: Request, res: Response) => {
     const params = projectAgentParamsSchema.parse(req.params);
     const agentType = req.query['agentType'] ? (String(req.query['agentType']) as AgentType) : undefined;
-    const runs = await listAgentRuns(params.id, agentType);
+    const runs = await listAgentRuns(params.id, getActor(req), agentType);
     res.status(200).json(runs);
   })
 );
@@ -75,8 +85,9 @@ agentsRouter.get(
   '/runs/:runId',
   requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
+    const params = projectAgentParamsSchema.parse(req.params);
     const runId = req.params['runId']!;
-    const run = await getAgentRunDetails(runId);
+    const run = await getAgentRunDetails(params.id, getActor(req), runId);
     if (!run) {
       res.status(404).json({ error: 'Agent run not found' });
       return;
@@ -96,6 +107,7 @@ agentsRouter.put(
     const schedule = await updateAgentScheduleService({
       projectId: params.id,
       agentType: body.agentType as AgentType,
+      actor: getActor(req),
       schedule: body.schedule,
       isActive: body.isActive,
     });

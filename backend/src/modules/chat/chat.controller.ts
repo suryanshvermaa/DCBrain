@@ -1,20 +1,45 @@
 import prisma from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { runChatAgent } from './agent';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, Role } from '@prisma/client';
+import { assertProjectAccess } from '@/modules/projects';
+import { NotFoundError } from '@/core/errors';
 
-export async function createSession(projectId: string, userId: string, title?: string) {
+export interface ChatActor {
+  id: string;
+  role: Role;
+}
+
+export async function createSession(projectId: string, actor: ChatActor, title?: string) {
+  await assertProjectAccess(projectId, actor);
   const session = await prisma.chatSession.create({
     data: {
       projectId,
-      userId,
+      userId: actor.id,
       title: title || 'New Chat',
     },
   });
   return session;
 }
 
-export async function listSessions(projectId: string, userId: string, page: number, pageSize: number) {
+export async function deleteSession(sessionId: string, projectId: string, actor: ChatActor) {
+  await assertProjectAccess(projectId, actor);
+  const session = await prisma.chatSession.findFirst({
+    where: { id: sessionId, projectId, userId: actor.id },
+  });
+  if (!session) {
+    throw new NotFoundError('Chat session', sessionId);
+  }
+  await prisma.chatSession.delete({
+    where: { id: sessionId },
+  });
+  logger.info('Chat session deleted', { sessionId, projectId, userId: actor.id });
+  return { success: true };
+}
+
+export async function listSessions(projectId: string, actor: ChatActor, page: number, pageSize: number) {
+  await assertProjectAccess(projectId, actor);
+  const userId = actor.id;
   const skip = (page - 1) * pageSize;
   const [sessions, total] = await Promise.all([
     prisma.chatSession.findMany({
@@ -28,13 +53,14 @@ export async function listSessions(projectId: string, userId: string, page: numb
   return { sessions, total };
 }
 
-export async function getSessionMessages(sessionId: string, projectId: string, userId: string) {
+export async function getSessionMessages(sessionId: string, projectId: string, actor: ChatActor) {
+  await assertProjectAccess(projectId, actor);
   // Ensure session belongs to this project and user
   const session = await prisma.chatSession.findFirst({
-    where: { id: sessionId, projectId, userId },
+    where: { id: sessionId, projectId, userId: actor.id },
   });
   if (!session) {
-    throw new Error('Session not found or unauthorized');
+    throw new NotFoundError('Chat session', sessionId);
   }
 
   const messages = await prisma.chatMessage.findMany({
@@ -44,13 +70,15 @@ export async function getSessionMessages(sessionId: string, projectId: string, u
   return messages;
 }
 
-export async function sendMessage(sessionId: string, projectId: string, userId: string, content: string) {
+export async function sendMessage(sessionId: string, projectId: string, actor: ChatActor, content: string) {
+  await assertProjectAccess(projectId, actor);
+  const userId = actor.id;
   // 1. Verify session
   const session = await prisma.chatSession.findFirst({
     where: { id: sessionId, projectId, userId },
   });
   if (!session) {
-    throw new Error('Session not found or unauthorized');
+    throw new NotFoundError('Chat session', sessionId);
   }
 
   // 2. Save user message
@@ -98,9 +126,10 @@ export async function sendMessage(sessionId: string, projectId: string, userId: 
   return assistantMsg;
 }
 
-export async function exportSessionAsPDF(sessionId: string, projectId: string, userId: string): Promise<Buffer> {
+export async function exportSessionAsPDF(sessionId: string, projectId: string, actor: ChatActor): Promise<Buffer> {
+  await assertProjectAccess(projectId, actor);
   const session = await prisma.chatSession.findFirst({
-    where: { id: sessionId, projectId, userId },
+    where: { id: sessionId, projectId, userId: actor.id },
     include: {
       messages: { orderBy: { createdAt: 'asc' } },
       project: { select: { name: true } }
@@ -108,7 +137,7 @@ export async function exportSessionAsPDF(sessionId: string, projectId: string, u
   });
 
   if (!session) {
-    throw new Error('Session not found or unauthorized');
+    throw new NotFoundError('Chat session', sessionId);
   }
 
   return new Promise((resolve, reject) => {

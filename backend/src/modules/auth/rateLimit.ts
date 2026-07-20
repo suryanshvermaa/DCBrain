@@ -14,6 +14,15 @@ function isTestRuntime(): boolean {
   return process.env['APP_ENV'] === 'test' || process.env['NODE_ENV'] === 'test' || typeof process.env['JEST_WORKER_ID'] !== 'undefined';
 }
 
+/**
+ * Rate limiting is enforced in every environment. The only bypass is an
+ * explicit opt-out flag intended for tests/local tooling — it is never
+ * inferred from the runtime environment.
+ */
+function isRateLimitDisabled(): boolean {
+  return process.env['DISABLE_RATE_LIMIT'] === 'true';
+}
+
 function shouldUseMemoryStore(): boolean {
   const env = getRuntimeEnv();
 
@@ -64,7 +73,7 @@ async function saveState(key: string, state: { count: number; expiresAt: number;
 }
 
 export async function assertAuthRateLimit(scope: string, ipAddress: string): Promise<void> {
-  if (getRuntimeEnv() === 'development' && !isTestRuntime()) {
+  if (isRateLimitDisabled()) {
     return;
   }
 
@@ -103,7 +112,7 @@ export async function assertAuthRateLimit(scope: string, ipAddress: string): Pro
 }
 
 export async function resetAuthRateLimit(scope: string, ipAddress: string): Promise<void> {
-  if (getRuntimeEnv() === 'development' && !isTestRuntime()) {
+  if (isRateLimitDisabled()) {
     return;
   }
 

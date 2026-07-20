@@ -92,8 +92,14 @@ function toNcrResponse(ncr: Ncr): NcrResponse {
 }
 
 async function nextNcrNumber(projectId: string): Promise<string> {
-  const count = await prisma.ncr.count({ where: { projectId } });
-  return `NCR-${String(count + 1).padStart(4, '0')}`;
+  const latest = await prisma.ncr.findFirst({
+    where: { projectId },
+    orderBy: { number: 'desc' },
+  });
+  if (!latest) return 'NCR-0001';
+  const match = latest.number.match(/\d+$/);
+  const nextNum = match ? parseInt(match[0], 10) + 1 : (await prisma.ncr.count({ where: { projectId } })) + 1;
+  return `NCR-${String(nextNum).padStart(4, '0')}`;
 }
 
 // --------------------------------------------------------------------------
@@ -219,7 +225,7 @@ export async function updateNcr(input: {
   if (!existing) throw new NotFoundError('NCR', input.ncrId);
 
   const now = new Date();
-  const updateData: Prisma.NcrUpdateInput = {};
+  const updateData: Prisma.NcrUncheckedUpdateInput = {};
 
   if (input.data.title !== undefined) updateData.title = input.data.title;
   if (input.data.description !== undefined) updateData.description = input.data.description;

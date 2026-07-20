@@ -231,7 +231,7 @@ function NcrsPageContent() {
                 <Loader2 size={32} className="animate-spin text-violet-400" />
               </div>
             ) : ncrs.length === 0 ? (
-              <div className="text-center py-16 text-white/30">
+              <div className="text-center py-16 text-[var(--color-text-tertiary)]">
                 <AlertOctagon size={40} className="mx-auto mb-3 opacity-30" />
                 <p>No NCRs found</p>
                 <p className="text-sm mt-1">Create your first NCR to get started</p>
@@ -242,29 +242,31 @@ function NcrsPageContent() {
                   <div
                     key={ncr.id}
                     onClick={() => setSelected(ncr)}
-                    className={`bg-[#111118] border rounded-xl p-4 cursor-pointer transition-all hover:border-violet-500/30 ${
-                      selected?.id === ncr.id ? 'border-violet-500/50 bg-violet-500/5' : 'border-white/5'
+                    className={`card-level-1 p-4 cursor-pointer transition-theme ${
+                      selected?.id === ncr.id
+                        ? 'border-[var(--color-primary)] bg-[var(--color-sidebar-active)] shadow-md'
+                        : 'hover:border-[var(--color-primary)]/40 hover:bg-[var(--color-surface-hover)]'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-mono text-white/40">{ncr.number}</span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full border ${SEVERITY_COLORS[ncr.severity]}`}>
+                          <span className="text-xs font-mono text-[var(--color-text-tertiary)]">{ncr.number}</span>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${SEVERITY_COLORS[ncr.severity]}`}>
                             {ncr.severity}
                           </span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full border ${STATUS_COLORS[ncr.status]}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[ncr.status]}`}>
                             {ncr.status.replace('_', ' ')}
                           </span>
                         </div>
-                        <p className="font-medium text-white text-sm truncate">{ncr.title}</p>
-                        {ncr.discipline && <p className="text-xs text-white/40 mt-0.5">{ncr.discipline}</p>}
+                        <p className="font-medium text-[var(--color-text-primary)] text-sm truncate">{ncr.title}</p>
+                        {ncr.discipline && <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">{ncr.discipline}</p>}
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-xs text-white/30">
+                        <span className="text-xs text-[var(--color-text-tertiary)]">
                           {new Date(ncr.createdAt).toLocaleDateString()}
                         </span>
-                        <ChevronRight size={14} className="text-white/30" />
+                        <ChevronRight size={14} className="text-[var(--color-text-tertiary)]" />
                       </div>
                     </div>
                   </div>
@@ -275,55 +277,55 @@ function NcrsPageContent() {
 
           {/* Detail pane */}
           {selected && (
-            <div className="w-96 border-l border-white/5 bg-[#111118] flex flex-col overflow-hidden">
-              <div className="p-5 border-b border-white/5 flex items-center justify-between">
-                <h2 className="font-semibold text-sm text-white">{selected.number}</h2>
-                <button onClick={() => setSelected(null)} className="text-white/40 hover:text-white">
+            <div className="w-96 border-l border-[var(--color-border)] bg-[var(--color-surface)] flex flex-col overflow-hidden transition-theme">
+              <div className="p-5 border-b border-[var(--color-border)] flex items-center justify-between">
+                <h2 className="font-semibold text-sm text-[var(--color-text-primary)]">{selected.number}</h2>
+                <button onClick={() => setSelected(null)} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors">
                   <XCircle size={18} />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-5 space-y-4">
                 <div>
-                  <p className="text-xs text-white/40 mb-1">Title</p>
-                  <p className="text-sm text-white font-medium">{selected.title}</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Title</p>
+                  <p className="text-sm text-[var(--color-text-primary)] font-medium">{selected.title}</p>
                 </div>
                 <div className="flex gap-2">
-                  <span className={`text-xs px-2 py-1 rounded-full border ${SEVERITY_COLORS[selected.severity]}`}>
+                  <span className={`text-xs px-2 py-1 rounded-full ${SEVERITY_COLORS[selected.severity]}`}>
                     {selected.severity}
                   </span>
-                  <span className={`text-xs px-2 py-1 rounded-full border ${STATUS_COLORS[selected.status]}`}>
+                  <span className={`text-xs px-2 py-1 rounded-full ${STATUS_COLORS[selected.status]}`}>
                     {selected.status.replace('_', ' ')}
                   </span>
                 </div>
                 <div>
-                  <p className="text-xs text-white/40 mb-1">Description</p>
-                  <p className="text-sm text-white/70 leading-relaxed">{selected.description}</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Description</p>
+                  <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{selected.description}</p>
                 </div>
                 {selected.discipline && (
                   <div>
-                    <p className="text-xs text-white/40 mb-1">Discipline</p>
-                    <p className="text-sm text-white/70">{selected.discipline}</p>
+                    <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Discipline</p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">{selected.discipline}</p>
                   </div>
                 )}
                 {selected.rootCause && (
                   <div>
-                    <p className="text-xs text-white/40 mb-1">Root Cause</p>
-                    <p className="text-sm text-white/70 leading-relaxed">{selected.rootCause}</p>
+                    <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Root Cause</p>
+                    <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{selected.rootCause}</p>
                   </div>
                 )}
                 {selected.resolutionNote && (
                   <div>
-                    <p className="text-xs text-white/40 mb-1">Resolution</p>
-                    <p className="text-sm text-white/70 leading-relaxed">{selected.resolutionNote}</p>
+                    <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Resolution</p>
+                    <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{selected.resolutionNote}</p>
                   </div>
                 )}
-                <div className="text-xs text-white/30">
+                <div className="text-xs text-[var(--color-text-tertiary)]">
                   Created {new Date(selected.createdAt).toLocaleString()}
                 </div>
 
                 {/* Status transitions */}
                 <div>
-                  <p className="text-xs text-white/40 mb-2">Update Status</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)] mb-2">Update Status</p>
                   <div className="flex flex-wrap gap-2">
                     {(['OPEN','UNDER_REVIEW','RESOLVED','CLOSED','VOID'] as ncrApi.NcrStatus[]).map((s) => (
                       <button
@@ -332,8 +334,8 @@ function NcrsPageContent() {
                         onClick={() => void handleStatusChange(selected.id, s)}
                         className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                           s === selected.status
-                            ? 'border-violet-500/50 bg-violet-500/20 text-violet-300'
-                            : 'border-white/10 text-white/50 hover:text-white hover:border-white/20'
+                            ? 'border-[var(--color-primary)] bg-[var(--color-primary-100)] text-[var(--color-primary)] font-semibold'
+                            : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-ring)] bg-[var(--color-surface)]'
                         } disabled:opacity-50`}
                       >
                         {updatingId === selected.id && s === selected.status ? (

@@ -39,6 +39,7 @@ function SearchPageContent() {
     runSearch,
     rerunQuery,
     loadMoreHistory,
+    deleteHistoryItem,
   } = useSearch(projectId ?? '');
 
   const headerActions = (
@@ -86,6 +87,7 @@ function SearchPageContent() {
                 history={history}
                 onRerun={rerunQuery}
                 onLoadMore={loadMoreHistory}
+                onDelete={deleteHistoryItem}
               />
             </div>
 

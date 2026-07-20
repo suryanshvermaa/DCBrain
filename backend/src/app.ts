@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { Application, Request, Response, NextFunction } from 'express';
 import express from 'express';
 import cors from 'cors';
@@ -16,30 +15,52 @@ export function createApp(): Application {
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: 'cross-origin' },
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.jsdelivr.net'],
-          styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
-          imgSrc: ["'self'", 'data:', 'https:'],
-          fontSrc: ["'self'", 'data:', 'https:'],
-          connectSrc: ["'self'", 'https://dcbrain-api.nebula-hack.tech', 'wss://dcbrain-api.nebula-hack.tech'],
-        },
-      },
+      contentSecurityPolicy: false,
     })
   );
 
+  app.use('/docs', helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.jsdelivr.net'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      fontSrc: ["'self'", 'data:', 'https:'],
+    },
+  }));
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.path.startsWith('/docs')) return next();
+    return helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", 'https://cdn.jsdelivr.net'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        fontSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", 'https://dcbrain-api.nebula-hack.tech', 'wss://dcbrain-api.nebula-hack.tech'],
+      },
+    })(req, res, next);
+  });
+
+  const allowedOrigins = config.FRONTEND_URL.split(',').map((url) => url.trim());
   app.use(
     cors({
-      origin: config.FRONTEND_URL,
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
 
-  app.use(express.json({ limit: '1gb' }));
-  app.use(express.urlencoded({ extended: true, limit: '1gb' }));
+  app.use(express.json({ limit: `${config.MAX_UPLOAD_SIZE_MB}mb` }));
+  app.use(express.urlencoded({ extended: true, limit: `${config.MAX_UPLOAD_SIZE_MB}mb` }));
 
   app.use((req: Request, _res: Response, next: NextFunction) => {
     logger.debug('Incoming request', {

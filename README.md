@@ -140,6 +140,53 @@ graph TD
 
 ---
 
+## 📡 API Usage & Documentation
+
+DCBrain exposes a RESTful API over port `8000` (or port `9020` when running via `docker-compose.prod.test.yml`). Below are key endpoints for interacting with the core AI and management services.
+
+### 1. Authentication (`/api/v1/auth`)
+Obtain a JSON Web Token (JWT) by authenticating with your credentials:
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "suryansh@gmail.com",
+    "password": "testadminpassword"
+  }'
+```
+*Response returns `{ "accessToken": "eyJ...", "refreshToken": "..." }`.*
+
+### 2. AI Chat & RAG Queries (`/api/v1/projects/:projectId/chat`)
+Engage with **DCBrain** (powered by LangGraph and `gemma-4-31b-it`) to search project documents or retrieve expert Data Centre EPC answers:
+```bash
+# Send a prompt to an active chat session
+curl -X POST http://localhost:8000/api/v1/projects/YOUR_PROJECT_ID/chat/sessions/YOUR_SESSION_ID/messages \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Give me a 3-row comparison table of ASHRAE 90.4 vs NFPA 75 requirements for data centres."
+  }'
+```
+
+### 3. AI Compliance Engine (`/api/v1/projects/:projectId/compliance`)
+Run automated compliance checks against Data Centre engineering standards (`ASHRAE`, `NFPA`, `TIA-942`, `Uptime Institute`):
+```bash
+curl -X POST http://localhost:8000/api/v1/projects/YOUR_PROJECT_ID/compliance/run-audit \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+### 4. Schedule Risk Simulations & AI Mitigations (`/api/v1/projects/:projectId/simulations`)
+Simulate delay cascades across construction schedules and generate AI engineering mitigation strategies:
+```bash
+# Trigger AI Mitigation Plan generation for a completed delay simulation
+curl -X POST http://localhost:8000/api/v1/projects/YOUR_PROJECT_ID/simulations/YOUR_SIMULATION_ID/generate-mitigation \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+---
+
 ## 🔒 Security
 
 - 🎫 JWT authentication with refresh tokens

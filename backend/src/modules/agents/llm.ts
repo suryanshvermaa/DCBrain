@@ -1,5 +1,6 @@
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import config from '@/core/config';
+import { extractMessageContent } from '@/core/utils/contentExtractor';
 
 export const llm = new ChatGoogleGenerativeAI({
   model: config.GEMINI_MODEL,
@@ -15,7 +16,7 @@ export async function askGemini(prompt: string, jsonMode: boolean = false): Prom
   }
 
   const response = await llm.invoke([{ role: 'user', content: finalPrompt }]);
-  const content = typeof response.content === 'string' ? response.content : JSON.stringify(response.content);
+  const content = extractMessageContent(response.content);
 
   if (jsonMode) {
     // Clean up any markdown json blocks if Gemini ignores instructions

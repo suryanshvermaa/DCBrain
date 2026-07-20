@@ -32,20 +32,29 @@ export async function extractAndStoreEntities(
   
   if (!text.trim()) return;
   
+  let result: z.infer<typeof EntityExtractionSchema>;
   try {
     const model = new ChatGoogleGenerativeAI({
-      modelName: config.GEMINI_MODEL || 'gemini-2.5-flash',
+      modelName: config.GEMINI_MODEL || 'gemma-4-31b-it',
       apiKey: config.GEMINI_API_KEY,
       temperature: 0.1,
     });
     
     const structuredModel = model.withStructuredOutput(EntityExtractionSchema);
-    const result = await structuredModel.invoke([
+    result = await structuredModel.invoke([
       ["system", "You are an expert EPC engineering assistant. Extract the requested entities from the provided document chunk."],
       ["human", text]
     ]);
-    
-    // Store in Neo4j
+  } catch (llmErr: any) {
+    if (llmErr?.status === 503 || llmErr?.status === 429 || llmErr?.code === 'ECONNRESET' || llmErr?.code === 'ENOTFOUND') {
+      throw llmErr; // Transient LLM API/network failure -> rethrow for worker retry
+    }
+    logger.warn('LLM failed to extract entities from chunk (per-chunk LLM issue)', { error: llmErr?.message, documentId, chunkIndex });
+    return;
+  }
+  
+  // Store in Neo4j (distinguish infrastructure failure and rethrow so reconciliation/retries fire)
+  try {
     await executeWrite(async (tx) => {
       // Ensure Document node exists
       await tx.run(
@@ -97,8 +106,8 @@ export async function extractAndStoreEntities(
         }
       }
     });
-    
-  } catch (error) {
-    logger.warn('Failed to extract and store entities', { error, documentId, chunkIndex });
+  } catch (neo4jErr) {
+    logger.error('Neo4j infrastructure failure during entity storage', { error: neo4jErr, documentId, chunkIndex });
+    throw neo4jErr;
   }
 }

@@ -129,6 +129,23 @@ const envSchema = z.object({
   // Logging
   LOG_LEVEL: z.enum(['DEBUG', 'INFO', 'WARN', 'ERROR']).default('INFO'),
   LOG_FORMAT: z.enum(['json', 'console']).default('console'),
+}).superRefine((data, ctx) => {
+  if (data.APP_ENV === 'production') {
+    if (data.MINIO_ACCESS_KEY === 'minioadmin' || data.MINIO_SECRET_KEY === 'minioadmin') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Insecure MinIO default credentials cannot be used in production',
+        path: ['MINIO_ACCESS_KEY'],
+      });
+    }
+    if (data.GRAPH_DB_PASSWORD === 'password') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Insecure Graph DB default password cannot be used in production',
+        path: ['GRAPH_DB_PASSWORD'],
+      });
+    }
+  }
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

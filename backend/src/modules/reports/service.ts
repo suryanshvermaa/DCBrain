@@ -1,4 +1,4 @@
-import { ReportStatus, type ReportType } from '@prisma/client';
+import { ReportStatus, type ReportType, type Role } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { uploadBuffer, getPresignedDownloadUrl } from '@/lib/minio';
@@ -8,13 +8,20 @@ import { markdownToPdf } from './pdf';
 import { enqueueReportGeneration } from './queue';
 import type { ReportListItem, ReportDetail, GenerateReportInput } from './types';
 
+export interface ReportActor {
+  id: string;
+  role: Role;
+}
+
 // ---------------------------------------------------------------------------
 // Generate Report (sync or async)
 // ---------------------------------------------------------------------------
 
 export async function generateReport(input: GenerateReportInput): Promise<{ reportId: string; status: string; report?: ReportDetail }> {
   // Access check
-  if (input.userId) {
+  if (input.actor) {
+    await assertProjectAccess(input.projectId, input.actor);
+  } else if (input.userId) {
     await assertProjectAccess(input.projectId, { id: input.userId, role: 'VIEWER' as any });
   }
 
@@ -172,9 +179,9 @@ export async function listReports(
 // Get Report Detail
 // ---------------------------------------------------------------------------
 
-export async function getReportDetail(reportId: string): Promise<ReportDetail | null> {
-  const report = await prisma.report.findUnique({
-    where: { id: reportId },
+export async function getReportDetail(reportId: string, projectId: string): Promise<ReportDetail | null> {
+  const report = await prisma.report.findFirst({
+    where: { id: reportId, projectId },
     include: {
       generatedBy: {
         select: { id: true, firstName: true, lastName: true },
@@ -192,10 +199,11 @@ export async function getReportDetail(reportId: string): Promise<ReportDetail | 
 
 export async function getReportDownloadUrl(
   reportId: string,
+  projectId: string,
   format: 'pdf' | 'md',
 ): Promise<{ url?: string; markdown?: string; filename: string } | null> {
-  const report = await prisma.report.findUnique({
-    where: { id: reportId },
+  const report = await prisma.report.findFirst({
+    where: { id: reportId, projectId },
     select: { id: true, title: true, status: true, storageKey: true, markdownContent: true, type: true },
   });
 

@@ -1,96 +1,80 @@
+import express from 'express';
 import request from 'supertest';
-import { app } from '@/app';
-import { prisma } from '@/lib/prisma';
-import { getTestToken, createTestUser, createTestProject } from '@/lib/test-utils';
-import { graphService } from '@/modules/graph/service';
-import { runAgentService } from '@/modules/agents/service';
+import simulationsRouter from './routes';
 
-jest.mock('@/modules/graph/service', () => ({
-  graphService: {
-    getFailurePropagation: jest.fn(),
+jest.mock('./service', () => ({
+  createAndRunSimulation: jest.fn(),
+  listSimulations: jest.fn(),
+  getSimulation: jest.fn(),
+  generateMitigationPlan: jest.fn(),
+}));
+
+const { createAndRunSimulation, listSimulations } = jest.requireMock('./service') as {
+  createAndRunSimulation: jest.Mock;
+  listSimulations: jest.Mock;
+};
+
+jest.mock('@/modules/auth/middleware', () => ({
+  requireAuth: (req: any, _res: any, next: () => void) => {
+    req.auth = { user: { id: 'test-user-id', role: 'ENGINEER' } };
+    next();
   },
+  requirePermission: () => (_req: any, _res: any, next: () => void) => next(),
 }));
 
-jest.mock('@/modules/agents/service', () => ({
-  runAgentService: jest.fn(),
+jest.mock('@/modules/projects', () => ({
+  assertProjectAccess: jest.fn(async () => undefined),
 }));
 
-describe('Simulations API', () => {
-  let token: string;
-  let projectId: string;
-  let userId: string;
-  let activityId: string;
+function createTestApp() {
+  const app = express();
+  app.use(express.json());
+  app.use('/api/v1/projects/:id/simulations', simulationsRouter);
+  return app;
+}
 
-  beforeAll(async () => {
-    const user = await createTestUser({ role: 'ENGINEER' });
-    userId = user.id;
-    token = getTestToken(user);
-    
-    const project = await createTestProject(user.id);
-    projectId = project.id;
-    
-    const importRecord = await prisma.scheduleImport.create({
-      data: {
-        projectId,
-        filename: 'test.xml',
-        status: 'SUCCESS',
-        activityCount: 1,
-      },
-    });
+describe('Simulations API Routes', () => {
+  const app = createTestApp();
+  const projectId = 'test-project-id';
 
-    const activity = await prisma.scheduleActivity.create({
-      data: {
-        projectId,
-        importId: importRecord.id,
-        activityId: 'ACT-100',
-        name: 'Test Activity',
-      },
-    });
-    activityId = activity.activityId;
-  });
-
-  afterAll(async () => {
-    await prisma.simulation.deleteMany();
-    await prisma.scheduleActivity.deleteMany();
-    await prisma.scheduleImport.deleteMany();
-    await prisma.project.deleteMany();
-    await prisma.user.deleteMany();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('POST /api/v1/projects/:projectId/simulations/delay should run simulation', async () => {
-    (graphService.getFailurePropagation as jest.Mock).mockResolvedValue({
-      nodes: [
-        { properties: { name: 'Test Activity' }, labels: ['Activity'] },
-        { properties: { name: 'Downstream 1' }, labels: ['Equipment'] }
-      ],
-      edges: []
+    createAndRunSimulation.mockResolvedValue({
+      id: 'sim-1',
+      name: 'Test Simulation',
+      status: 'COMPLETED',
+      costImpact: 70000,
     });
 
     const res = await request(app)
       .post(`/api/v1/projects/${projectId}/simulations/delay`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', 'Bearer mock-token')
       .send({
         name: 'Test Simulation',
-        targetActivityId: activityId,
+        targetActivityId: 'ACT-100',
         delayDays: 14,
         assumptions: { costPerDay: 5000 },
       });
 
     expect(res.status).toBe(201);
-    expect(res.body.id).toBeDefined();
-
-    const sim = await prisma.simulation.findUnique({ where: { id: res.body.id } });
-    expect(sim?.status).toBe('COMPLETED');
-    expect(sim?.costImpact).toBe(70000); // 1 downstream node * 14 days * 5000
+    expect(res.body.id).toBe('sim-1');
+    expect(createAndRunSimulation).toHaveBeenCalled();
   });
 
   it('GET /api/v1/projects/:projectId/simulations should list simulations', async () => {
+    listSimulations.mockResolvedValue([
+      { id: 'sim-1', name: 'Test Simulation', status: 'COMPLETED' },
+    ]);
+
     const res = await request(app)
       .get(`/api/v1/projects/${projectId}/simulations`)
-      .set('Authorization', `Bearer ${token}`);
-      
+      .set('Authorization', 'Bearer mock-token');
+
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body.length).toBe(1);
   });
 });

@@ -66,52 +66,52 @@ function NewSimulationPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+    <div className="min-h-screen bg-[var(--color-bg)] p-8 text-[var(--color-text-primary)]">
       <div className="max-w-2xl mx-auto space-y-6">
         <Link
           href={`/simulations${projectId ? `?projectId=${projectId}` : ''}`}
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white"
+          className="inline-flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Simulations
         </Link>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-6">
-            <Activity className="w-6 h-6 text-blue-600" />
+        <div className="bg-[var(--color-surface)] p-6 rounded-xl border border-[var(--color-border)] shadow-sm">
+          <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-3 mb-6">
+            <Activity className="w-6 h-6 text-[var(--color-primary)]" />
             Run Delay Simulation
           </h2>
 
           {error && (
-            <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6 text-sm">
+            <div className="bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 p-4 rounded-lg mb-6 text-sm border border-red-200 dark:border-red-800/40">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Scenario Name</label>
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Scenario Name</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                className="w-full px-4 py-2 border border-[var(--color-input)] rounded-lg bg-[var(--color-input-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                 placeholder="e.g. Chiller Delivery Delay"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Activity</label>
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Target Activity</label>
               {loadingActivities ? (
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Loading activities...
+                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                  <Loader2 className="w-4 h-4 animate-spin text-[var(--color-primary)]" /> Loading activities...
                 </div>
               ) : (
                 <select
                   required
                   value={targetActivityId}
                   onChange={(e) => setTargetActivityId(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                  className="w-full px-4 py-2 border border-[var(--color-input)] rounded-lg bg-[var(--color-input-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                 >
                   <option value="" disabled>Select an activity</option>
                   {activities.map((act) => (
@@ -124,14 +124,14 @@ function NewSimulationPageContent() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Delay (Days)</label>
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Delay (Days)</label>
               <input
                 type="number"
                 required
                 min="1"
                 value={delayDays}
                 onChange={(e) => setDelayDays(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                className="w-full px-4 py-2 border border-[var(--color-input)] rounded-lg bg-[var(--color-input-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
               />
             </div>
 
@@ -139,7 +139,7 @@ function NewSimulationPageContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-2 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50 flex items-center gap-2 transition-colors font-medium"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 Run Simulation

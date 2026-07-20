@@ -71,3 +71,12 @@ export async function getSearchHistory(
     `/api/v1/projects/${projectId}/search/history?page=${page}&pageSize=${pageSize}`
   );
 }
+
+export async function deleteSearchHistoryItem(
+  projectId: string,
+  historyId: string
+): Promise<{ success: boolean }> {
+  return api.delete<{ success: boolean }>(
+    `/api/v1/projects/${projectId}/search/history/${historyId}`
+  );
+}

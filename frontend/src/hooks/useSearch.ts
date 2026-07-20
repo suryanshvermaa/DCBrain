@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   searchProject,
   getSearchHistory,
+  deleteSearchHistoryItem,
   type SearchResponse,
   type SearchFilters,
   type SearchHistoryItem,
@@ -26,6 +27,7 @@ interface UseSearchActions {
   rerunQuery: (q: string) => void;
   clearResult: () => void;
   loadMoreHistory: () => void;
+  deleteHistoryItem: (id: string) => Promise<void>;
 }
 
 export function useSearch(projectId: string): UseSearchState & UseSearchActions {
@@ -118,6 +120,19 @@ export function useSearch(projectId: string): UseSearchState & UseSearchActions 
 
   const clearResult = useCallback(() => setResult(null), []);
 
+  const deleteHistoryItem = useCallback(
+    async (id: string) => {
+      if (!projectId) return;
+      try {
+        await deleteSearchHistoryItem(projectId, id);
+        setHistory((prev) => prev.filter((item) => item.id !== id));
+      } catch (err) {
+        console.error('Failed to delete search history item', err);
+      }
+    },
+    [projectId]
+  );
+
   return {
     query,
     filters,
@@ -131,5 +146,6 @@ export function useSearch(projectId: string): UseSearchState & UseSearchActions 
     rerunQuery,
     clearResult,
     loadMoreHistory,
+    deleteHistoryItem,
   };
 }

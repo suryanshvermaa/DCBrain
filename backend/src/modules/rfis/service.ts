@@ -145,36 +145,45 @@ function fullName(
   return { id: user.id, name: `${user.firstName} ${user.lastName}` };
 }
 
-function toRfiResponse(rfi: RfiWithRelations, now: Date = new Date()): RfiResponse {
+function toRfiResponse(rfi: RfiWithRelations | any, now: Date = new Date()): RfiResponse {
   return {
     id: rfi.id,
     number: rfi.number,
-    subject: rfi.subject,
-    question: rfi.question,
+    subject: rfi.subject ?? '',
+    question: rfi.question ?? '',
     status: rfi.status,
     priority: rfi.priority,
-    discipline: rfi.discipline,
-    dueDate: rfi.dueDate?.toISOString() ?? null,
-    resolution: rfi.resolution,
-    suggestedAnswer: rfi.suggestedAnswer,
+    discipline: rfi.discipline ?? null,
+    dueDate: rfi.dueDate instanceof Date ? rfi.dueDate.toISOString() : (rfi.dueDate ?? null),
+    resolution: rfi.resolution ?? null,
+    suggestedAnswer: rfi.suggestedAnswer ?? null,
     suggestedSources: Array.isArray(rfi.suggestedSources)
-      ? (rfi.suggestedSources as unknown as RfiSource[])
+      ? (rfi.suggestedSources as any[]).map((s) => ({
+          documentId: s?.documentId || '',
+          documentName: s?.documentName || 'Document',
+          excerpt: s?.excerpt || '',
+          relevanceScore: typeof s?.relevanceScore === 'number' ? s.relevanceScore : (Number(s?.relevanceScore) || 0),
+        }))
       : [],
-    suggestedAt: rfi.suggestedAt?.toISOString() ?? null,
-    answeredAt: rfi.answeredAt?.toISOString() ?? null,
-    closedAt: rfi.closedAt?.toISOString() ?? null,
-    ageDays: ageInDays(rfi.createdAt, now),
+    suggestedAt: rfi.suggestedAt instanceof Date ? rfi.suggestedAt.toISOString() : (rfi.suggestedAt ?? null),
+    answeredAt: rfi.answeredAt instanceof Date ? rfi.answeredAt.toISOString() : (rfi.answeredAt ?? null),
+    closedAt: rfi.closedAt instanceof Date ? rfi.closedAt.toISOString() : (rfi.closedAt ?? null),
+    ageDays: rfi.createdAt ? ageInDays(new Date(rfi.createdAt), now) : 0,
     overdue: isOverdue(rfi, now),
     raisedBy: fullName(rfi.raisedBy),
     assignee: fullName(rfi.assignee),
     answeredBy: fullName(rfi.answeredBy),
-    documents: rfi.documents.map((link) => ({
-      documentId: link.document.id,
-      filename: link.document.filename,
-      originalName: link.document.originalName,
-    })),
-    createdAt: rfi.createdAt.toISOString(),
-    updatedAt: rfi.updatedAt.toISOString(),
+    documents: Array.isArray(rfi.documents)
+      ? rfi.documents
+          .filter((link: any) => link && link.document)
+          .map((link: any) => ({
+            documentId: link.document.id,
+            filename: link.document.filename || '',
+            originalName: link.document.originalName || link.document.filename || 'Document',
+          }))
+      : [],
+    createdAt: rfi.createdAt instanceof Date ? rfi.createdAt.toISOString() : (rfi.createdAt || new Date().toISOString()),
+    updatedAt: rfi.updatedAt instanceof Date ? rfi.updatedAt.toISOString() : (rfi.updatedAt || new Date().toISOString()),
   };
 }
 
@@ -184,8 +193,14 @@ function toRfiResponse(rfi: RfiWithRelations, now: Date = new Date()): RfiRespon
 
 /** Generate the next project-scoped RFI number, e.g. "RFI-0001". */
 async function nextRfiNumber(projectId: string): Promise<string> {
-  const count = await prisma.rfi.count({ where: { projectId } });
-  return `RFI-${String(count + 1).padStart(4, '0')}`;
+  const latest = await prisma.rfi.findFirst({
+    where: { projectId },
+    orderBy: { number: 'desc' },
+  });
+  if (!latest) return 'RFI-0001';
+  const match = latest.number.match(/\d+$/);
+  const nextNum = match ? parseInt(match[0], 10) + 1 : (await prisma.rfi.count({ where: { projectId } })) + 1;
+  return `RFI-${String(nextNum).padStart(4, '0')}`;
 }
 
 /** Validate that the supplied document IDs all belong to the project. */

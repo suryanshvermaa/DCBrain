@@ -8,6 +8,8 @@ import {
   Background,
   useNodesState,
   useEdgesState,
+  type Node,
+  type Edge,
   Panel,
   MarkerType,
 } from '@xyflow/react';
@@ -90,8 +92,8 @@ function layoutNodes(nodes: GraphNode[]): Record<string, { x: number; y: number 
 /* ─── Main Component ─── */
 
 function GraphPageContent() {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [projects, setProjects] = useState<projectsApi.Project[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -213,13 +215,33 @@ function GraphPageContent() {
           maxZoom={2}
           proOptions={{ hideAttribution: true }}
         >
-          <Background color="#334155" gap={20} size={1} />
+          <Background color="var(--color-divider)" gap={20} size={1} />
           <Controls className="!bg-[var(--color-surface)] !border-[var(--color-border)] !shadow-lg [&>button]:!bg-[var(--color-surface-raised)] [&>button]:!border-[var(--color-input)] [&>button]:!text-[var(--color-text-primary)] [&>button:hover]:!bg-[var(--color-surface-hover)]" />
           <MiniMap
             nodeColor={(n: any) => n.style?.background as string || '#64748b'}
-            maskColor="rgba(15, 23, 42, 0.7)"
-            style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
+            maskColor="rgba(0, 0, 0, 0.3)"
+            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px' }}
           />
+
+          {!loading && nodes.length === 0 && (
+            <Panel position="top-center" className="mt-24 max-w-md w-full mx-4">
+              <div className="bg-[var(--color-surface)] p-6 rounded-xl border border-[var(--color-border)] shadow-xl text-center space-y-3">
+                <Network className="w-10 h-10 text-[var(--color-text-tertiary)] mx-auto" />
+                <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Knowledge Graph is Empty</h3>
+                <p className="text-sm text-[var(--color-text-secondary)]">
+                  No entities or relationships found in Neo4j. Upload and process project documents (specifications, P6 schedules, equipment lists) to automatically extract entities and populate the graph.
+                </p>
+                <div className="pt-2">
+                  <a
+                    href={`/documents${projectId ? `?projectId=${projectId}` : ''}`}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] transition-colors"
+                  >
+                    Go to Documents
+                  </a>
+                </div>
+              </div>
+            </Panel>
+          )}
 
           {/* ── Top-left Controls ── */}
           <Panel position="top-left" className="space-y-3 max-w-xs">

@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import config from '@/core/config';
 import type { FusedResult, GeneratedAnswer, SourceCitation } from './types';
+import { extractMessageContent } from '@/core/utils/contentExtractor';
 
 /** Maximum characters to include in the LLM context window */
 const MAX_CONTEXT_CHARS = 12_000;
@@ -76,6 +77,7 @@ export async function generateAnswer(
 
   let rawResponse = '';
   let confidence = 0.5;
+  let generationFailed = false;
 
   try {
     const llm = new ChatGoogleGenerativeAI({
@@ -90,7 +92,7 @@ export async function generateAnswer(
       new HumanMessage(userMessage),
     ]);
 
-    rawResponse = typeof response.content === 'string' ? response.content : String(response.content);
+    rawResponse = extractMessageContent(response.content);
 
     // Extract trailing JSON confidence block: {"confidence": 0.9, "cited_sources": [1, 3]}
     const jsonMatch = rawResponse.match(/\{[^{}]*"confidence"[^{}]*\}/);
@@ -110,6 +112,7 @@ export async function generateAnswer(
     rawResponse =
       'I was unable to generate an answer at this time. Please try again shortly.';
     confidence = 0;
+    generationFailed = true;
   }
 
   const sources: SourceCitation[] = usedChunks.map((chunk, index) => ({
@@ -126,5 +129,6 @@ export async function generateAnswer(
     confidence,
     sources,
     noResults: false,
+    error: generationFailed,
   };
 }

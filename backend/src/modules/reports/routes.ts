@@ -1,7 +1,8 @@
-// @ts-nocheck
 import { Router, type Request, type Response } from 'express';
+import { Role } from '@prisma/client';
 import { asyncHandler } from '@/core/middleware/errorHandler';
 import { requireAuth, requirePermission, type AuthenticatedRequest } from '@/modules/auth/middleware';
+import { assertProjectAccess } from '@/modules/projects';
 import {
   reportParamsSchema,
   reportDetailParamsSchema,
@@ -20,6 +21,14 @@ export const reportsRouter = Router({ mergeParams: true });
 
 reportsRouter.use(requireAuth);
 
+function getActor(req: Request) {
+  const user = (req as AuthenticatedRequest).auth?.user;
+  return {
+    id: user?.id ?? '',
+    role: user?.role ?? Role.VIEWER,
+  };
+}
+
 /**
  * POST /api/v1/projects/:id/reports/generate
  *
@@ -31,12 +40,13 @@ reportsRouter.post(
   asyncHandler(async (req: Request, res: Response) => {
     const params = reportParamsSchema.parse(req.params);
     const body = generateReportBodySchema.parse(req.body);
-    const userId = (req as AuthenticatedRequest).auth?.user.id;
+    const actor = getActor(req);
 
     const result = await generateReport({
       projectId: params.id,
       type: body.type,
-      userId,
+      userId: actor.id,
+      actor,
       runAsync: body.runAsync,
     });
 
@@ -54,6 +64,7 @@ reportsRouter.get(
   requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     const params = reportParamsSchema.parse(req.params);
+    await assertProjectAccess(params.id, getActor(req));
     const query = reportListQuerySchema.parse(req.query);
 
     const result = await listReports(params.id, {
@@ -76,8 +87,9 @@ reportsRouter.get(
   requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     const params = reportDetailParamsSchema.parse(req.params);
+    await assertProjectAccess(params.id, getActor(req));
 
-    const report = await getReportDetail(params.reportId);
+    const report = await getReportDetail(params.reportId, params.id);
     if (!report) {
       res.status(404).json({ error: 'Report not found' });
       return;
@@ -97,15 +109,16 @@ reportsRouter.get(
   requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     const params = reportDetailParamsSchema.parse(req.params);
+    await assertProjectAccess(params.id, getActor(req));
     const query = reportDownloadQuerySchema.parse(req.query);
 
     if (query.format === 'pdf') {
-      const report = await getReportDetail(params.reportId);
+      const report = await getReportDetail(params.reportId, params.id);
       if (!report || !report.storageKey) {
         res.status(404).json({ error: 'Report not found or not yet generated' });
         return;
       }
-      
+
       const { getObjectStream } = await import('@/lib/minio');
       try {
         const stream = await getObjectStream(report.storageKey);
@@ -118,7 +131,7 @@ reportsRouter.get(
       return;
     }
 
-    const result = await getReportDownloadUrl(params.reportId, query.format);
+    const result = await getReportDownloadUrl(params.reportId, params.id, query.format);
     if (!result) {
       res.status(404).json({ error: 'Report not found or not yet generated' });
       return;

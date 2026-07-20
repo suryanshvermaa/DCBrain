@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { SearchResponse } from '@/lib/api/search';
 import { SourceCitationCard } from './SourceCitationCard';
+import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 
 interface AIAnswerCardProps {
   result: SearchResponse;
@@ -35,12 +36,8 @@ export function AIAnswerCard({ result, projectId }: AIAnswerCardProps) {
       </div>
 
       {/* ── Answer text ── */}
-      <div className="text-lg leading-relaxed text-[var(--color-text-primary)] mb-8 space-y-4" id="ai-answer-text">
-        {result.answer.split('\n').map((line, i) => (
-          <p key={i} className="">
-            {line}
-          </p>
-        ))}
+      <div className="mb-8" id="ai-answer-text">
+        <MarkdownRenderer content={result.answer} />
       </div>
 
       {/* ── Confidence bar ── */}

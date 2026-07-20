@@ -4,8 +4,16 @@ import { enqueueAgentExecution } from './queue';
 import type { AgentType, AgentInput, AgentOutput } from './agent.types';
 import { agentExecutionQueue } from './queue';
 import { logger } from '@/lib/logger';
+import type { Role } from '@prisma/client';
+import { assertProjectAccess } from '@/modules/projects';
 
-export async function listAgents(projectId: string) {
+export interface AgentActor {
+  id: string;
+  role: Role;
+}
+
+export async function listAgents(projectId: string, actor: AgentActor) {
+  await assertProjectAccess(projectId, actor);
   const agents = getAllAgents();
   const [schedules, latestRuns] = await Promise.all([
     prisma.agentSchedule.findMany({ where: { projectId } }),
@@ -43,9 +51,11 @@ export async function runAgentService(input: {
   projectId: string;
   agentType: AgentType;
   input: AgentInput;
+  actor: AgentActor;
   userId?: string;
   runAsync?: boolean;
 }): Promise<{ runId: string; status: string; output?: AgentOutput }> {
+  await assertProjectAccess(input.projectId, input.actor);
   const agent = getAgentInstance(input.agentType);
   if (!agent) {
     throw new Error(`Agent ${input.agentType} is not registered`);
@@ -91,7 +101,8 @@ export async function runAgentService(input: {
   }
 }
 
-export async function listAgentRuns(projectId: string, agentType?: AgentType) {
+export async function listAgentRuns(projectId: string, actor: AgentActor, agentType?: AgentType) {
+  await assertProjectAccess(projectId, actor);
   return prisma.agentRun.findMany({
     where: {
       projectId,
@@ -111,9 +122,10 @@ export async function listAgentRuns(projectId: string, agentType?: AgentType) {
   });
 }
 
-export async function getAgentRunDetails(runId: string) {
-  return prisma.agentRun.findUnique({
-    where: { id: runId },
+export async function getAgentRunDetails(projectId: string, actor: AgentActor, runId: string) {
+  await assertProjectAccess(projectId, actor);
+  return prisma.agentRun.findFirst({
+    where: { id: runId, projectId },
     include: {
       triggeredBy: {
         select: {
@@ -130,10 +142,12 @@ export async function getAgentRunDetails(runId: string) {
 export async function updateAgentScheduleService(input: {
   projectId: string;
   agentType: AgentType;
+  actor: AgentActor;
   schedule: string;
   isActive: boolean;
 }) {
   const { projectId, agentType, schedule, isActive } = input;
+  await assertProjectAccess(projectId, input.actor);
 
   const record = await prisma.agentSchedule.upsert({
     where: { projectId_agentType: { projectId, agentType } },

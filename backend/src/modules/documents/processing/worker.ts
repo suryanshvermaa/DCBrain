@@ -37,6 +37,18 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
 
     // 1. Download & Extract
     await updateDocumentProcessingStatus(documentId, DocumentStatus.PROCESSING, 'extraction.started');
+
+    // Idempotency: a retry (BullMQ attempts:3) must start from a clean slate,
+    // otherwise chunks would be double-inserted. Remove any chunks left behind
+    // by a previous partial run in both PostgreSQL and ChromaDB.
+    await prisma.documentChunk.deleteMany({ where: { documentId } });
+    try {
+      const staleCollection = await getOrCreateCollection(projectId);
+      await staleCollection.delete({ where: { documentId } });
+    } catch (e) {
+      logger.warn('Chroma cleanup of prior chunks failed (may be empty collection)', { documentId, error: e });
+    }
+
     tempFilePath = `${os.tmpdir()}/tmp-${documentId}-${Date.now()}`;
     await downloadFile(document.path, tempFilePath);
     const fileBuffer = await import('fs/promises').then((fs) => fs.readFile(tempFilePath as string));
@@ -115,29 +127,55 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
       (chunk.metadata as any).isDuplicate = isDuplicate;
     }
 
-    // 4. Store in PostgreSQL
-    await prisma.$transaction(async (tx) => {
+    // 4. Store in PostgreSQL (capture generated ids so ChromaDB can reuse them
+    //    as its own ids — this unifies the chunk identifier across both stores
+    //    so Reciprocal Rank Fusion can merge the same chunk from both legs).
+    //    Using upsert ensures idempotency across job retries without duplicate errors.
+    const pgChunkIds: string[] = await prisma.$transaction(async (tx) => {
+      const ids: string[] = [];
       for (const item of chromaItems) {
-        await tx.documentChunk.create({
-          data: {
+        const created = await tx.documentChunk.upsert({
+          where: {
+            documentId_chunkIndex: {
+              documentId,
+              chunkIndex: item.metadata.chunkIndex,
+            },
+          },
+          update: {
+            content: item.document,
+            tokenCount: Math.max(1, Math.ceil(item.document.length / 4)),
+            metadata: item.metadata as any,
+          },
+          create: {
             content: item.document,
             chunkIndex: item.metadata.chunkIndex,
             tokenCount: Math.max(1, Math.ceil(item.document.length / 4)),
-            metadata: item.metadata,
+            metadata: item.metadata as any,
             documentId,
           },
+          select: { id: true },
         });
+        ids.push(created.id);
       }
+      return ids;
     });
 
-    // 5. Store in ChromaDB
+    // 5. Store in ChromaDB using the PostgreSQL chunk ids. If this fails, roll
+    //    back the just-inserted PG rows so a retry starts from a clean state
+    //    (semantic search would otherwise never surface these orphaned rows).
     if (chromaItems.length > 0) {
-      await collection.add({
-        ids: chromaItems.map((item) => item.id),
-        embeddings: chromaItems.map((item) => item.embedding),
-        metadatas: chromaItems.map((item) => item.metadata),
-        documents: chromaItems.map((item) => item.document),
-      });
+      try {
+        await collection.delete({ where: { documentId } }).catch(() => undefined);
+        await collection.add({
+          ids: pgChunkIds,
+          embeddings: chromaItems.map((item) => item.embedding),
+          metadatas: chromaItems.map((item) => item.metadata),
+          documents: chromaItems.map((item) => item.document),
+        });
+      } catch (chromaErr) {
+        await prisma.documentChunk.deleteMany({ where: { documentId } });
+        throw chromaErr;
+      }
     }
 
     // 6. Entity Extraction to Neo4j
@@ -159,7 +197,7 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
         processedAt: new Date(),
         completedAt: new Date(),
         extractedText: rawText,
-        pageCount: Math.max(...chunks.map(c => c.metadata.pageNumber || 1)),
+        pageCount: chunks.length ? Math.max(...chunks.map((c) => c.metadata.pageNumber || 1)) : 1,
         summary: `Processed ${filename} - ${chunks.length} chunks (${duplicateCount} near-duplicates)`,
         metadata: {
           ...(document.metadata as Record<string, unknown> | null),
@@ -169,6 +207,14 @@ export async function processDocumentJob(job: Job<ProcessDocumentJobData>): Prom
     });
 
     logger.info('Document processing completed', { documentId, projectId, chunkCount: chunks.length, duplicateCount });
+
+    // Invalidate stale cached search answers now that new content is searchable.
+    try {
+      const { invalidateProjectSearchCache } = await import('../../rag/pipeline.js');
+      await invalidateProjectSearchCache(projectId);
+    } catch (cacheErr) {
+      logger.warn('Failed to invalidate search cache after processing', { projectId, error: cacheErr });
+    }
 
     try {
       const { createNotification } = await import('../../notifications/index.js');

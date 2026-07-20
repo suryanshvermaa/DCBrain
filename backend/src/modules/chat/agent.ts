@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { DynamicStructuredTool } from '@langchain/core/tools';
 import { StateGraph, START, END, MemorySaver, messagesStateReducer } from '@langchain/langgraph';
@@ -9,6 +8,7 @@ import { semanticSearch, keywordSearch, embedQuery } from '@/modules/rag/retriev
 import { reciprocalRankFusion } from '@/modules/rag/fusion';
 import type { ChatMessage as PrismaChatMessage } from '@prisma/client';
 import prisma from '@/lib/prisma';
+import { extractMessageContent } from '@/core/utils/contentExtractor';
 
 // LangGraph state interface
 type AgentState = {
@@ -16,17 +16,17 @@ type AgentState = {
 };
 
 // StateGraph initialization
-const graph = new StateGraph<AgentState>({
+const graph = new StateGraph<any>({
   channels: {
     messages: {
       value: (x: BaseMessage[], y: BaseMessage[]) => x.concat(y),
       default: () => [],
     },
   },
-});
+}) as any;
 
 // Create tools from existing retrievers
-const hybridSearchTool = new DynamicStructuredTool({
+const hybridSearchTool = new DynamicStructuredTool<any>({
   name: 'project_document_search',
   description: 'Search project documents to find technical information, compliance standards, and schedule data.',
   schema: z.object({
@@ -69,7 +69,7 @@ const hybridSearchTool = new DynamicStructuredTool({
   },
 });
 
-const getProjectDocumentsTool = new DynamicStructuredTool({
+const getProjectDocumentsTool = new DynamicStructuredTool<any>({
   name: 'get_project_documents_info',
   description: 'Get the total number of documents and their names for the given project.',
   schema: z.object({
@@ -182,10 +182,9 @@ const SYSTEM_PROMPT = `You are DCBrain, an expert AI assistant for Data Centre E
 Your role is to answer questions using the provided tools to search project documents.
 - If the user asks a factual question about the project, compliance, or schedule, you MUST search the project documents.
 - If the user asks about the number of documents or wants a list of documents, use the get_project_documents_info tool.
-- If the user just greets you (e.g., "hi", "hello"), simply greet them back and ask how you can assist. DO NOT use the search tool for simple greetings.
-- If the search tool returns no relevant results, tell the user you couldn't find the answer in the documents.
+- If the search tool returns no relevant results (or if no documents have been uploaded to the project yet), explicitly inform the user that no project documents matched, but you MUST then provide a comprehensive, structured answer using your deep expert Data Centre EPC domain knowledge (ASHRAE, NFPA, TIA-942, Tier standards, mechanical/electrical systems).
 - When answering based on documents, explicitly cite the sources provided by the tool (e.g. "According to [Document Name], Page [X]...").
-- Keep answers concise and technically precise.`;
+- Keep answers professional, well-formatted (using markdown tables and bullet points where appropriate), and technically precise.`;
 
 export async function runChatAgent(
   projectId: string,
@@ -211,7 +210,7 @@ export async function runChatAgent(
   try {
     resultState = await app.invoke(
       { messages: lcMessages },
-      { recursionLimit: 5 }
+      { recursionLimit: 20 }
     );
   } catch (error: any) {
     console.error('LangGraph error:', error);
@@ -232,7 +231,7 @@ export async function runChatAgent(
   const toolMessages = finalMessages.filter((m: BaseMessage) => m._getType() === 'tool') as ToolMessage[];
   const sources = toolMessages.map(tm => ({ content: tm.content }));
 
-  let content = typeof finalMessage.content === 'string' ? finalMessage.content : String(finalMessage.content);
+  let content = extractMessageContent(finalMessage.content);
   
   // If the agent was forcefully stopped on a duplicate tool call, its content will be empty
   if (!content && finalMessage.tool_calls && finalMessage.tool_calls.length > 0) {

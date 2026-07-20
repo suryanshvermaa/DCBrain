@@ -26,6 +26,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
 import * as projectsApi from '@/lib/api/projects';
 import * as reportsApi from '@/lib/api/reports';
+import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 
 
 const REPORT_TYPE_LABELS: Record<reportsApi.ReportType, string> = {
@@ -270,7 +271,7 @@ function ReportsPageContent() {
                 </thead>
                 <tbody className="divide-y divide-[var(--color-divider)]">
                   {reports.map((report) => (
-                    <tr key={report.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+                    <tr key={report.id} className="hover:bg-[var(--color-surface-hover)] transition-colors">
                       <td className="px-6 py-3">
                         <div className="flex items-center gap-2">
                           <FileBarChart className="w-4 h-4 text-[var(--color-text-tertiary)]" />
@@ -330,7 +331,7 @@ function ReportsPageContent() {
                           )}
                           <button
                             onClick={() => void handleViewReport(report.id)}
-                            className="text-[var(--color-primary)] hover:text-blue-800 dark:text-blue-400 inline-flex items-center gap-1 text-xs"
+                            className="text-[var(--color-link)] hover:text-[var(--color-link-hover)] inline-flex items-center gap-1 text-xs font-medium"
                           >
                             Details <ChevronRight className="w-3.5 h-3.5" />
                           </button>
@@ -383,7 +384,7 @@ function ReportsPageContent() {
                         className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition-all ${
                           selectedType === type
                             ? 'border-[var(--color-primary)] bg-[var(--color-primary-100)] text-[var(--color-primary)] ring-1 ring-[var(--color-primary)]'
-                            : 'border-gray-200 dark:border-gray-600 text-[var(--color-text-primary)] hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : 'border-[var(--color-border)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)]'
                         }`}
                       >
                         {label}
@@ -461,13 +462,13 @@ function ReportsPageContent() {
                   <>
                     <button
                       onClick={() => void handleDownload(selectedReport.id, 'pdf')}
-                      className="px-3 py-1.5 text-sm border border-[var(--color-input)] rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1.5"
+                      className="px-3 py-1.5 text-sm border border-[var(--color-input)] rounded-lg hover:bg-[var(--color-surface-hover)] flex items-center gap-1.5 transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" /> PDF
                     </button>
                     <button
                       onClick={() => void handleDownload(selectedReport.id, 'md')}
-                      className="px-3 py-1.5 text-sm border border-[var(--color-input)] rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1.5"
+                      className="px-3 py-1.5 text-sm border border-[var(--color-input)] rounded-lg hover:bg-[var(--color-surface-hover)] flex items-center gap-1.5 transition-colors"
                     >
                       <FileText className="w-3.5 h-3.5" /> MD
                     </button>
@@ -490,11 +491,7 @@ function ReportsPageContent() {
               )}
 
               {selectedReport.markdownContent ? (
-                <div className="prose dark:prose-invert max-w-none text-sm">
-                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[var(--color-text-primary)] bg-transparent p-0 border-none">
-                    {selectedReport.markdownContent}
-                  </pre>
-                </div>
+                <MarkdownRenderer content={selectedReport.markdownContent} />
               ) : (
                 <div className="text-center text-[var(--color-text-secondary)] py-8">
                   {selectedReport.status === 'PENDING' || selectedReport.status === 'GENERATING'

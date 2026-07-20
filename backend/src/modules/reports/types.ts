@@ -72,6 +72,7 @@ export interface GenerateReportInput {
   projectId: string;
   type: ReportType;
   userId?: string;
+  actor?: { id: string; role: import('@prisma/client').Role };
   runAsync?: boolean;
 }
 

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@/lib/store';
 import * as authApi from '@/lib/api/auth';
-import { ApiError } from '@/lib/api';
+import { ApiError, api } from '@/lib/api';
 
 export interface AuthError {
   message: string;
@@ -27,6 +27,7 @@ function applySession(state: AuthState, payload: authApi.AuthSessionResponse): v
   state.user = payload.user;
   state.status = 'authenticated';
   state.error = null;
+  api.setToken(payload.token.accessToken);
 }
 
 function normalizeAuthError(error: unknown, fallbackMessage: string): AuthError {
@@ -89,6 +90,7 @@ const authSlice = createSlice({
       state.user = null;
       state.status = 'anonymous';
       state.error = null;
+      api.setToken(null);
     },
   },
   extraReducers(builder) {
@@ -126,6 +128,7 @@ const authSlice = createSlice({
         state.user = null;
         state.status = 'anonymous';
         state.error = null;
+        api.setToken(null);
       });
   },
 });

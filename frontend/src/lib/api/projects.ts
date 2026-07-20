@@ -95,6 +95,10 @@ export async function sendChatMessage(projectId: string, sessionId: string, cont
   return api.post<{ message: ChatMessage }>(`/api/v1/projects/${projectId}/chat/sessions/${sessionId}/messages`, { content });
 }
 
+export async function deleteChatSession(projectId: string, sessionId: string): Promise<{ success: boolean }> {
+  return api.delete<{ success: boolean }>(`/api/v1/projects/${projectId}/chat/sessions/${sessionId}`);
+}
+
 export async function exportChatSessionPDF(projectId: string, sessionId: string): Promise<Blob> {
   const token = api.getToken();
   const headers: Record<string, string> = {};

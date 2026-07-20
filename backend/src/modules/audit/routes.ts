@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Router, type Request, type Response } from 'express';
 import { Role } from '@prisma/client';
 import { z } from 'zod';
@@ -19,8 +18,8 @@ adminRouter.use(requireRole(Role.ADMIN));
 adminRouter.get(
   '/audit-log',
   asyncHandler(async (req: Request, res: Response) => {
-    const page = parseInt(req.query['page'] as string) || 1;
-    const limit = parseInt(req.query['limit'] as string) || 20;
+    const page = Math.max(parseInt(req.query['page'] as string) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query['limit'] as string) || 20, 1), 100);
     const skip = (page - 1) * limit;
     const action = req.query['action'] as string;
     const resourceType = req.query['resourceType'] as string;

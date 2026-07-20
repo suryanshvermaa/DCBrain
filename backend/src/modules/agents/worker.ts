@@ -14,7 +14,10 @@ export async function processAgentJob(job: Job<AgentJobData>): Promise<void> {
   }
 
   try {
-    await agent.execute(input, userId);
+    const output = await agent.execute(input, userId);
+    if (!output.success) {
+      throw new Error(output.content || `Agent ${agentType} execution failed`);
+    }
     logger.info(`Worker finished agent execution job`, { jobId: job.id, agentType, projectId });
   } catch (error: any) {
     logger.error(`Worker failed agent execution job`, { jobId: job.id, agentType, error: error.message });

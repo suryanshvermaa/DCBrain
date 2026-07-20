@@ -9,6 +9,11 @@ import type { RagPipelineInput, RagResponse } from './types';
 
 const CACHE_TTL_SECONDS = 3600; // 1 hour
 
+/** Redis set holding every live cache key for a project, so all can be invalidated on ingestion. */
+function getCacheIndexKey(projectId: string): string {
+  return `search:index:${projectId}`;
+}
+
 /** Deterministic cache key from projectId + query + serialised filters */
 function getCacheKey(input: RagPipelineInput): string {
   const payload = JSON.stringify({
@@ -16,7 +21,26 @@ function getCacheKey(input: RagPipelineInput): string {
     query: input.query.trim().toLowerCase(),
     filters: input.filters ?? {},
   });
-  return `search:${crypto.createHash('sha256').update(payload).digest('hex')}`;
+  return `search:${input.projectId}:${crypto.createHash('sha256').update(payload).digest('hex')}`;
+}
+
+/**
+ * Invalidate every cached answer for a project. Call after any event that
+ * changes what documents/data a search could return (document processed,
+ * procurement import, schedule import) so stale "no documents found" answers
+ * don't linger for up to an hour.
+ */
+export async function invalidateProjectSearchCache(projectId: string): Promise<void> {
+  try {
+    const indexKey = getCacheIndexKey(projectId);
+    const keys = await redis.smembers(indexKey);
+    if (keys.length > 0) {
+      await redis.unlink(...keys);
+    }
+    await redis.unlink(indexKey);
+  } catch (err) {
+    logger.warn('Failed to invalidate project search cache', { projectId, err });
+  }
 }
 
 /**
@@ -81,10 +105,18 @@ export async function runRagPipeline(input: RagPipelineInput): Promise<RagRespon
   };
 
   // ── 7. Cache write ───────────────────────────────────────────────────────
-  try {
-    await redis.set(cacheKey, JSON.stringify(response), 'EX', CACHE_TTL_SECONDS);
-  } catch (cacheErr) {
-    logger.warn('Redis cache write failed', { cacheErr });
+  // Skip caching error placeholders (e.g. a transient Gemini outage) so a brief
+  // failure doesn't poison the cache for an hour.
+  if (!generated.error) {
+    try {
+      await redis.set(cacheKey, JSON.stringify(response), 'EX', CACHE_TTL_SECONDS);
+      // Track the key so it can be invalidated when the project's data changes.
+      const indexKey = getCacheIndexKey(input.projectId);
+      await redis.sadd(indexKey, cacheKey);
+      await redis.expire(indexKey, CACHE_TTL_SECONDS);
+    } catch (cacheErr) {
+      logger.warn('Redis cache write failed', { cacheErr });
+    }
   }
 
   // ── 8. Persist history (non-critical) ────────────────────────────────────
@@ -142,3 +174,21 @@ export async function listSearchHistory(
     total,
   };
 }
+
+export async function deleteSearchHistoryItem(
+  historyId: string,
+  projectId: string,
+  userId: string
+): Promise<{ success: boolean }> {
+  const item = await prisma.searchHistory.findFirst({
+    where: { id: historyId, projectId, userId },
+  });
+  if (!item) {
+    throw new Error('Search history item not found');
+  }
+  await prisma.searchHistory.delete({
+    where: { id: historyId },
+  });
+  return { success: true };
+}
+

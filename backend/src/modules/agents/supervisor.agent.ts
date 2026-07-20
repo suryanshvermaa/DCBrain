@@ -71,10 +71,12 @@ Return a JSON object with the following fields:
         throw new Error(`Sub-agent ${plan.agent_to_invoke} is not registered in the framework registry.`);
       }
 
-      // Execute sub-agent with the combined input parameters
+      // Execute sub-agent with the combined input parameters, ensuring extracted_parameters
+      // cannot override trusted security context like projectId and userId.
+      const { projectId: _ignoredProj, userId: _ignoredUser, ...safeExtracted } = (plan.extracted_parameters ?? {}) as Record<string, unknown>;
       const mergedInput: AgentInput = {
+        ...safeExtracted,
         ...input,
-        ...plan.extracted_parameters,
       };
 
       // Run subagent execution block (which writes its own logs in agent_runs)
@@ -112,19 +114,24 @@ Present a summary response back to the user, incorporating key findings from the
 
   private parseRoutingPlan(jsonStr: string): RoutingPlan {
     const fallback: RoutingPlan = {
-      agent_to_invoke: 'KNOWLEDGE',
+      agent_to_invoke: 'NONE',
       extracted_parameters: {},
-      rationale: 'Failed to parse JSON routing plan, defaulting to Knowledge Agent',
+      rationale: 'Failed to parse JSON routing plan. Please clarify or restate your request.',
     };
 
-    return safeParseJson<RoutingPlan>(jsonStr, fallback);
+    const parsed = safeParseJson<RoutingPlan>(jsonStr);
+    if (!parsed || !parsed.agent_to_invoke) {
+      return fallback;
+    }
+    return parsed;
   }
 }
 
-function safeParseJson<T>(jsonStr: string, fallback: T): T {
+function safeParseJson<T>(jsonStr: string): T | null {
   try {
-    return JSON.parse(jsonStr) as T;
+    const cleaned = jsonStr.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+    return JSON.parse(cleaned) as T;
   } catch (error) {
-    return fallback;
+    return null;
   }
 }

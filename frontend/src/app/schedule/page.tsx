@@ -492,7 +492,7 @@ function SchedulePageContent() {
                   </p>
                   <ResponsiveContainer width="100%" height={280}>
                     <ScatterChart margin={{ top: 4, right: 8, bottom: 8, left: 4 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--color-divider)" strokeOpacity={0.6} />
                       <XAxis
                         dataKey="x"
                         type="number"

@@ -2,17 +2,20 @@
 
 import { useState } from 'react';
 import type { SearchHistoryItem } from '@/lib/api/search';
+import { Trash2 } from 'lucide-react';
 
 interface SearchHistorySidebarProps {
   history: SearchHistoryItem[];
   onRerun: (query: string) => void;
   onLoadMore: () => void;
+  onDelete?: (id: string) => void;
 }
 
 export function SearchHistorySidebar({
   history,
   onRerun,
   onLoadMore,
+  onDelete,
 }: SearchHistorySidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -53,22 +56,35 @@ export function SearchHistorySidebar({
 
           <ul className="flex flex-col gap-2" id="history-list">
             {history.map((item) => (
-              <li key={item.id} className="">
+              <li key={item.id} className="group relative flex items-center justify-between rounded-xl transition-all hover:bg-[var(--color-surface-raised)] border border-transparent hover:border-[var(--color-border)]">
                 <button
                   id={`history-item-${item.id}`}
-                  className="w-full text-left bg-transparent border border-transparent p-3 rounded-xl cursor-pointer transition-all flex flex-col gap-1 hover:bg-[var(--color-surface-raised)] hover:border-[var(--color-border)] hover:translate-x-1"
+                  className="flex-1 text-left bg-transparent border-none p-3 cursor-pointer flex flex-col gap-1 min-w-0"
                   type="button"
                   onClick={() => onRerun(item.query)}
                   title={item.query}
                 >
-                  <span className="font-medium text-[var(--color-text-primary)] text-sm whitespace-nowrap overflow-hidden text-ellipsis block">{item.query}</span>
+                  <span className="font-medium text-[var(--color-text-primary)] text-sm truncate block">{item.query}</span>
                   <div className="flex justify-between text-xs text-[var(--color-text-tertiary)]">
-                    <span className="">
+                    <span>
                       {item.resultCount} result{item.resultCount !== 1 ? 's' : ''}
                     </span>
-                    <span className="">{formatTime(item.createdAt)}</span>
+                    <span>{formatTime(item.createdAt)}</span>
                   </div>
                 </button>
+                {onDelete && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(item.id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1.5 mr-2 rounded-md hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 text-[var(--color-text-secondary)] transition-all shrink-0"
+                    title="Delete recent search"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
               </li>
             ))}
           </ul>

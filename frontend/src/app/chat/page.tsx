@@ -4,7 +4,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
 import * as projectsApi from '@/lib/api/projects';
-import { Bot, Send, User, FileText, Download, BookOpen, Hash } from 'lucide-react';
+import { Bot, Send, User, FileText, Download, BookOpen, Hash, Trash2 } from 'lucide-react';
+import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { useAppSelector } from '@/lib/hooks';
 import { selectAccessToken } from '@/features/auth/authSlice';
 
@@ -136,6 +137,26 @@ function ChatPageContent() {
     }
   }
 
+  async function handleDeleteSession(e: React.MouseEvent, sessionId: string) {
+    e.stopPropagation();
+    if (!projectId) return;
+    try {
+      await projectsApi.deleteChatSession(projectId, sessionId);
+      const remaining = sessions.filter((s) => s.id !== sessionId);
+      setSessions(remaining);
+      if (activeSessionId === sessionId) {
+        if (remaining.length > 0) {
+          setActiveSessionId(remaining[0]!.id);
+        } else {
+          setActiveSessionId(null);
+          setMessages([]);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to delete session', err);
+    }
+  }
+
   async function handleCreateSession() {
     if (!projectId) return;
     try {
@@ -145,6 +166,21 @@ function ChatPageContent() {
       setMessages([]);
     } catch (e) {
       console.error(e);
+    }
+  }
+
+  async function handleClearAllSessions() {
+    if (!projectId || sessions.length === 0) return;
+    if (!window.confirm('Are you sure you want to delete all previous chat sessions?')) return;
+    try {
+      for (const s of sessions) {
+        await projectsApi.deleteChatSession(projectId, s.id);
+      }
+      setSessions([]);
+      setActiveSessionId(null);
+      setMessages([]);
+    } catch (err) {
+      console.error('Failed to clear sessions', err);
     }
   }
 
@@ -244,16 +280,38 @@ function ChatPageContent() {
             {sessions.map((s) => (
               <div
                 key={s.id}
-                className={`flex flex-col gap-1 p-3 rounded-lg cursor-pointer transition-colors ${activeSessionId === s.id ? 'bg-[var(--color-primary-100)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]'}`}
+                className={`group relative flex items-center justify-between gap-2 p-3 rounded-lg cursor-pointer transition-colors ${activeSessionId === s.id ? 'bg-[var(--color-primary-100)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]'}`}
                 onClick={() => setActiveSessionId(s.id)}
               >
-                <div className="font-semibold text-sm truncate">{s.title}</div>
-                <div className="text-xs opacity-75">
-                  {new Date(s.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                  <div className="font-semibold text-sm truncate">{s.title}</div>
+                  <div className="text-xs opacity-75">
+                    {new Date(s.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={(e) => handleDeleteSession(e, s.id)}
+                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/40 transition-all shrink-0"
+                  title="Delete chat session"
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
             ))}
           </div>
+          {sessions.length > 0 && (
+            <div className="p-3 border-t border-[var(--color-divider)]">
+              <button
+                type="button"
+                onClick={handleClearAllSessions}
+                className="w-full inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-red-200 dark:border-red-800/40 bg-red-50 dark:bg-red-900/20 px-3 text-xs font-medium text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                title="Delete all previous chat sessions"
+              >
+                <Trash2 size={13} /> Delete Previous Chats
+              </button>
+            </div>
+          )}
         </aside>
 
         {/* ── Main Chat ── */}
@@ -293,7 +351,7 @@ function ChatPageContent() {
                           <Bot size={14} />
                           DCBrain
                         </div>
-                        <div className="text-[16px] leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                        <MarkdownRenderer content={msg.content} />
                         {msg.sources && Array.isArray(msg.sources) && msg.sources.length > 0 && (
                           <SourcesPanel sources={msg.sources as Array<{ content: string }>} />
                         )}

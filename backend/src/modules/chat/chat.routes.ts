@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from 'express';
+import { Role } from '@prisma/client';
 import { asyncHandler } from '@/core/middleware/errorHandler';
 import { requireAuth, type AuthenticatedRequest } from '@/modules/auth/middleware';
 import { requirePermission } from '@/modules/auth/middleware';
@@ -9,6 +10,14 @@ import * as chatController from './chat.controller';
 export const chatRouter = Router({ mergeParams: true });
 
 chatRouter.use(requireAuth);
+
+function getActor(req: Request) {
+  const user = (req as AuthenticatedRequest).auth?.user;
+  return {
+    id: user?.id ?? '',
+    role: user?.role ?? Role.VIEWER,
+  };
+}
 
 const projectParamsSchema = z.object({
   id: z.string().min(1),
@@ -25,10 +34,9 @@ chatRouter.post(
   requirePermission('search_documents'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id: projectId } = projectParamsSchema.parse(req.params);
-    const userId = (req as AuthenticatedRequest).auth?.user?.id ?? '';
     const body = createSessionSchema.parse(req.body);
 
-    const session = await chatController.createSession(projectId, userId, body.title);
+    const session = await chatController.createSession(projectId, getActor(req), body.title);
     res.status(201).json({ session });
   })
 );
@@ -39,10 +47,9 @@ chatRouter.get(
   requirePermission('search_documents'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id: projectId } = projectParamsSchema.parse(req.params);
-    const userId = (req as AuthenticatedRequest).auth?.user?.id ?? '';
     const query = chatSessionQuerySchema.parse(req.query);
 
-    const result = await chatController.listSessions(projectId, userId, query.page, query.pageSize);
+    const result = await chatController.listSessions(projectId, getActor(req), query.page, query.pageSize);
     res.status(200).json({
       sessions: result.sessions,
       pagination: {
@@ -61,9 +68,8 @@ chatRouter.get(
   requirePermission('search_documents'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id: projectId, sid: sessionId } = sessionParamsSchema.parse(req.params);
-    const userId = (req as AuthenticatedRequest).auth?.user?.id ?? '';
 
-    const messages = await chatController.getSessionMessages(sessionId, projectId, userId);
+    const messages = await chatController.getSessionMessages(sessionId, projectId, getActor(req));
     res.status(200).json({ messages });
   })
 );
@@ -74,10 +80,9 @@ chatRouter.post(
   requirePermission('search_documents'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id: projectId, sid: sessionId } = sessionParamsSchema.parse(req.params);
-    const userId = (req as AuthenticatedRequest).auth?.user?.id ?? '';
     const body = sendMessageSchema.parse(req.body);
 
-    const message = await chatController.sendMessage(sessionId, projectId, userId, body.content);
+    const message = await chatController.sendMessage(sessionId, projectId, getActor(req), body.content);
     res.status(201).json({ message });
   })
 );
@@ -88,12 +93,23 @@ chatRouter.get(
   requirePermission('search_documents'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id: projectId, sid: sessionId } = sessionParamsSchema.parse(req.params);
-    const userId = (req as AuthenticatedRequest).auth?.user?.id ?? '';
 
-    const pdfBuffer = await chatController.exportSessionAsPDF(sessionId, projectId, userId);
-    
+    const pdfBuffer = await chatController.exportSessionAsPDF(sessionId, projectId, getActor(req));
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=chat-export-${sessionId}.pdf`);
     res.send(pdfBuffer);
   })
 );
+
+/** DELETE /api/v1/projects/:id/chat/sessions/:sid */
+chatRouter.delete(
+  '/:sid',
+  requirePermission('search_documents'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id: projectId, sid: sessionId } = sessionParamsSchema.parse(req.params);
+    await chatController.deleteSession(sessionId, projectId, getActor(req));
+    res.status(200).json({ success: true });
+  })
+);
+

@@ -60,8 +60,14 @@ function toCoResponse(co: ChangeOrder): CoResponse {
 }
 
 async function nextCoNumber(projectId: string): Promise<string> {
-  const count = await prisma.changeOrder.count({ where: { projectId } });
-  return `CO-${String(count + 1).padStart(4, '0')}`;
+  const latest = await prisma.changeOrder.findFirst({
+    where: { projectId },
+    orderBy: { number: 'desc' },
+  });
+  if (!latest) return 'CO-0001';
+  const match = latest.number.match(/\d+$/);
+  const nextNum = match ? parseInt(match[0], 10) + 1 : (await prisma.changeOrder.count({ where: { projectId } })) + 1;
+  return `CO-${String(nextNum).padStart(4, '0')}`;
 }
 
 const ALLOWED_CO_TRANSITIONS: Record<ChangeOrderStatus, ChangeOrderStatus[]> = {
@@ -179,7 +185,7 @@ export async function updateChangeOrder(input: {
   if (!existing) throw new NotFoundError('Change Order', input.coId);
 
   const now = new Date();
-  const updateData: Prisma.ChangeOrderUpdateInput = {};
+  const updateData: Prisma.ChangeOrderUncheckedUpdateInput = {};
 
   if (input.data.title !== undefined) updateData.title = input.data.title;
   if (input.data.description !== undefined) updateData.description = input.data.description;

@@ -79,7 +79,7 @@ describe('Agent Routes', () => {
         .expect(200);
 
       expect(res.body).toHaveLength(2);
-      expect(mockService.listAgents).toHaveBeenCalledWith('proj-1');
+      expect(mockService.listAgents).toHaveBeenCalledWith('proj-1', { id: '', role: 'VIEWER' });
     });
   });
 
@@ -116,7 +116,7 @@ describe('Agent Routes', () => {
         .expect(200);
 
       expect(res.body).toHaveLength(1);
-      expect(mockService.listAgentRuns).toHaveBeenCalledWith('proj-1', 'DOCUMENT');
+      expect(mockService.listAgentRuns).toHaveBeenCalledWith('proj-1', { id: '', role: 'VIEWER' }, 'DOCUMENT');
     });
   });
 
@@ -129,7 +129,7 @@ describe('Agent Routes', () => {
         .expect(200);
 
       expect(res.body.id).toBe('run-1');
-      expect(mockService.getAgentRunDetails).toHaveBeenCalledWith('run-1');
+      expect(mockService.getAgentRunDetails).toHaveBeenCalledWith('proj-1', { id: '', role: 'VIEWER' }, 'run-1');
     });
 
     it('returns 404 when run is not found', async () => {
@@ -160,6 +160,7 @@ describe('Agent Routes', () => {
       expect(mockService.updateAgentScheduleService).toHaveBeenCalledWith({
         projectId: 'proj-1',
         agentType: 'PROJECT_HEALTH',
+        actor: { id: '', role: 'VIEWER' },
         schedule: '0 6 * * *',
         isActive: true,
       });

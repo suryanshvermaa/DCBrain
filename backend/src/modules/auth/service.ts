@@ -10,7 +10,6 @@ import {
   verifyRefreshToken,
 } from './security';
 import {
-  countUsers,
   createAuditLog,
   createUser,
   findUserByEmail,
@@ -106,18 +105,15 @@ export async function register(input: RegisterInput, context: AuthContext = {}):
   }
 
   const passwordHash = await hashPassword(input.password);
-  const userCount = await countUsers();
-  
-  if (userCount > 0) {
-    throw new (await import('@/core/errors')).ForbiddenError('Public registration is disabled. Please contact your system administrator to get an account.');
-  }
 
+  // Self-registrations always default to VIEWER. The initial admin is seeded
+  // out-of-band (see scripts/create-admin.ts), never inferred from registration order.
   const user = await createUser({
     email: input.email,
     passwordHash,
     firstName: input.firstName,
     lastName: input.lastName,
-    role: 'ADMIN',
+    role: 'VIEWER',
   });
   const response = buildAuthResponse(user);
 

@@ -175,7 +175,7 @@ export async function updateInspection(input: {
   });
   if (!existing) throw new NotFoundError('Inspection', input.inspId);
 
-  const updateData: Prisma.InspectionUpdateInput = {};
+  const updateData: Prisma.InspectionUncheckedUpdateInput = {};
   if (input.data.title !== undefined) updateData.title = input.data.title;
   if (input.data.itpRef !== undefined) updateData.itpRef = input.data.itpRef;
   if (input.data.discipline !== undefined) updateData.discipline = input.data.discipline;
