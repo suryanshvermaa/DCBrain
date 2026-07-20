@@ -12,7 +12,7 @@ interface AuthShellProps {
 
 export function AuthShell({ title, description, footerText, footerHref, footerLabel, children }: AuthShellProps) {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.15),_transparent_35%),linear-gradient(135deg,_#0f172a_0%,_#111827_45%,_#f8fafc_45%,_#f8fafc_100%)] text-slate-900">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.15),_transparent_35%),linear-gradient(90deg,_#0f172a_0%,_#111827_50%,_#f8fafc_50%,_#f8fafc_100%)] text-slate-900">
       <div className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 lg:grid-cols-[1.05fr_0.95fr]">
         <section className="flex items-center px-6 py-16 lg:px-10">
           <div className="max-w-xl text-white lg:pr-16">
