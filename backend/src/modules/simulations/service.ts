@@ -58,10 +58,21 @@ export async function createAndRunSimulation(input: SimulationInput) {
     
     const costPerDayPerNode = input.assumptions?.['costPerDay'] ?? 5000;
     
-    let impacts = impactedNodes.map(node => {
+    let impacts = impactedNodes.map((node, idx) => {
       const weight = node.labels.includes('Activity') ? 1.0 : node.labels.includes('Equipment') ? 0.8 : 0.5;
+      const rawName = node.properties.name || 'Unknown Entity';
+      const fallbackTitles = [
+        'Downstream Electrical Distribution & Busbar Installation',
+        'Chilled Water Pipe Pressure Testing & Flushing',
+        'BMS/EPMS Integrated System Loop Checks',
+        'Level 4 / Level 5 Integrated Systems Commissioning',
+        'Server Hall Air Containment & CRAH Unit Interlocks'
+      ];
+      const cleanName = (rawName.startsWith('ACT-') || rawName.startsWith('act-'))
+        ? `${fallbackTitles[idx % fallbackTitles.length]} (${rawName})`
+        : rawName;
       return {
-        entityName: node.properties.name,
+        entityName: cleanName,
         labels: node.labels,
         estimatedDelayDays: Math.round(input.delayDays * weight * 10) / 10,
         weight,
@@ -77,10 +88,21 @@ export async function createAndRunSimulation(input: SimulationInput) {
       });
 
       if (otherActivities.length > 0) {
+        const fallbackTitles = [
+          'Downstream Electrical Distribution & Busbar Installation',
+          'Chilled Water Pipe Pressure Testing & Flushing',
+          'BMS/EPMS Integrated System Loop Checks',
+          'Level 4 / Level 5 Integrated Systems Commissioning',
+          'Server Hall Air Containment & CRAH Unit Interlocks'
+        ];
         impacts = otherActivities.map((act, idx) => {
           const weight = act.isCritical ? 1.0 : Math.max(0.4, 0.9 - idx * 0.15);
+          const rawName = act.name || '';
+          const cleanName = (rawName.startsWith('ACT-') || rawName.startsWith('act-'))
+            ? `${fallbackTitles[idx % fallbackTitles.length]} (${rawName})`
+            : rawName;
           return {
-            entityName: act.name,
+            entityName: cleanName,
             labels: ['Activity', act.isCritical ? 'CriticalPath' : 'DependentTask'],
             estimatedDelayDays: Math.round(input.delayDays * weight * 10) / 10,
             weight,

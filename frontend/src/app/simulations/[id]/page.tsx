@@ -87,7 +87,7 @@ function SimulationDetailPageContent() {
               <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">{sim.name}</h2>
               <p className="text-sm text-[var(--color-text-secondary)] mt-1">Target: {sim.targetActivityId} | Delay: {sim.delayDays} days</p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${sim.status === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'}`}>
+            <span className={`px-3 py-1.5 rounded-full text-xs font-bold border ${sim.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700' : sim.status === 'RUNNING' ? 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-700' : 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/40 dark:text-red-300 dark:border-red-700'}`}>
               {sim.status}
             </span>
           </div>
@@ -107,9 +107,14 @@ function SimulationDetailPageContent() {
             <h3 className="text-lg font-semibold mb-3 text-[var(--color-text-primary)]">Failure Propagation Chain</h3>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {sim.impacts?.length ? sim.impacts.map((i, idx) => (
-                <div key={idx} className="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 text-sm rounded-lg flex justify-between border border-amber-200 dark:border-amber-800/40">
-                  <span>{i.entityName}</span>
-                  <span className="text-xs bg-amber-200 dark:bg-amber-900/50 px-2 py-1 rounded font-medium">{i.labels.join(', ')}</span>
+                <div key={idx} className="p-3 bg-orange-50 dark:bg-orange-950/30 text-sm rounded-lg flex justify-between items-center border border-orange-200 dark:border-orange-800/40 gap-4">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100 truncate">{i.entityName}</span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="text-xs bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 px-2.5 py-1 rounded-md font-bold border border-red-200 dark:border-red-800/40">
+                      +{i.estimatedDelayDays} days
+                    </span>
+                    <span className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 px-2 py-1 rounded-md font-medium border border-amber-200 dark:border-amber-800/40">{i.labels.join(', ')}</span>
+                  </div>
                 </div>
               )) : (
                 <p className="text-sm text-[var(--color-text-secondary)]">No downstream cascade detected.</p>
