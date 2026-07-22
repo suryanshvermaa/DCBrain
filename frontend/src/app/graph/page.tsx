@@ -210,8 +210,8 @@ function GraphPageContent() {
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
           fitView
-          fitViewOptions={{ padding: 0.3 }}
-          minZoom={0.2}
+          fitViewOptions={{ padding: 0.3, minZoom: 0.01 }}
+          minZoom={0.01}
           maxZoom={2}
           proOptions={{ hideAttribution: true }}
         >
