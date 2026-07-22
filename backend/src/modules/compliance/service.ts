@@ -45,6 +45,8 @@ export interface ComplianceSummaryResult {
     complianceScore: number;
     status: 'COMPLETED' | 'FAILED';
     createdAt: string;
+    findings?: ComplianceFinding[];
+    standards?: string[];
   } | null;
   summary: {
     totalFindings: number;
@@ -229,7 +231,7 @@ Every finding MUST cite realistic evidence or observations from the provided doc
     status: record.status as 'COMPLETED' | 'FAILED',
     complianceScore: record.complianceScore,
     standards: Array.isArray(record.standards) ? (record.standards as string[]) : standards,
-    findings: (record.findings as ComplianceFinding[]) ?? findings,
+    findings: (record.findings as unknown as ComplianceFinding[]) ?? findings,
     summary: (record.summary as ComplianceCheckResult['summary']) ?? {
       totalFindings: findings.length,
       compliantFindings,
@@ -256,6 +258,8 @@ export async function getComplianceSummary(input: {
       status: true,
       createdAt: true,
       summary: true,
+      findings: true,
+      standards: true,
     },
   });
 
@@ -282,6 +286,8 @@ export async function getComplianceSummary(input: {
       complianceScore: latestCheck.complianceScore,
       status: latestCheck.status as 'COMPLETED' | 'FAILED',
       createdAt: latestCheck.createdAt.toISOString(),
+      findings: (latestCheck.findings as unknown as ComplianceFinding[]) ?? [],
+      standards: Array.isArray(latestCheck.standards) ? (latestCheck.standards as string[]) : [],
     },
     summary: {
       totalFindings: summary.totalFindings ?? 0,

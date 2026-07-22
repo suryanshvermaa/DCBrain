@@ -34,6 +34,8 @@ export interface ComplianceSummaryResponse {
     complianceScore: number;
     status: 'COMPLETED' | 'FAILED';
     createdAt: string;
+    findings?: ComplianceFinding[];
+    standards?: string[];
   } | null;
   summary: {
     totalFindings: number;
