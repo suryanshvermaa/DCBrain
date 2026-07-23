@@ -9,6 +9,15 @@ An AI-powered platform unifying Data Centre EPC (Engineering, Procurement, Const
 
 ![DCBrain Home](public/home-screenshot.png)
 
+---
+
+### 🚀 Hackathon Test Account
+If you are reviewing this project for the ET AI Hackathon, you can use the following test account to explore the platform:
+- **Email:** `test@gmail.com`
+- **Password:** `12345678`
+
+---
+
 ## Table of Contents
 - [Problem Statement](#problem-statement)
 - [Solution Overview](#solution-overview)
